@@ -1,0 +1,56 @@
+LidarFormat
+
+LidarFormat is an open source library for efficiently handling 3D point 
+clouds with a variable number of attributes at runtime. LidarFormat is 
+distributed under the CeCILL-B licence. See Licence_CeCILL-B_V1-en.txt 
+or http://www.cecill.info for more details.
+
+
+Homepage: 
+
+	https://fullanalyze.ign.fr/trac/LidarFormat
+	
+Copyright:
+	
+	Institut Geographique National & CEMAGREF (2009)
+
+Author: 
+
+	Adrien Chauve
+
+
+ 
+Installation instructions:
+--------------------------
+
+
+1. 	Dependencies
+
+		NB: On linux plateforms, you should use the official distribution packages.
+
+		Install the following tools or libraries:
+			CMake
+			Boost (>= 1.36)
+			Xerces
+			Code Synthesis XSD (can be downloaded at http://www.codesynthesis.com/download)
+
+2. 	Compilation:
+
+		On Linux platforms, enter in a terminal (in the LidarFormat/trunk directory):
+		
+			ccmake . 
+			--> follow the CMake instructions, in particular:
+			--> launch the configure step with 'c'
+			--> set CMAKE_BUILD_TYPE to Release within CMake
+			--> generate the configuration with 'g'
+			make
+			make test
+			--> check all tests are passed!
+			
+		** Make sure you compiled LidarFormat as a shared library, otherwise you will need 
+		to register the file formats in your code before using the library.
+
+3.	Examples: 
+	
+		Look at the cpp files in the LidarFormat/trunk/tests directory for examples.
+
