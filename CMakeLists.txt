@@ -8,8 +8,10 @@ PROJECT(LidarFormat)
 #### On recherche tous les fichiers ".h", ".hpp", ".hxx" et "*.inl"
 ####
 FILE( GLOB ALL_LIDAR_FORMAT_HEADER_FILES src/LidarFormat/*.h )
-FILE( GLOB ALL_MODELS_HEADER_FILES src/LidarFormat/models/*.h )
 FILE( GLOB ALL_GEOMETRY_HEADER_FILES src/LidarFormat/geometry/*.h )
+FILE( GLOB ALL_TOOLS_HEADER_FILES src/LidarFormat/tools/*.h src/LidarFormat/tools/*.hpp)
+FILE( GLOB ALL_MODELS_HEADER_FILES src/LidarFormat/models/*.h src/LidarFormat/models/*.hxx)
+FILE( GLOB ALL_EXTERN_HEADER_FILES src/extern/matis/*.h)
 
 
 #Génération du code de parse des fichiers xml (gestion du format lidar)
@@ -44,6 +46,7 @@ SET( ALL_SOURCES
         ${SRC_EXTERN_TERRABIN}
    )
 
+SET( ALL_HEADERS ${ALL_LIDAR_FORMAT_HEADER_FILES} ${ALL_MODELS_HEADER_FILES} ${ALL_GEOMETRY_HEADER_FILES})
 
 ####
 #### Recherche des libs
@@ -66,7 +69,7 @@ ELSE()
 ENDIF()
 
 # Find BOOST
-SET(Boost_ADDITIONAL_VERSIONS "1.37.0" "1.37")
+SET(Boost_ADDITIONAL_VERSIONS "1.37.0" "1.37" "1.38" "1.38.0" "1.39.0" "1.39")
 FIND_PACKAGE( Boost 1.36 COMPONENTS filesystem system thread unit_test_framework)
 IF( Boost_FOUND )
     INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
@@ -104,6 +107,7 @@ endif(ENABLE_LAS)
 OPTION( ENABLE_TERRABIN "Enable TerraBin" OFF )
 if(ENABLE_TERRABIN)
     AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/TerraBin  SRC_TERRABIN)
+	INCLUDE_DIRECTORIES(${SRC_DIR}/LidarFormat/file_formats/TerraBin)
     SET( ALL_SOURCES ${ALL_SOURCES} ${SRC_TERRABIN})
 endif(ENABLE_TERRABIN)
 
@@ -158,4 +162,7 @@ endif(BUILD_TESTS)
 ####
 #### Install
 ####
-#INCLUDE( LidarFormat_install.cmake )
+OPTION( BUILD_INSTALL " generate install target " ON)
+IF(BUILD_INSTALL)
+	INCLUDE(LidarFormat_install.cmake )
+ENDIF(BUILD_INSTALL)
