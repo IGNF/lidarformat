@@ -57,6 +57,12 @@ knowledge of the CeCILL-B license and that you accept its terms.
  * \date 26 juil. 2009
  */
 
+
+/** \example 01_ex_basics.cpp
+ * This is an example of how to use the basics of the LidarFormat library.
+ */
+
+
 #include <iostream>
 #include <boost/filesystem.hpp>
 

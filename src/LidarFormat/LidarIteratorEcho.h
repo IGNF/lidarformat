@@ -189,6 +189,10 @@ namespace detail
 }
 
 
+/**
+ * \ingroup group_iterators
+ */
+
 struct LidarIteratorEcho : public detail::_LidarIteratorEchoBase
 {
 
@@ -303,7 +307,9 @@ struct LidarIteratorEcho : public detail::_LidarIteratorEchoBase
 };
 
 
-
+/**
+ * \ingroup group_iterators
+ */
 
 struct LidarConstIteratorEcho : public detail::_LidarIteratorEchoBase
 {
@@ -412,6 +418,7 @@ struct LidarConstIteratorEcho : public detail::_LidarIteratorEchoBase
 
 
 };
+
 
 
 } //namespace Lidar
