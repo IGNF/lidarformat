@@ -265,7 +265,7 @@ int main(int ac, char* av[])
 			m_lidarInput=LoadInputData(*input_file_ite);
 			add_crop(poly, m_lidarInput, m_lidarOutput );
 		}
-		boost::shared_ptr<LidarFileIO> writer=LidarIOFactory::Instance()->createObject(output_format);
+		boost::shared_ptr<LidarFileIO> writer=LidarIOFactory::instance().createObject(output_format);
 		std::string output_name=(*crop_ite).first;
 		std::cout<<" write crop file "<<output_name<<std::endl;
 		try{
