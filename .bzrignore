@@ -23,3 +23,7 @@ data/testAscii-new.xml
 tests/config_data_test.h
 doc/html
 doc/latex
+CPackConfig.cmake
+CPackSourceConfig.cmake
+LidarFormatConfig.cmake
+install_manifest.txt

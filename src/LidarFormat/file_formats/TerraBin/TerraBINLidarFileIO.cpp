@@ -58,7 +58,7 @@ knowledge of the CeCILL-B license and that you accept its terms.
  */
 
 using namespace std;
-#include "TerraBin.h"
+#include "extern/terrabin/TerraBin.h"
 
 #include "LidarFormat/LidarIOFactory.h"
 #include "LidarFormat/LidarDataContainer.h"
@@ -208,7 +208,7 @@ boost::shared_ptr<TerraBINLidarFileIO> createTerraBINLidarFileReader()
 bool TerraBINLidarFileIO::Register()
 {
 //	std::cout << "Format cs : " << cs::DataFormatType(cs::DataFormatType::binary_one_file_ungrouped) << std::endl;
-	LidarIOFactory::Instance()->Register(cs::DataFormatType(cs::DataFormatType::terrabin), createTerraBINLidarFileReader);
+	LidarIOFactory::instance().Register(cs::DataFormatType(cs::DataFormatType::terrabin), createTerraBINLidarFileReader);
 	return true;
 }
 
