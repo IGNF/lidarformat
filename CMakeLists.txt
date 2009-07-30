@@ -3,6 +3,13 @@ CMAKE_MINIMUM_REQUIRED( VERSION 2.6 )
 #Nom du projet
 PROJECT(LidarFormat)
 
+# Useful for Eclipse code STL completion
+if(UNIX)
+	exec_program( gcc ARGS -dumpversion OUTPUT_VARIABLE GCC_VERSION )
+	
+	string( SUBSTRING ${GCC_VERSION} 0 3 GOOD_GCC_VERSION )
+    include_directories( /usr/include/c++/${GOOD_GCC_VERSION} )
+endif()
 
 ####
 #### On recherche tous les fichiers ".h", ".hpp", ".hxx" et "*.inl"

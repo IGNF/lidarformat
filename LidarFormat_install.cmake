@@ -23,7 +23,7 @@ IF(UNIX)
 	#SET(RELATIVE_INCLUDE_EXTERN_PATH "../../include/extern")
 	#CONFIGURE_FILE(${LIDARFORMAT_CMAKE_SELF_DIR}/LidarFormatConfig.cmake.in ${CMAKE_CURRENT_SOURCE_DIR}/LidarFormatConfig.cmake @ONLY)
 	
-	INSTALL (	TARGETS LidarFormat DESTINATION lib COMPONENT library)
+	INSTALL ( TARGETS LidarFormat DESTINATION lib COMPONENT library )
 			 
 	#INSTALL (	EXPORT LidarFormat-targets 
 	#			DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/LidarFormat
@@ -42,7 +42,7 @@ IF(UNIX)
 	 set(CPACK_GENERATOR "DEB")
 	 set(CPACK_PACKAGE_CONTACT "adrien.chauve@ign.fr")
 	 set(CPACK_PACKAGE_INSTALL_DIRECTORY "CPack Component Example")
-	 set(CPACK_COMPONENTS_ALL library headers)
+	 set( CPACK_COMPONENTS_ALL headers library )
 	 
 	 
 	 include(CPack)
