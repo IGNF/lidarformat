@@ -1,0 +1,5 @@
+get_filename_component(SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(${SELF_DIR}/LidarFormat-targets.cmake)
+get_filename_component(LidarFormat_INCLUDE_DIR "${SELF_DIR}/@RELATIVE_INCLUDE_PATH@"  ABSOLUTE)
+get_filename_component(extern_INCLUDE_DIR "${SELF_DIR}/@RELATIVE_INCLUDE_EXTERN_PATH@"  ABSOLUTE)
+SET(LidarFormat_INCLUDE_DIRS "${LidarFormat_INCLUDE_DIR}" "${extern_INCLUDE_DIR}")
