@@ -3,7 +3,6 @@ CMAKE_MINIMUM_REQUIRED( VERSION 2.6 )
 #Nom du projet
 PROJECT(LidarFormat)
 
-
 ####
 #### On recherche tous les fichiers ".h", ".hpp", ".hxx" et "*.inl"
 ####
@@ -166,3 +165,4 @@ OPTION( BUILD_INSTALL " generate install target " ON)
 IF(BUILD_INSTALL)
 	INCLUDE(LidarFormat_install.cmake )
 ENDIF(BUILD_INSTALL)
+

@@ -51,11 +51,17 @@ knowledge of the CeCILL-B license and that you accept its terms.
 ***********************************************************************/
 
 /*!
- * \file test1.cpp
+ * \file 02_ex_filtering.cpp
  * \brief
  * \author Adrien Chauve
  * \date 15 févr. 2009
  */
+
+
+/** \example 02_ex_filtering.cpp
+ * This is an example of how to use STL algorithms on a LidarDataContainer.
+ */
+
 
 #include <boost/filesystem.hpp>
 
