@@ -3,6 +3,13 @@ CMAKE_MINIMUM_REQUIRED( VERSION 2.6 )
 #Nom du projet
 PROJECT(LidarFormat)
 
+# Useful for Eclipse code STL completion
+if(UNIX)
+	exec_program( gcc ARGS -dumpversion OUTPUT_VARIABLE GCC_VERSION )
+	
+	string( SUBSTRING ${GCC_VERSION} 0 3 GOOD_GCC_VERSION )
+    include_directories( /usr/include/c++/${GOOD_GCC_VERSION} )
+endif()
 
 ####
 #### On recherche tous les fichiers ".h", ".hpp", ".hxx" et "*.inl"
@@ -11,7 +18,7 @@ FILE( GLOB ALL_LIDAR_FORMAT_HEADER_FILES src/LidarFormat/*.h )
 FILE( GLOB ALL_GEOMETRY_HEADER_FILES src/LidarFormat/geometry/*.h )
 FILE( GLOB ALL_TOOLS_HEADER_FILES src/LidarFormat/tools/*.h src/LidarFormat/tools/*.hpp)
 FILE( GLOB ALL_MODELS_HEADER_FILES src/LidarFormat/models/*.h src/LidarFormat/models/*.hxx)
-FILE( GLOB ALL_EXTERN_HEADER_FILES src/extern/matis/*.h)
+FILE( GLOB ALL_EXTERN_HEADER_FILES src/LidarFormat/extern/matis/*.h)
 
 
 #Génération du code de parse des fichiers xml (gestion du format lidar)
@@ -29,8 +36,8 @@ AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat SRC_LIDAR_FORMAT)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/geometry  SRC_GEOMETRY)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/tools  SRC_TOOLS)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/standard  SRC_FILE_FORMATS_STANDARD)
-AUX_SOURCE_DIRECTORY(${SRC_DIR}/extern/matis  SRC_EXTERN_MATIS)
-AUX_SOURCE_DIRECTORY(${SRC_DIR}/extern/terrabin  SRC_EXTERN_TERRABIN)
+AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/extern/matis  SRC_EXTERN_MATIS)
+AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/extern/terrabin  SRC_EXTERN_TERRABIN)
 
 SET(SRC_MODELS_DIR ${SRC_DIR}/LidarFormat/models)
 SET(SRC_MODELS  ${SRC_MODELS_DIR}/format_me.cxx)
@@ -81,10 +88,6 @@ ENDIF()
 
 SET(LidarFormat_LIBRAIRIES ${Boost_LIBRARIES} ${XERCESC_LIBRARIES})
 
-
-exec_program( gcc ARGS -dumpversion OUTPUT_VARIABLE GCC_VERSION )
-include_directories( /usr/include/c++/${GCC_VERSION} )
-
 ####
 #### Use LAS format
 ####
@@ -107,7 +110,6 @@ endif(ENABLE_LAS)
 OPTION( ENABLE_TERRABIN "Enable TerraBin" OFF )
 if(ENABLE_TERRABIN)
     AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/TerraBin  SRC_TERRABIN)
-	INCLUDE_DIRECTORIES(${SRC_DIR}/LidarFormat/file_formats/TerraBin)
     SET( ALL_SOURCES ${ALL_SOURCES} ${SRC_TERRABIN})
 endif(ENABLE_TERRABIN)
 
@@ -162,7 +164,7 @@ endif(BUILD_TESTS)
 ####
 #### Install
 ####
-OPTION( BUILD_INSTALL " generate install target " ON)
+OPTION( BUILD_INSTALL "Generate install target" ON)
 IF(BUILD_INSTALL)
 	INCLUDE(LidarFormat_install.cmake )
 ENDIF(BUILD_INSTALL)
