@@ -42,8 +42,12 @@ IF(UNIX)
 	 set(CPACK_GENERATOR "DEB")
 	 set(CPACK_PACKAGE_CONTACT "adrien.chauve@ign.fr")
 	 set(CPACK_PACKAGE_INSTALL_DIRECTORY "CPack Component Example")
-	 set( CPACK_COMPONENTS_ALL headers library )
 	 
+	 set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/doc/Licence_CeCILL-B_V1-en.txt )
+	 set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README )
+	 
+	 set( CPACK_COMPONENTS_ALL headers library )
+	 set( CPACK_DEBIAN_PACKAGE_DEPENDS "libxerces-c2-dev" )
 	 
 	 include(CPack)
 	 
