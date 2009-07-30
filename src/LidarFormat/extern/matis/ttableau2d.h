@@ -61,17 +61,11 @@ typedef		typename std::vector<T>::iterator iterator;
 
 		inline reference operator () (int x, int y)
 		{
-#ifdef _DEBUG
-			if (x<0 || y<0 || x>=m_taille.x || y>=m_taille.y) throw Erreur ("[TTableau2D] Acces hors bornes.");
-#endif
 			return *(m_ligne[x] + y);
 		}
 
 		inline const_reference operator () (int x, int y) const
 		{
-#ifdef _DEBUG
-			if (x<0 || y<0 || x>=m_taille.x || y>=m_taille.y) throw Erreur ("[TTableau2D] Acces hors bornes.");
-#endif
 			return *(m_ligne[x] + y);
 		}
 

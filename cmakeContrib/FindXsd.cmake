@@ -8,8 +8,7 @@
 # XSD_FOUND, If false, don't try to use xsd
 
 FIND_PATH(XSD_INCLUDE_DIR cxx/parser/elements.hxx
-  "[HKEY_CURRENT_USER\\software\\xsd\\include]"
-  "[HKEY_CURRENT_USER]\\xsd\\include]"
+  "C:/Program Files/CodeSynthesis XSD 3.2/include/xsd"
   $ENV{XSDDIR}/include
   /usr/local/include/xsd
   /usr/include/xsd
@@ -19,6 +18,7 @@ FIND_PROGRAM(XSD_EXECUTABLE
   NAMES 
     xsd
   PATHS
+	"C:/Program Files/CodeSynthesis XSD 3.2/bin"
     "[HKEY_CURRENT_USER\\xsd\\bin"
     $ENV{XSDDIR}/bin 
     /usr/local/bin
