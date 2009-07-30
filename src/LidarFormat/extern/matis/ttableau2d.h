@@ -8,7 +8,7 @@
 
 
 #include <vector>
-#include "extern/matis/tpoint2d.h"
+#include "LidarFormat/extern/matis/tpoint2d.h"
 
 /** Tableau a deux dimensions.
  *

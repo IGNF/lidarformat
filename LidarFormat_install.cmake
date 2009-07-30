@@ -18,12 +18,12 @@ IF(UNIX)
 	INSTALL( FILES ${ALL_MODELS_HEADER_FILES} DESTINATION include/LidarFormat/models COMPONENT headers)
 	INSTALL( FILES ${ALL_GEOMETRY_HEADER_FILES} DESTINATION include/LidarFormat/geometry COMPONENT headers)
 	INSTALL( FILES ${ALL_TOOLS_HEADER_FILES} DESTINATION include/LidarFormat/tools COMPONENT headers)
-	INSTALL( FILES ${ALL_EXTERN_HEADER_FILES} DESTINATION include/extern/matis COMPONENT headers)
+	INSTALL( FILES ${ALL_EXTERN_HEADER_FILES} DESTINATION include/LidarFormat/extern/matis COMPONENT headers)
 	#SET(RELATIVE_INCLUDE_PATH "../../include/LidarFormat")
 	#SET(RELATIVE_INCLUDE_EXTERN_PATH "../../include/extern")
 	#CONFIGURE_FILE(${LIDARFORMAT_CMAKE_SELF_DIR}/LidarFormatConfig.cmake.in ${CMAKE_CURRENT_SOURCE_DIR}/LidarFormatConfig.cmake @ONLY)
 	
-	INSTALL (	TARGETS LidarFormat DESTINATION lib )
+	INSTALL (	TARGETS LidarFormat DESTINATION lib COMPONENT library)
 			 
 	#INSTALL (	EXPORT LidarFormat-targets 
 	#			DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/LidarFormat
@@ -34,7 +34,7 @@ IF(UNIX)
 	
 	 set(CPACK_PACKAGE_NAME "LidarFormat")
 	 set(CPACK_PACKAGE_VENDOR "IGN/CEMAGREF")
-	 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "LdiarFormat library")
+	 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "LidarFormat is an open source library for efficiently handling 3D point clouds with a variable number of attributes at runtime.")
 	 set(CPACK_PACKAGE_VERSION "0.1")
 	 set(CPACK_PACKAGE_VERSION_MAJOR "0")
 	 set(CPACK_PACKAGE_VERSION_MINOR "1")
@@ -42,7 +42,7 @@ IF(UNIX)
 	 set(CPACK_GENERATOR "DEB")
 	 set(CPACK_PACKAGE_CONTACT "adrien.chauve@ign.fr")
 	 set(CPACK_PACKAGE_INSTALL_DIRECTORY "CPack Component Example")
-	 #set(CPACK_COMPONENTS_ALL library headers)
+	 set(CPACK_COMPONENTS_ALL library headers)
 	 
 	 
 	 include(CPack)
