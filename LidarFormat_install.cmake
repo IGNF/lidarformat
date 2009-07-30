@@ -68,7 +68,7 @@ IF(WIN32)
 	#SET(RELATIVE_INCLUDE_EXTERN_PATH "../../include/extern")
 	#CONFIGURE_FILE(${LIDARFORMAT_CMAKE_SELF_DIR}/LidarFormatConfig.cmake.in ${CMAKE_CURRENT_SOURCE_DIR}/LidarFormatConfig.cmake @ONLY)
 	
-	INSTALL (	TARGETS LidarFormat ARCHIVE DESTINATION lib COMPONENT library)	
+	INSTALL ( TARGETS LidarFormat DESTINATION lib COMPONENT library)	
 	
 	
 	set(CPACK_PACKAGE_NAME "LidarFormat")
@@ -80,9 +80,12 @@ IF(WIN32)
 	 set(CPACK_PACKAGE_VERSION_PATCH "0")
 	 #set(CPACK_GENERATOR "NSIS")
 	 set(CPACK_PACKAGE_CONTACT "adrien.chauve@ign.fr")
-	 set(CPACK_PACKAGE_INSTALL_DIRECTORY "CPack Component Example")
-	 set(CPACK_COMPONENTS_ALL library headers)
+	 set(CPACK_PACKAGE_INSTALL_DIRECTORY "LidarFormat")
 	 
+	 set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/doc/Licence_CeCILL-B_V1-en.txt )
+	 set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README )
+	 
+	 set(CPACK_COMPONENTS_ALL library headers)
 	 
 	 include(CPack)
 ENDIF(WIN32)
