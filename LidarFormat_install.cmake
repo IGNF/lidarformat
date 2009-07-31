@@ -31,27 +31,15 @@ IF(UNIX)
 	#		)
 	#INSTALL (FILES LidarFormatConfig.cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/LidarFormat)
 	
-	
-	 set(CPACK_PACKAGE_NAME "LidarFormat")
-	 set(CPACK_PACKAGE_VENDOR "IGN/CEMAGREF")
-	 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "LidarFormat is an open source library for efficiently handling 3D point clouds with a variable number of attributes at runtime.")
-	 set(CPACK_PACKAGE_VERSION "0.1")
-	 set(CPACK_PACKAGE_VERSION_MAJOR "0")
-	 set(CPACK_PACKAGE_VERSION_MINOR "1")
-	 set(CPACK_PACKAGE_VERSION_PATCH "0")
 	 set(CPACK_GENERATOR "DEB")
-	 set(CPACK_PACKAGE_CONTACT "adrien.chauve@ign.fr")
-	 set(CPACK_PACKAGE_INSTALL_DIRECTORY "CPack Component Example")
 	 
-	 set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/doc/Licence_CeCILL-B_V1-en.txt )
-	 set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README )
+	 #dpkg-shlibdeps libLidarFormat.so
+	 set(CPACK_DEBIAN_PACKAGE_DEPENDS
+	         "libboost-filesystem1.37.0 (>= 1.37.0-1), libboost-system1.37.0 (>= 1.37.0-1), libc6 (>= 2.4), libgcc1 (>= 1:4.1.1), libstdc++6 (>= 4.2.1), libxerces-c28"
+	     )
+	     
+	 #set(DEBIAN_PACKAGE_BUILDS_DEPENDS "libboost-dev (>=1.36)")
 	 
-	 set( CPACK_COMPONENTS_ALL headers library )
-	 set( CPACK_DEBIAN_PACKAGE_DEPENDS "libxerces-c2-dev" )
-	 
-	 include(CPack)
-	 
-	
 ENDIF(UNIX)
 
 
@@ -70,35 +58,37 @@ IF(WIN32)
 	
 	INSTALL ( TARGETS LidarFormat DESTINATION lib COMPONENT library)	
 	
-	
-	set(CPACK_PACKAGE_NAME "LidarFormat")
-	 set(CPACK_PACKAGE_VENDOR "IGN/CEMAGREF")
-	 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "LidarFormat is an open source library for efficiently handling 3D point clouds with a variable number of attributes at runtime.")
-	 set(CPACK_PACKAGE_VERSION "0.1")
-	 set(CPACK_PACKAGE_VERSION_MAJOR "0")
-	 set(CPACK_PACKAGE_VERSION_MINOR "1")
-	 set(CPACK_PACKAGE_VERSION_PATCH "0")
 	 #set(CPACK_GENERATOR "NSIS")
-	 set(CPACK_PACKAGE_CONTACT "adrien.chauve@ign.fr")
-	 set(CPACK_PACKAGE_INSTALL_DIRECTORY "LidarFormat")
-	 
-	 set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/doc/Licence_CeCILL-B_V1-en.txt )
-	 set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README )
-	 
-	 # Descriptive components names
-	 set( CPACK_COMPONENT_LIBRARY_DISPLAY_NAME "Library" )
-	 set( CPACK_COMPONENT_HEADERS_DISPLAY_NAME "C++ Headers" )
-	 
-	 # Descriptive components texts
-	 set( CPACK_COMPONENT_LIBRARY_DESCRIPTION "Library used to build applications with LidarFormat" )
-	 set( CPACK_COMPONENT_HEADERS_DESCRIPTION "C++ headers files for use with LidarFormat" )
-	 
-	 # Groups
-	 set( CPACK_COMPONENT_LIBRARY_GROUP "Development" )
-	 set( CPACK_COMPONENT_HEADERS_GROUP "Development" )
-	 
-	 	 
-	 set(CPACK_COMPONENTS_ALL library headers)
-	 
-	 include(CPack)
+
 ENDIF(WIN32)
+
+
+
+set(CPACK_PACKAGE_NAME "LidarFormat")
+set(CPACK_PACKAGE_VENDOR "IGN/CEMAGREF")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "LidarFormat is an open source library for efficiently handling 3D point clouds with a variable number of attributes at runtime.")
+set(CPACK_PACKAGE_VERSION "0.1")
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+
+set(CPACK_PACKAGE_CONTACT "LidarFormat Dev <lidardev@lists.launchpad.net>")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "LidarFormat")
+ 
+set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/doc/Licence_CeCILL-B_V1-en.txt )
+set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README )
+ 
+# Descriptive components names
+set( CPACK_COMPONENT_LIBRARY_DISPLAY_NAME "Library" )
+set( CPACK_COMPONENT_HEADERS_DISPLAY_NAME "C++ Headers" )
+ 
+# Descriptive components texts
+set( CPACK_COMPONENT_LIBRARY_DESCRIPTION "Library used to build applications with LidarFormat" )
+set( CPACK_COMPONENT_HEADERS_DESCRIPTION "C++ headers files for use with LidarFormat" )
+ 
+# Groups
+set( CPACK_COMPONENT_LIBRARY_GROUP "Development" )
+set( CPACK_COMPONENT_HEADERS_GROUP "Development" )
+
+set(CPACK_COMPONENTS_ALL library headers)
+include(CPack)

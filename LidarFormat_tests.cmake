@@ -15,7 +15,7 @@ SET( all_tests
 
 FOREACH( one_test ${all_tests} )
     ADD_EXECUTABLE(${one_test} tests/${one_test}.cpp)
-    TARGET_LINK_LIBRARIES(${one_test} LidarFormat ${LidarFormat_LIBRAIRIES})
+    TARGET_LINK_LIBRARIES(${one_test} LidarFormat ${LidarFormat_LIBRAIRIES} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
     ADD_DEPENDENCIES(${one_test} LidarFormat)
 
     ADD_TEST(LidarFormat_${one_test} ${one_test})
