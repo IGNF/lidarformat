@@ -21,3 +21,6 @@ src/LidarFormat/models/format_me.hxx
 data/testAscii-new.bin
 data/testAscii-new.xml
 tests/config_data_test.h
+CPackConfig.cmake
+CPackSourceConfig.cmake
+install_manifest.txt
