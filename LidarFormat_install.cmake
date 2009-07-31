@@ -85,6 +85,19 @@ IF(WIN32)
 	 set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/doc/Licence_CeCILL-B_V1-en.txt )
 	 set(CPACK_RESOURCE_FILE_README ${CMAKE_SOURCE_DIR}/README )
 	 
+	 # Descriptive components names
+	 set( CPACK_COMPONENT_LIBRARY_DISPLAY_NAME "Library" )
+	 set( CPACK_COMPONENT_HEADERS_DISPLAY_NAME "C++ Headers" )
+	 
+	 # Descriptive components texts
+	 set( CPACK_COMPONENT_LIBRARY_DESCRIPTION "Library used to build applications with LidarFormat" )
+	 set( CPACK_COMPONENT_HEADERS_DESCRIPTION "C++ headers files for use with LidarFormat" )
+	 
+	 # Groups
+	 set( CPACK_COMPONENT_LIBRARY_GROUP "Development" )
+	 set( CPACK_COMPONENT_HEADERS_GROUP "Development" )
+	 
+	 	 
 	 set(CPACK_COMPONENTS_ALL library headers)
 	 
 	 include(CPack)
