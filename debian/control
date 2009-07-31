@@ -1,0 +1,6 @@
+Source: lidarformat
+
+Package: lidarformat
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: 
