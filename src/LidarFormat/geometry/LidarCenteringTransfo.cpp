@@ -60,7 +60,7 @@ knowledge of the CeCILL-B license and that you accept its terms.
 #include <cmath>
 
 
-#include "extern/matis/tpoint2d.h"
+#include "LidarFormat/extern/matis/tpoint2d.h"
 #include "LidarFormat/LidarDataContainer.h"
 #include "LidarFormat/apply.h"
 #include "LidarFormat/tools/Orientation2D.h"

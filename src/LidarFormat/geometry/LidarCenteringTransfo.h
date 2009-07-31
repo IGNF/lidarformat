@@ -62,8 +62,8 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 #include <boost/shared_ptr.hpp>
 
-#include <extern/matis/tpoint2d.h>
-#include <extern/matis/tpoint3d.h>
+#include "LidarFormat/extern/matis/tpoint2d.h"
+#include "LidarFormat/extern/matis/tpoint3d.h"
 
 
 namespace Lidar
