@@ -63,6 +63,7 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmakeCont
 FIND_PACKAGE(XercesC)
 IF( XERCESC_FOUND )
 	INCLUDE_DIRECTORIES( ${XERCESC_INCLUDE_DIR} )
+	SET(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES} ${XERCESC_LIBRARIES})
 ELSE()
 	MESSAGE( FATAL_ERROR "XercesC not found ! Please set XercesC path ..." )
 ENDIF()
@@ -77,16 +78,15 @@ ENDIF()
 
 # Find BOOST
 SET(Boost_ADDITIONAL_VERSIONS "1.37.0" "1.37" "1.38" "1.38.0" "1.39.0" "1.39")
-FIND_PACKAGE( Boost 1.36 COMPONENTS filesystem system thread unit_test_framework)
+FIND_PACKAGE( Boost 1.36 COMPONENTS filesystem system unit_test_framework)
 IF( Boost_FOUND )
     INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+    SET(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     #MESSAGE("Boost Include Path : " ${Boost_INCLUDE_DIR} )
 ELSE()
 	MESSAGE( FATAL_ERROR "Boost not found ! Please set Boost path ..." )
 ENDIF()
 
-
-SET(LidarFormat_LIBRAIRIES ${Boost_LIBRARIES} ${XERCESC_LIBRARIES})
 
 ####
 #### Use LAS format
