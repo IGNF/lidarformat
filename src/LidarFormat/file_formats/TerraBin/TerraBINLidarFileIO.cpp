@@ -57,13 +57,14 @@ knowledge of the CeCILL-B license and that you accept its terms.
  *      Author: frederic
  */
 
-using namespace std;
-#include "extern/terrabin/TerraBin.h"
+#include "LidarFormat/extern/terrabin/TerraBin.h"
 
 #include "LidarFormat/LidarIOFactory.h"
 #include "LidarFormat/LidarDataContainer.h"
 
 #include "TerraBINLidarFileIO.h"
+using namespace std;
+
 namespace Lidar
 {
 
