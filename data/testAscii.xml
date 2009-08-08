@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<LidarData xmlns="cs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <Attributes DataFileName="testAscii.txt" DataFormat="ascii" DataSize="10">
+    <Attribute DataType="float64" Name="x"/>
+    <Attribute DataType="float64" Name="y"/>
+    <Attribute DataType="float64" Name="z"/>
+  </Attributes>
+</LidarData>
