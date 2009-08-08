@@ -109,7 +109,7 @@ unsigned int LidarFile::getNbPoints() const
 	if(!isValid())
 		throw std::logic_error("Error : Lidar xml file is not valid !\n");
 
-	return m_xmlData->attributes().dataSize();
+	return (unsigned int)m_xmlData->attributes().dataSize();
 }
 
 LidarFile::LidarFile(const std::string &xmlFileName):
@@ -124,7 +124,7 @@ LidarFile::LidarFile(const std::string &xmlFileName):
 //		std::cout << "nb pts : " << m_xmlData->attributes().dataSize() << "\n";
 	}
 
-	catch( std::exception &e )
+	catch( const std::exception &e )
 	{
 //		std::cout << e.what() << std::endl;
 		m_isValid =  false;
@@ -246,7 +246,7 @@ void LidarFile::loadMetaDataFromXML()
 	m_lidarMetaData.binaryDataFileName_ = getBinaryDataFileName();
 
 
-	m_lidarMetaData.nbPoints_ = attributes.dataSize(); //tailleFicOctets/m_lidarMetaData.ptSize_;
+	m_lidarMetaData.nbPoints_ = (size_t)attributes.dataSize(); //tailleFicOctets/m_lidarMetaData.ptSize_;
 
 //	std::cout << "taille d'un enregistrement : " << m_lidarMetaData.ptSize_ << std::endl;
 //	double reste = double(tailleFicOctets)/double(m_lidarMetaData.ptSize_) - m_lidarMetaData.nbPoints_;

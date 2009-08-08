@@ -187,9 +187,9 @@ struct FunctorCenter
 		{
 			LidarEcho echoInitial(*itb);
 
-			echo.value<float>(decalageX) = echoInitial.value<AttributeType>(decalageX_initial) - transfo.x();
-			echo.value<float>(decalageY) = echoInitial.value<AttributeType>(decalageY_initial) - transfo.y();
-			echo.value<float>(decalageZ) = echoInitial.value<AttributeType>(decalageZ_initial);
+			echo.value<float>(decalageX) = (float)( echoInitial.value<AttributeType>(decalageX_initial) - transfo.x() );
+			echo.value<float>(decalageY) = (float)( echoInitial.value<AttributeType>(decalageY_initial) - transfo.y() );
+			echo.value<float>(decalageZ) = (float)echoInitial.value<AttributeType>(decalageZ_initial);
 
 			AttributeMapType::const_iterator itbAttribute = centeredContainer->getAttributeMap().begin();
 			const AttributeMapType::const_iterator iteAttribute = centeredContainer->getAttributeMap().end();

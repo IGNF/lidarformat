@@ -60,7 +60,6 @@ knowledge of the CeCILL-B license and that you accept its terms.
 #ifndef RASTERSPATIALINDEXATION_H_
 #define RASTERSPATIALINDEXATION_H_
 
-
 #include <string>
 #include <vector>
 //#include <list>

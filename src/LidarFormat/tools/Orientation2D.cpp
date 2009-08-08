@@ -55,6 +55,7 @@ knowledge of the CeCILL-B license and that you accept its terms.
 #include <sstream>
 
 #include <boost/filesystem.hpp>
+
 #include "LidarFormat/tools/Orientation2D.h"
 
 

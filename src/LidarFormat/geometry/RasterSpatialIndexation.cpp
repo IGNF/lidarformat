@@ -82,7 +82,7 @@ void RasterSpatialIndexation::getApproximateRectangularNeighborhood( Neighborhoo
 	const int ligMin = std::max( 0, std::min(ligne1, ligne2) );
 	const int ligMax = std::min( m_griddedData.GetTaille().y - 1, std::max(ligne1, ligne2) );
 
-	const unsigned int evalNbPoints = (colMax-colMin+1)*(ligMax-ligMin+1)*m_resolution*m_nbPointsParM2;
+	const unsigned int evalNbPoints = (unsigned int)( (colMax-colMin+1)*(ligMax-ligMin+1)*m_resolution*m_nbPointsParM2 );
 	list.reserve(evalNbPoints);
 
 	for (int col = colMin; col <= colMax; ++col)

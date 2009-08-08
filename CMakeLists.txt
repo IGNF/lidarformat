@@ -77,15 +77,19 @@ ELSE()
 ENDIF()
 
 # Find BOOST
-SET(Boost_ADDITIONAL_VERSIONS "1.37.0" "1.37" "1.38" "1.38.0" "1.39.0" "1.39")
-FIND_PACKAGE( Boost 1.36 COMPONENTS filesystem system unit_test_framework)
-IF( Boost_FOUND )
-    INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
-    SET(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES}  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
-    #MESSAGE("Boost Include Path : " ${Boost_INCLUDE_DIR} )
-ELSE()
-	MESSAGE( FATAL_ERROR "Boost not found ! Please set Boost path ..." )
-ENDIF()
+# CMake does not include boost version 1.39
+set(Boost_ADDITIONAL_VERSIONS "1.39.0" "1.39")
+find_package( Boost 1.36 COMPONENTS filesystem system unit_test_framework)
+if( Boost_FOUND )
+	include_directories( ${Boost_INCLUDE_DIR} )
+	link_directories( ${Boost_LIBRARY_DIRS} )
+	# Autolink under Windows platforms
+	if( NOT WIN32 )
+		set(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+	endif()
+else()
+	message( FATAL_ERROR "Boost not found ! Please set Boost path ..." )
+endif()
 
 
 ####
@@ -137,15 +141,18 @@ ELSE()
 	SET( LIBRARY_TYPE STATIC )
 ENDIF()
 
-ADD_DEFINITIONS(-Wall)
+if(UNIX)
+	ADD_DEFINITIONS(-Wall)
+else()
+	ADD_DEFINITIONS( -W3 )
+	# Visual warnings on checked iterators
+	ADD_DEFINITIONS( -D_SCL_SECURE_NO_WARNINGS )
+endif()
 
 ADD_LIBRARY( LidarFormat  ${LIBRARY_TYPE} ${ALL_SOURCES} ${ALL_HEADERS}  )
 
 
 TARGET_LINK_LIBRARIES( LidarFormat ${LidarFormat_LIBRAIRIES} )
-
-
-
 
 ####
 #### Construction du sample

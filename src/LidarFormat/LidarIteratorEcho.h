@@ -299,7 +299,7 @@ struct LidarIteratorEcho : public detail::_LidarIteratorEchoBase
 			return *reinterpret_cast<TAttributeType*>(m_dataPtr + decalage);
 		}
 
-		friend class LidarConstIteratorEcho;
+		friend struct LidarConstIteratorEcho;
 };
 
 

@@ -120,8 +120,8 @@ private:
 
 inline void Orientation2D::ImageToMap(const int col, const int lig, float &x, float &y) const
 {
-	x = m_originX + col * m_step;
-	y = m_originY - lig * m_step;
+	x = (float)(m_originX + col * m_step);
+	y = (float)(m_originY - lig * m_step);
 }
 
 inline void Orientation2D::MapToImage(const float x, const float y, int &col, int &lig) const

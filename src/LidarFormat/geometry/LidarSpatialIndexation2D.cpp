@@ -82,7 +82,7 @@ void LidarSpatialIndexation2D::GetCenteredNeighborhood(NeighborhoodListeType &li
 	const int ligMin = std::max( 0, ligne - tailleVoisinage );
 	const int ligMax = std::min( m_griddedData.GetTaille().y - 1, ligne + tailleVoisinage );
 
-	const unsigned int evalNbPoints = (colMax-colMin+1)*(ligMax-ligMin+1)*m_resolution*m_nbPointsParM2;
+	const unsigned int evalNbPoints = (unsigned int)( (colMax-colMin+1)*(ligMax-ligMin+1)*m_resolution*m_nbPointsParM2 );
 	list.reserve(evalNbPoints);
 
 	const LidarConstIteratorXYZ<float> beginXYZ = m_lidarContainer.beginXYZ<float>();

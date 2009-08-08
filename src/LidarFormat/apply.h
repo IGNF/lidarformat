@@ -74,12 +74,9 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 #include <boost/preprocessor/seq/for_each.hpp>
 
-
 #include "LidarFormat/models/format_me.hxx"
 
 #include <boost/preprocessor/iteration/iterate.hpp>
-
-
 
 #define BOOST_PP_ITERATION_PARAMS_1 (3, (0, 9, "LidarFormat/apply.h"))
 #include BOOST_PP_ITERATE()
