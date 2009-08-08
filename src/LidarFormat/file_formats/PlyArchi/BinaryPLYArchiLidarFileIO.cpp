@@ -133,7 +133,7 @@ boost::shared_ptr<BinaryPLYArchiLidarFileIO> createBinaryPLYArchiLidarFileReader
 bool BinaryPLYArchiLidarFileIO::Register()
 {
 //	std::cout << "Format cs : " << cs::DataFormatType(cs::DataFormatType::binary_one_file_ungrouped) << std::endl;
-	LidarIOFactory::Instance()->Register(cs::DataFormatType(cs::DataFormatType::plyarchi), createBinaryPLYArchiLidarFileReader);
+	LidarIOFactory::instance().Register(cs::DataFormatType(cs::DataFormatType::plyarchi), createBinaryPLYArchiLidarFileReader);
 	return true;
 }
 
