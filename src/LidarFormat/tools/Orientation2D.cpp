@@ -93,7 +93,7 @@ void Orientation2D::ReadOriFromImageFile(const std::string &filename)
 	{
 		ReadOriFromOriFile(path+"/"+basename+".ori");
 	}
-	catch (const std::logic_error &e)
+	catch (const std::logic_error &)
 	{
 		// Si on catche cette erreur, cela signifie que le .ori n'existe pas
 		// On essaie de lire un .tfw

@@ -124,7 +124,7 @@ LidarFile::LidarFile(const std::string &xmlFileName):
 //		std::cout << "nb pts : " << m_xmlData->attributes().dataSize() << "\n";
 	}
 
-	catch( const std::exception &e )
+	catch( const std::exception &)
 	{
 //		std::cout << e.what() << std::endl;
 		m_isValid =  false;

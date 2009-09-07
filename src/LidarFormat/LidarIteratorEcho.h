@@ -376,12 +376,12 @@ struct LidarConstIteratorEcho : public detail::_LidarIteratorEchoBase
 	    	return *(*this + i);
 	    }
 
-		inline friend const Self operator+(const Self &lhs, const std::size_t index)
+		inline friend const Self operator+(const Self &lhs, const difference_type index)
 		{
 			return Self(lhs) += index;
 		}
 
-		inline friend const Self operator-(const Self &lhs, const std::size_t index)
+		inline friend const Self operator-(const Self &lhs, const difference_type index)
 		{
 			return Self(lhs) -= index;
 		}
