@@ -147,6 +147,7 @@ else()
 	ADD_DEFINITIONS( -W3 )
 	# Visual warnings on checked iterators
 	ADD_DEFINITIONS( -D_SCL_SECURE_NO_WARNINGS )
+	ADD_DEFINITIONS( -D_CRT_SECURE_NO_WARNINGS )
 endif()
 
 ADD_LIBRARY( LidarFormat  ${LIBRARY_TYPE} ${ALL_SOURCES} ${ALL_HEADERS}  )
