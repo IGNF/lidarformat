@@ -24,3 +24,4 @@ tests/config_data_test.h
 CPackConfig.cmake
 CPackSourceConfig.cmake
 install_manifest.txt
+LidarFormatConfig.cmake

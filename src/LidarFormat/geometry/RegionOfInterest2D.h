@@ -19,6 +19,10 @@ Copyright:
 Author: 
 
 	Adrien Chauve
+	
+Contributors:
+
+	Nicolas David, Olivier Tournaire
 
 
 
