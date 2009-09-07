@@ -19,6 +19,10 @@ Copyright:
 Author: 
 
 	Adrien Chauve
+	
+Contributors:
+
+	Nicolas David, Olivier Tournaire
 
 
 
@@ -83,13 +87,26 @@ knowledge of the CeCILL-B license and that you accept its terms.
 *
 */
 
+// 08/01/2009: [Olivier Tournaire] FactoryErrorPolicy
+
+template <class TIdentifierType , class ProductType>
+class ThrowFactoryErrorPolicy
+{
+    public:
+    static boost::shared_ptr<ProductType> OnUnknowType(const TIdentifierType& id)
+    {
+        throw std::logic_error("Unknown object type passed to factory !\n");
+    }
+};
+
 template
 <
 	class TAbstractProduct,
 	typename TIdentifierType = std::string,
-	typename TProductCreator = boost::function<boost::shared_ptr<TAbstractProduct> ()>
+	typename TProductCreator = boost::function<boost::shared_ptr<TAbstractProduct> ()>,
+        template <typename , class> class FactoryErrorPolicy = ThrowFactoryErrorPolicy
 >
-class Factory
+class Factory : public FactoryErrorPolicy<TIdentifierType,TAbstractProduct>
 {
 
 	public:
@@ -123,7 +140,8 @@ class Factory
 //				std::cout << "contenu : " << it->first << "\n";
 //			}
 
-			throw std::logic_error("Unknown object type passed to factory !\n");
+                        //throw std::logic_error("Unknown object type passed to factory !\n");
+                        return OnUnknowType(id);
 		}
 
 	private:
