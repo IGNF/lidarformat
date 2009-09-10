@@ -50,13 +50,6 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 ***********************************************************************/
 
-/*!
- * \file 01_ex_basics.cpp
- * \brief 
- * \author Adrien Chauve
- * \date 26 juil. 2009
- */
-
 #include <iostream>
 #include <boost/filesystem.hpp>
 
@@ -65,12 +58,21 @@ knowledge of the CeCILL-B license and that you accept its terms.
 #include "LidarFormat/LidarDataContainer.h"
 #include "LidarFormat/LidarFile.h"
 
+#ifdef _WINDOWS
+#include "LidarFormat/file_formats/StaticRegisterFormats.cpp"
+#endif
+
 
 int main()
 {
 	using namespace Lidar;
 	using namespace std;
 
+
+	/* Call this function before loading any data from a file if the library is compiled as a .lib or .a (static) */
+#ifdef _WINDOWS
+	registerAllFileFormats();
+#endif
 
 
 	/**** Load data in a container ****/

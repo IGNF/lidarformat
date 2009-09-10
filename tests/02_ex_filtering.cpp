@@ -54,12 +54,6 @@ knowledge of the CeCILL-B license and that you accept its terms.
  
 ***********************************************************************/
 
-/*!
- * \file test1.cpp
- * \brief
- * \author Adrien Chauve
- * \date 15 févr. 2009
- */
 
 #include <boost/filesystem.hpp>
 
