@@ -73,6 +73,10 @@ knowledge of the CeCILL-B license and that you accept its terms.
 using namespace Lidar;
 using namespace std;
 
+#ifdef _WINDOWS
+#include "LidarFormat/file_formats/StaticRegisterFormats.cpp"
+#endif
+
 
 
 BOOST_AUTO_TEST_SUITE(LidarDataContainerTests)
@@ -88,6 +92,11 @@ const double lastX = 919360.56, lastY = 1914108.38, lastZ = 1079.2;
 
 BOOST_AUTO_TEST_CASE( LidarIteratorEcho_tests )
 {
+	/* Call this function before loading any data from a file if the library is compiled as a .lib or .a (static) */
+#ifdef _WINDOWS
+	registerAllFileFormats();
+#endif
+
 	LidarFile file(lidarFileName);
 	LidarDataContainer lidarContainer;
 	file.loadData(lidarContainer);
