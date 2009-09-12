@@ -25,5 +25,6 @@ doc/html
 doc/latex
 CPackConfig.cmake
 CPackSourceConfig.cmake
+install_manifest.txt
 LidarFormatConfig.cmake
 install_manifest.txt

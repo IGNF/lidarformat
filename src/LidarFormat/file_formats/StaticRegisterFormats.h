@@ -39,10 +39,7 @@ Contributors:
  
 ***********************************************************************/
 
-#ifndef CONFIG_DATA_TEST_H_
-#define CONFIG_DATA_TEST_H_
 
+/* Function to be called when the library is compiled statically, so as to register the formats in the factory. */
 
-const char * PATH_LIDAR_TEST_DATA = "@PATH_LIDAR_TEST_DATA@";
-
-#endif /*CONFIG_DATA_TEST_H_*/
+void registerAllFileFormats();

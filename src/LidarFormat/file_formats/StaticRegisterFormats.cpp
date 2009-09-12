@@ -39,10 +39,12 @@ Contributors:
  
 ***********************************************************************/
 
-#ifndef CONFIG_DATA_TEST_H_
-#define CONFIG_DATA_TEST_H_
+#include "LidarFormat/file_formats/standard/ASCIILidarFileIO.h"
+#include "LidarFormat/file_formats/standard/BinaryLidarFileIO.h"
 
-
-const char * PATH_LIDAR_TEST_DATA = "@PATH_LIDAR_TEST_DATA@";
-
-#endif /*CONFIG_DATA_TEST_H_*/
+void registerAllFileFormats()
+{
+	using namespace Lidar;
+	ASCIILidarFileIO::Register();
+	BinaryLidarFileIO::Register();
+}

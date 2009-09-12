@@ -3,6 +3,14 @@ CMAKE_MINIMUM_REQUIRED( VERSION 2.6 )
 #Nom du projet
 PROJECT(LidarFormat)
 
+# Useful for Eclipse code STL completion
+if(UNIX)
+	exec_program( gcc ARGS -dumpversion OUTPUT_VARIABLE GCC_VERSION )
+	
+	string( SUBSTRING ${GCC_VERSION} 0 3 GOOD_GCC_VERSION )
+    include_directories( /usr/include/c++/${GOOD_GCC_VERSION} )
+endif()
+
 ####
 #### On recherche tous les fichiers ".h", ".hpp", ".hxx" et "*.inl"
 ####
@@ -27,6 +35,7 @@ INCLUDE_DIRECTORIES(${SRC_DIR})
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat SRC_LIDAR_FORMAT)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/geometry  SRC_GEOMETRY)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/tools  SRC_TOOLS)
+AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats  SRC_FILE_FORMATS)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/standard  SRC_FILE_FORMATS_STANDARD)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/extern/matis  SRC_EXTERN_MATIS)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/extern/terrabin  SRC_EXTERN_TERRABIN)
@@ -40,6 +49,7 @@ SET( ALL_SOURCES
         ${SRC_MODELS} 
         ${SRC_GEOMETRY} 
         ${SRC_TOOLS} 
+        ${SRC_FILE_FORMATS}
         ${SRC_FILE_FORMATS_STANDARD}
         ${SRC_EXTERN_MATIS} 
         ${SRC_EXTERN_TERRABIN}
@@ -55,6 +65,7 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmakeCont
 FIND_PACKAGE(XercesC)
 IF( XERCESC_FOUND )
 	INCLUDE_DIRECTORIES( ${XERCESC_INCLUDE_DIR} )
+	SET(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES} ${XERCESC_LIBRARIES})
 ELSE()
 	MESSAGE( FATAL_ERROR "XercesC not found ! Please set XercesC path ..." )
 ENDIF()
@@ -68,17 +79,20 @@ ELSE()
 ENDIF()
 
 # Find BOOST
-SET(Boost_ADDITIONAL_VERSIONS "1.37.0" "1.37" "1.38" "1.38.0" "1.39.0" "1.39")
-FIND_PACKAGE( Boost 1.36 COMPONENTS filesystem system thread unit_test_framework)
-IF( Boost_FOUND )
-    INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
-    #MESSAGE("Boost Include Path : " ${Boost_INCLUDE_DIR} )
-ELSE()
-	MESSAGE( FATAL_ERROR "Boost not found ! Please set Boost path ..." )
-ENDIF()
+# CMake does not include boost version 1.39
+set(Boost_ADDITIONAL_VERSIONS "1.39.0" "1.39")
+find_package( Boost 1.36 COMPONENTS filesystem system unit_test_framework)
+if( Boost_FOUND )
+	include_directories( ${Boost_INCLUDE_DIR} )
+	link_directories( ${Boost_LIBRARY_DIRS} )
+	# Autolink under Windows platforms
+	if( NOT WIN32 )
+		set(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+	endif()
+else()
+	message( FATAL_ERROR "Boost not found ! Please set Boost path ..." )
+endif()
 
-
-SET(LidarFormat_LIBRAIRIES ${Boost_LIBRARIES} ${XERCESC_LIBRARIES})
 
 ####
 #### Use LAS format
@@ -129,15 +143,19 @@ ELSE()
 	SET( LIBRARY_TYPE STATIC )
 ENDIF()
 
-ADD_DEFINITIONS(-Wall)
+if(UNIX)
+	ADD_DEFINITIONS(-Wall)
+else()
+	ADD_DEFINITIONS( -W3 )
+	# Visual warnings on checked iterators
+	ADD_DEFINITIONS( -D_SCL_SECURE_NO_WARNINGS )
+	ADD_DEFINITIONS( -D_CRT_SECURE_NO_WARNINGS )
+endif()
 
 ADD_LIBRARY( LidarFormat  ${LIBRARY_TYPE} ${ALL_SOURCES} ${ALL_HEADERS}  )
 
 
 TARGET_LINK_LIBRARIES( LidarFormat ${LidarFormat_LIBRAIRIES} )
-
-
-
 
 ####
 #### Construction du sample
