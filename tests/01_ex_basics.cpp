@@ -39,6 +39,12 @@ Contributors:
 
 ***********************************************************************/
 
+
+/** \example 01_ex_basics.cpp
+ * This is an example of how to use the basics of the LidarFormat library.
+ */
+
+
 #include <iostream>
 #include <boost/filesystem.hpp>
 

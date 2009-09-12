@@ -39,6 +39,10 @@ Contributors:
  
 ***********************************************************************/
 
+/** \example 02_ex_filtering.cpp
+ * This is an example of how to use STL algorithms on a LidarDataContainer.
+ */
+
 
 #include <boost/filesystem.hpp>
 

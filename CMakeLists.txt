@@ -178,3 +178,4 @@ OPTION( BUILD_INSTALL "Generate install target" ON)
 IF(BUILD_INSTALL)
 	INCLUDE(LidarFormat_install.cmake )
 ENDIF(BUILD_INSTALL)
+
