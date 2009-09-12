@@ -25,3 +25,4 @@ CPackConfig.cmake
 CPackSourceConfig.cmake
 install_manifest.txt
 LidarFormatConfig.cmake
+libLidarFormat.so
