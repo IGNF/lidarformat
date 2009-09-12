@@ -50,12 +50,6 @@ knowledge of the CeCILL-B license and that you accept its terms.
 
 ***********************************************************************/
 
-/*!
- * \file LidarIteratorEcho.cpp
- * \brief 
- * \author Adrien Chauve
- * \date 27 juil. 2009
- */
 
 
 #include <iostream>
