@@ -10,6 +10,7 @@
 FIND_PATH(XSD_INCLUDE_DIR cxx/parser/elements.hxx
   "C:/Program Files/CodeSynthesis XSD 3.2/include/xsd"
   $ENV{XSDDIR}/include
+  $ENV{CODESYNTH}/include/xsd
   /usr/local/include/xsd
   /usr/include/xsd
 )

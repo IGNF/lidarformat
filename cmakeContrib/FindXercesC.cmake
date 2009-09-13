@@ -9,7 +9,8 @@
 # Look for a root installation
 FIND_PATH(XERCESC_ROOT_DIR include/xercesc/parsers/SAXParser.hpp
 	"C:/Program Files/CodeSynthesis XSD 3.2"
-  /usr
+	/usr
+	$ENV{CODESYNTH}
   DOC "The root of an installed xerces-c installation"
 )
 
@@ -26,6 +27,7 @@ FIND_LIBRARY(XERCESC_LIBRARY
    PATHS 
      ${XERCESC_ROOT_DIR}/lib
 	 ${XERCESC_ROOT_DIR}/lib/vc-9.0
+     ${XERCESC_ROOT_DIR}/lib64/vc-9.0
      /usr/lib 
      /usr/local/lib
    DOC "The name of the xerces-c library"
