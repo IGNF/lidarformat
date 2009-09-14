@@ -1,14 +1,12 @@
 LidarFormat
 
 LidarFormat is an open source library for efficiently handling 3D point 
-clouds with a variable number of attributes at runtime. LidarFormat is 
-distributed under the CeCILL-B licence. See Licence_CeCILL-B_V1-en.txt 
-or http://www.cecill.info for more details.
+clouds with a variable number of attributes at runtime. 
 
 
 Homepage: 
 
-	https://fullanalyze.ign.fr/trac/LidarFormat
+	http://code.google.com/p/lidarformat
 	
 Copyright:
 	
@@ -22,40 +20,26 @@ Author:
 Contributors:
 
 	Nicolas David, Olivier Tournaire
+
+
+
+    LidarFormat is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    LidarFormat is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public 
+    License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
 	
 	
+
  
 Installation instructions:
---------------------------
 
-
-1. 	Dependencies
-
-		NB: On linux plateforms, you should use the official distribution packages.
-
-		Install the following tools or libraries:
-			CMake
-			Boost (>= 1.36)
-			Xerces
-			Code Synthesis XSD (can be downloaded at http://www.codesynthesis.com/download)
-
-2. 	Compilation:
-
-		On Linux platforms, enter in a terminal (in the LidarFormat/trunk directory):
-		
-			ccmake . 
-			--> follow the CMake instructions, in particular:
-			--> launch the configure step with 'c'
-			--> set CMAKE_BUILD_TYPE to Release within CMake
-			--> generate the configuration with 'g'
-			make
-			make test
-			--> check all tests are passed!
-			
-		** Make sure you compiled LidarFormat as a shared library, otherwise you will need 
-		to register the file formats in your code before using the library.
-
-3.	Examples: 
-	
-		Look at the cpp files in the LidarFormat/trunk/tests directory for examples.
+	Please go to the Homepage.
 
