@@ -1,4 +1,5 @@
-lidarformat (0.1) jaunty; urgency=low
+lidarformat (0.1.0) jaunty; urgency=low
 
+  * Initial release 
 
-
+ -- Adrien Chauve <petraike@gmail.com>  Wed, 16 Sep 2009 14:57:45 +0200
