@@ -90,7 +90,7 @@
             <xs:element name="Attribute" type="AttributeType" maxOccurs="unbounded"/>
             <xs:element name="CenteringTransfo" type="CenteringTransfoType" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
-        <xs:attribute name="DataFileName" type="xs:string" use="required"/>
+        <xs:attribute name="DataFileName" type="xs:string"/>
         <xs:attribute name="DataSize" type="xs:long" use="required"/>
         <xs:attribute name="DataFormat" type="DataFormatType" use="required"/>      
     </xs:complexType>
@@ -99,7 +99,7 @@
         <xs:sequence>    
             <xs:element name="ProcessedPointCloudFileNames" type="xs:string" minOccurs="0"/> 
         </xs:sequence>
-        <xs:attribute name="FullwaveFileName" type="xs:string" use="required"/>
+        <xs:attribute name="FullwaveFileName" type="xs:string"/>
         <xs:attribute name="NbMaxSequences" type="xs:nonNegativeInteger" use="required"/>
         <xs:attribute name="RangeStep" type="xs:double" use="required"/>
         <xs:attribute name="NbCol" type="xs:int" use="required"/>

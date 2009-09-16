@@ -66,9 +66,18 @@ std::string LidarFile::getMetaData() const
 
 	using namespace std;
 	ostringstream result;
-	result << "Nb of points : " << m_xmlData->attributes().dataSize() << endl;
-	result << "Format : " << m_xmlData->attributes().dataFormat() << endl;
-	result << "Binary filename : " << basename(m_xmlData->attributes().dataFileName()) << endl;
+	result << "Nb of points : " << m_xmlData->attributes().dataSize() << "\n";
+	result << "Format : " << m_xmlData->attributes().dataFormat() << "\n";
+	result << "Binary filename : ";
+
+	if(m_xmlData->attributes().dataFileName().present())
+	{
+		result << basename(m_xmlData->attributes().dataFileName().get()) << "\n";
+	}
+	else
+	{
+		result << basename(m_xmlFileName) + ".bin";
+	}
 	return result.str();
 }
 
@@ -85,7 +94,18 @@ std::string LidarFile::getBinaryDataFileName() const
 	if(!isValid())
 		throw std::logic_error("Error : Lidar xml file is not valid !\n");
 
-	return path(m_xmlFileName).branch_path().string() + "/" + m_xmlData->attributes().dataFileName();
+	path fileName = path(m_xmlFileName).branch_path();
+
+	if(m_xmlData->attributes().dataFileName().present())
+	{
+		fileName /= m_xmlData->attributes().dataFileName().get();
+	}
+	else
+	{
+		fileName /= (basename(m_xmlFileName) + ".bin");
+	}
+
+	return fileName.string();
 }
 
 unsigned int LidarFile::getNbPoints() const
@@ -153,8 +173,7 @@ void LidarFile::loadTransfo(LidarCenteringTransfo& transfo) const
 shared_ptr<cs::LidarDataType> LidarFile::createXMLStructure(const LidarDataContainer& lidarContainer, const std::string& xmlFileName, const LidarCenteringTransfo& transfo, const cs::DataFormatType format)
 {
 	//génération du fichier xml
-	const std::string dataFileName = basename(xmlFileName) + ".bin";
-	cs::LidarDataType::AttributesType attributes(dataFileName, lidarContainer.size(), format);
+	cs::LidarDataType::AttributesType attributes(lidarContainer.size(), format);
 
 	//insertion des attributs dans le xml (avec leur nom et leur type)
 	const AttributeMapType& attributeMap = lidarContainer.getAttributeMap();
@@ -184,7 +203,7 @@ void LidarFile::save(const LidarDataContainer& lidarContainer, const std::string
 
 	//création du writer approprié au format grâce à la factory
 	boost::shared_ptr<LidarFileIO> writer = LidarIOFactory::instance().createObject(xmlStructure.attributes().dataFormat());
-	writer->save(lidarContainer, path(xmlFileName).branch_path().string() + "/" + xmlStructure.attributes().dataFileName());
+	writer->save(lidarContainer, (path(xmlFileName).branch_path() / (basename(xmlFileName) + ".bin")).string());
 }
 
 void LidarFile::save(const LidarDataContainer& lidarContainer, const std::string& xmlFileName, const LidarCenteringTransfo& transfo, const cs::DataFormatType format)
@@ -205,7 +224,7 @@ void LidarFile::saveInPlace(const LidarDataContainer& lidarContainer, const std:
 	std::auto_ptr<cs::LidarDataType> xmlData(cs::lidarData(xmlFileName, xml_schema::Flags::dont_validate));
 
 	const cs::DataFormatType format = xmlData->attributes().dataFormat();
-	const std::string dataFileName = path(xmlFileName).branch_path().string() + "/" + xmlData->attributes().dataFileName();
+	const std::string dataFileName = (path(xmlFileName).branch_path() / (basename(xmlFileName) + ".bin")).string();
 
 	//création du writer approprié au format grâce à la factory
 	boost::shared_ptr<LidarFileIO> writer = LidarIOFactory::instance().createObject(format);
@@ -260,7 +279,7 @@ void LidarFile::setMapsFromXML(LidarDataContainer& lidarContainer) const
 
 LidarFile::~LidarFile()
 {
-	// TODO Auto-generated destructor stub
+
 }
 
 
