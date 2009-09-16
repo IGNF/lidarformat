@@ -1,6 +1,14 @@
 Source: lidarformat
+Priority: standard
+Maintainer: Adrien Chauve <petraike@gmail.com>
+Build-Depends: debhelper (>= 7), cmake, libboost1.37-dev, libxerces-c2-dev, xsd (>=3.2)
+Standards-Version: 3.8.0
+Section: libs
+Homepage: http://code.google.com/p/lidarformat
 
-Package: lidarformat
+Package: liblidarformat-dev
+Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}
-Description: 
+Depends: 
+Description: C++ library for point clouds
+ C++ library for efficiently handling 3D point clouds with a variable number of attributes at runtime.
