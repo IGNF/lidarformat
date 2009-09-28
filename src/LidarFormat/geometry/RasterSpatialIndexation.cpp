@@ -65,6 +65,9 @@ void RasterSpatialIndexation::getApproximateRectangularNeighborhood( Neighborhoo
 	const int ligMin = std::max( 0, std::min(ligne1, ligne2) );
 	const int ligMax = std::min( m_griddedData.GetTaille().y - 1, std::max(ligne1, ligne2) );
 
+	if(colMax < colMin || ligMax < ligMin)
+		return;
+
 	const unsigned int evalNbPoints = (unsigned int)( (colMax-colMin+1)*(ligMax-ligMin+1)*m_resolution*m_nbPointsParM2 );
 	list.reserve(evalNbPoints);
 
@@ -72,6 +75,7 @@ void RasterSpatialIndexation::getApproximateRectangularNeighborhood( Neighborhoo
 	{
 		for (int lig = ligMin; lig <= ligMax; ++lig)
 		{
+			assert(col>=0 && lig>=0 && col<m_griddedData.GetTaille().x && lig<m_griddedData.GetTaille().y);
 			std::copy( m_griddedData( col,lig).begin(), m_griddedData( col,lig ).end(), std::back_inserter(list));
 		}
 	}
@@ -96,10 +100,10 @@ void RasterSpatialIndexation::allocateData()
 	std::cout << "bboxMin=" << m_bboxMin << " , bboxMax=" << m_bboxMax << std::endl;
 
 	//boundingBox de l'image :
-	float x0min = m_resolution * std::floor( m_bboxMin.x / m_resolution );
-	float y0min = m_resolution * std::floor( m_bboxMin.y / m_resolution );
-	float x0max = m_resolution * std::ceil( m_bboxMax.x / m_resolution );
-	float y0max = m_resolution * std::ceil( m_bboxMax.y / m_resolution );
+	float x0min = m_resolution * std::floor( m_bboxMin.x / m_resolution + 0.5);
+	float y0min = m_resolution * std::floor( m_bboxMin.y / m_resolution + 0.5);
+	float x0max = m_resolution * std::floor( m_bboxMax.x / m_resolution  + 0.5);
+	float y0max = m_resolution * std::floor( m_bboxMax.y / m_resolution  + 0.5);
 
 	//origine de la géométrie ortho dallée = (x0min, y0max)
 	// x positif vers l'est
@@ -108,8 +112,8 @@ void RasterSpatialIndexation::allocateData()
 	//dimensions:
 
 
-	int tailleX = static_cast< int > ( (x0max - x0min) / m_resolution);
-	int tailleY = static_cast< int > ( (y0max - y0min) / m_resolution);
+	int tailleX = static_cast< int > ( (x0max - x0min) / m_resolution + 1);
+	int tailleY = static_cast< int > ( (y0max - y0min) / m_resolution + 1);
 
 	//allocation du tableau :
 	m_griddedData = GriddedDataType( tailleX, tailleY );

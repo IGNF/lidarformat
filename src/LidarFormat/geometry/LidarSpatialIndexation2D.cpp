@@ -126,10 +126,13 @@ void LidarSpatialIndexation2D::fillData()
 	{
 		m_ori.MapToImage( itb.x(), itb.y(), col, ligne );
 
-//		std::cout << *itx << "\t" << *ity << "\t" << col << "\t" << ligne << std::endl;
+//		std::cout << itb.x() << "\t" << itb.y() << "\t" << col << "\t" << ligne << std::endl;
 		//dans le cas où la bbox n'a pas été calculée mais fournie dan le constructeur, il faut tester si on sort de la grille
 		if(col>=0 && ligne>=0 && col<m_griddedData.GetTaille().x && ligne<m_griddedData.GetTaille().y)
+		{
 			m_griddedData(col, ligne).push_back(itb - itbegin);
+//			std::cout << "filled en : " << col << "," << ligne << std::endl;
+		}
 	}
 
 }
