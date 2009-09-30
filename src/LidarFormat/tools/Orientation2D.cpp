@@ -213,6 +213,8 @@ void Orientation2D::SaveOriToFile(const std::string &filename)
 {
 	std::ofstream fileOri(filename.c_str() , std::ofstream::out);
 
+	fileOri.precision(10);
+
 	fileOri<<"CARTO\n";
 	fileOri<< m_originX << "\t" << m_originY << std::endl;
 	fileOri<< m_zoneCarto << std::endl;
