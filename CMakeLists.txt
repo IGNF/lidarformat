@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED( VERSION 2.6 )
+CMAKE_MINIMUM_REQUIRED( VERSION 2.6.2 )
 
 #Nom du projet
 PROJECT(LidarFormat)
@@ -6,7 +6,6 @@ PROJECT(LidarFormat)
 # Useful for Eclipse code STL completion
 if(UNIX)
 	exec_program( gcc ARGS -dumpversion OUTPUT_VARIABLE GCC_VERSION )
-	
 	string( SUBSTRING ${GCC_VERSION} 0 3 GOOD_GCC_VERSION )
     include_directories( /usr/include/c++/${GOOD_GCC_VERSION} )
 endif()
@@ -22,9 +21,18 @@ FILE( GLOB ALL_EXTERN_HEADER_FILES src/LidarFormat/extern/matis/*.h)
 
 
 #Génération du code de parse des fichiers xml (gestion du format lidar)
-add_custom_command(
-    OUTPUT  ${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me.cxx ${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me.hxx ${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me-fwd.hxx
-    COMMAND xsd cxx-tree --function-naming lcc --type-naming ucc --generate-polymorphic --generate-comparison --generate-doxygen --generate-serialization --generate-forward --output-dir ${CMAKE_SOURCE_DIR}/src/LidarFormat/models ${CMAKE_SOURCE_DIR}/src/LidarFormat/models/xsd/format_me.xsd
+ADD_CUSTOM_COMMAND(
+    OUTPUT  ${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me.cxx 
+			${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me.hxx 
+			${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me-fwd.hxx
+    COMMAND xsd cxx-tree 	--function-naming lcc 
+							--type-naming ucc 
+							--generate-polymorphic 
+							--generate-comparison 
+							--generate-doxygen 
+							--generate-serialization 
+							--generate-forward 
+							--output-dir ${CMAKE_SOURCE_DIR}/src/LidarFormat/models ${CMAKE_SOURCE_DIR}/src/LidarFormat/models/xsd/format_me.xsd
 	DEPENDS ${CMAKE_SOURCE_DIR}/src/LidarFormat/models/xsd/format_me.xsd
 )
 
@@ -38,7 +46,6 @@ AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/tools  SRC_TOOLS)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats  SRC_FILE_FORMATS)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/standard  SRC_FILE_FORMATS_STANDARD)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/extern/matis  SRC_EXTERN_MATIS)
-AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/extern/terrabin  SRC_EXTERN_TERRABIN)
 
 SET(SRC_MODELS_DIR ${SRC_DIR}/LidarFormat/models)
 SET(SRC_MODELS  ${SRC_MODELS_DIR}/format_me.cxx)
@@ -52,7 +59,6 @@ SET( ALL_SOURCES
         ${SRC_FILE_FORMATS}
         ${SRC_FILE_FORMATS_STANDARD}
         ${SRC_EXTERN_MATIS} 
-        ${SRC_EXTERN_TERRABIN}
    )
 
 SET( ALL_HEADERS ${ALL_LIDAR_FORMAT_HEADER_FILES} ${ALL_MODELS_HEADER_FILES} ${ALL_GEOMETRY_HEADER_FILES})
@@ -61,7 +67,7 @@ SET( ALL_HEADERS ${ALL_LIDAR_FORMAT_HEADER_FILES} ${ALL_MODELS_HEADER_FILES} ${A
 #### Recherche des libs
 ####	
 #Pour utiliser le find xerces et xsd:
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmakeContrib)
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 FIND_PACKAGE(XercesC)
 IF( XERCESC_FOUND )
 	INCLUDE_DIRECTORIES( ${XERCESC_INCLUDE_DIR} )
@@ -80,54 +86,18 @@ ENDIF()
 
 # Find BOOST
 # CMake does not include boost version 1.39
-set(Boost_ADDITIONAL_VERSIONS "1.39.0" "1.39")
-find_package( Boost 1.36 COMPONENTS filesystem system unit_test_framework)
+SET(Boost_ADDITIONAL_VERSIONS "1.39.0" "1.39" "1.38.0" "1.38" "1.37.0" "1.37")
+FIND_PACKAGE( Boost 1.36 COMPONENTS filesystem system unit_test_framework REQUIRED)
 if( Boost_FOUND )
-	include_directories( ${Boost_INCLUDE_DIR} )
-	link_directories( ${Boost_LIBRARY_DIRS} )
+	INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+	LINK_DIRECTORIES( ${Boost_LIBRARY_DIRS} )
 	# Autolink under Windows platforms
 	if( NOT WIN32 )
-		set(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+		SET(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 	endif()
 else()
 	message( FATAL_ERROR "Boost not found ! Please set Boost path ..." )
 endif()
-
-
-####
-#### Use LAS format
-####
-OPTION( ENABLE_LAS "Enable LAS" OFF )
-if(ENABLE_LAS)
-    AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/LAS  SRC_LAS)
-    SET( ALL_SOURCES ${ALL_SOURCES} ${SRC_LAS})
-    
-    SET( LAS_DIRECTORY "" CACHE STRING "LibLAS include directory" )
-    SET( LAS_LIBRARY "" CACHE STRING "LibLAS library" )
-    INCLUDE_DIRECTORIES(${LAS_DIRECTORY})
-    
-    SET(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES} ${LAS_LIBRARY})
-endif(ENABLE_LAS)
-
-
-####
-#### Use TerraBin format
-####
-OPTION( ENABLE_TERRABIN "Enable TerraBin" OFF )
-if(ENABLE_TERRABIN)
-    AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/TerraBin  SRC_TERRABIN)
-    SET( ALL_SOURCES ${ALL_SOURCES} ${SRC_TERRABIN})
-endif(ENABLE_TERRABIN)
-
-
-####
-#### Use PlyArchi format
-####
-OPTION( ENABLE_PLYARCHI "Enable PlyArchi" OFF )
-if(ENABLE_PLYARCHI)
-    AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/PlyArchi  SRC_PLYARCHI)
-    SET( ALL_SOURCES ${ALL_SOURCES} ${SRC_PLYARCHI})
-endif(ENABLE_PLYARCHI)
 
 
 ####
@@ -153,29 +123,36 @@ else()
 endif()
 
 ADD_LIBRARY( LidarFormat  ${LIBRARY_TYPE} ${ALL_SOURCES} ${ALL_HEADERS}  )
-
-
 TARGET_LINK_LIBRARIES( LidarFormat ${LidarFormat_LIBRAIRIES} )
 
+
 ####
-#### Construction du sample
-####
-#INCLUDE( LidarFormat_build_sample.cmake )
-		
+#### Choice for install mode.
+####     - None : no install target
+####     - Install : create a install target
+####     - Package : create a packake 
+SET(INSTALL_MODE "None" CACHE STRING "Choose install mode between : None, Install, Package")
+IF(${INSTALL_MODE} STREQUAL "Install")
+	INCLUDE(cmake/LidarFormat_install.cmake )
+	MESSAGE( STATUS " Install file include " )
+ENDIF(${INSTALL_MODE} STREQUAL "Install")
+IF(${INSTALL_MODE} STREQUAL "Package")
+	INCLUDE(cmake/LidarFormat_package.cmake )
+	MESSAGE( STATUS " Install file package" )
+ENDIF(${INSTALL_MODE} STREQUAL "Package")
 
 ####
 #### Tests
 ####
 OPTION( BUILD_TESTS "Build tests" ON )
 if(BUILD_TESTS)
-    INCLUDE( LidarFormat_tests.cmake )
+    INCLUDE( cmake/LidarFormat_tests.cmake )
 endif(BUILD_TESTS)
 
 ####
-#### Install
+#### Documentation ( create a doc traget for generating doxygen pages)
 ####
-OPTION( BUILD_INSTALL "Generate install target" ON)
-IF(BUILD_INSTALL)
-	INCLUDE(LidarFormat_install.cmake )
-ENDIF(BUILD_INSTALL)
-
+OPTION( BUILD_DOC "Build doc " OFF )
+if(BUILD_DOC)
+    INCLUDE( cmake/LidarFormat_doc.cmake )
+endif(BUILD_DOC)
