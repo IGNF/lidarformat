@@ -96,8 +96,8 @@ void RasterSpatialIndexation::indexData()
 
 void RasterSpatialIndexation::allocateData()
 {
-	std::cout << "RasterSpatialIndexation : allocateData : \n";
-	std::cout << "bboxMin=" << m_bboxMin << " , bboxMax=" << m_bboxMax << std::endl;
+//	std::cout << "RasterSpatialIndexation : allocateData : \n";
+//	std::cout << "bboxMin=" << m_bboxMin << " , bboxMax=" << m_bboxMax << std::endl;
 
 	//boundingBox de l'image :
 	float x0min = m_resolution * std::floor( m_bboxMin.x / m_resolution + 0.5);
@@ -119,7 +119,7 @@ void RasterSpatialIndexation::allocateData()
 	m_griddedData = GriddedDataType( tailleX, tailleY );
 
 	//Ori de la géométrie :
-	std::cout << "x0min=" << x0min << " , y0max=" << y0max << " , tailleX=" << tailleX << " , tailleY=" << tailleY << std::endl;
+//	std::cout << "x0min=" << x0min << " , y0max=" << y0max << " , tailleX=" << tailleX << " , tailleY=" << tailleY << std::endl;
 	m_ori = Orientation2D( x0min, y0max, m_resolution, 0, tailleX, tailleY );
 }
 
