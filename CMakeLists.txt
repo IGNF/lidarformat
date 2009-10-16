@@ -131,7 +131,7 @@ TARGET_LINK_LIBRARIES( LidarFormat ${LidarFormat_LIBRAIRIES} )
 ####     - None : no install target
 ####     - Install : create a install target
 ####     - Package : create a packake 
-SET(INSTALL_MODE "None" CACHE STRING "Choose install mode between : None, Install, Package")
+SET(INSTALL_MODE "Install" CACHE STRING "Choose install mode between : None, Install, Package")
 IF(${INSTALL_MODE} STREQUAL "Install")
 	INCLUDE(cmake/LidarFormat_install.cmake )
 	MESSAGE( STATUS " Install file include " )
