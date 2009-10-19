@@ -49,13 +49,15 @@ Contributors:
 namespace Lidar
 {
 
+char LidarEcho::m_separator = '\t';
+
 
 template<Lidar::EnumLidarDataType T>
 struct PrintFunctor
 {
 	void operator()(std::ostream &os, const LidarEcho &echo, const std::string &name)
 	{
-		os << echo.value<typename Lidar::LidarEnumTypeTraits<T>::type>(name) << "\t" ;
+		os << echo.value<typename Lidar::LidarEnumTypeTraits<T>::type>(name) << LidarEcho::m_separator ;
 	}
 };
 
@@ -64,7 +66,7 @@ struct PrintFunctor<LidarDataType::int8>
 {
 	void operator()(std::ostream &os, const LidarEcho &echo, const std::string &name)
 	{
-		os << (int) echo.value<int8>(name) << "\t" ;
+		os << (int) echo.value<int8>(name) << LidarEcho::m_separator ;
 	}
 };
 
@@ -73,7 +75,7 @@ struct PrintFunctor<LidarDataType::uint8>
 {
 	void operator()(std::ostream &os, const LidarEcho &echo, const std::string &name)
 	{
-		os << (unsigned int) echo.value<uint8>(name) << "\t" ;
+		os << (unsigned int) echo.value<uint8>(name) << LidarEcho::m_separator ;
 	}
 };
 

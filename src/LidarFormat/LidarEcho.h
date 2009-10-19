@@ -149,6 +149,10 @@ class LidarEcho
 		{
 			return echoPtr_.get();
 		}
+
+
+		static char m_separator;
+
 	protected:
 		boost::shared_array<char> echoPtr_; //donnees d'un echo
 		unsigned int size_; //taille d'un echo
