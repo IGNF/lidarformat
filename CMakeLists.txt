@@ -16,7 +16,7 @@ endif()
 FILE( GLOB ALL_LIDAR_FORMAT_HEADER_FILES src/LidarFormat/*.h )
 FILE( GLOB ALL_GEOMETRY_HEADER_FILES src/LidarFormat/geometry/*.h )
 FILE( GLOB ALL_TOOLS_HEADER_FILES src/LidarFormat/tools/*.h src/LidarFormat/tools/*.hpp)
-FILE( GLOB ALL_MODELS_HEADER_FILES src/LidarFormat/models/*.h src/LidarFormat/models/*.hxx)
+FILE( GLOB ALL_MODELS_HEADER_FILES src/LidarFormat/models/*.h src/LidarFormat/models/*.hpp)
 FILE( GLOB ALL_EXTERN_HEADER_FILES src/LidarFormat/extern/matis/*.h)
 
 
@@ -35,6 +35,15 @@ ADD_CUSTOM_COMMAND(
 							--output-dir ${CMAKE_SOURCE_DIR}/src/LidarFormat/models ${CMAKE_SOURCE_DIR}/src/LidarFormat/models/xsd/format_me.xsd
 	DEPENDS ${CMAKE_SOURCE_DIR}/src/LidarFormat/models/xsd/format_me.xsd
 )
+
+SET( ALL_MODELS_HEADER_FILES 
+		${ALL_MODELS_HEADER_FILES} 
+		${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me.cxx 
+		${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me.hxx 
+		${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me-fwd.hxx
+)
+
+
 
 #### Definition des dossiers contenant les sources
 SET(SRC_DIR src/)

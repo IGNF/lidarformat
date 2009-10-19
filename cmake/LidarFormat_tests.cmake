@@ -2,7 +2,7 @@ ENABLE_TESTING()
 
 #########
 ##OPTION Pour indiquer le chemin des données lidar pour effectuer les tests
-SET( PATH_LIDAR_TEST_DATA "data" CACHE STRING "Path to lidar test data" )
+SET( PATH_LIDAR_TEST_DATA "${CMAKE_SOURCE_DIR}/data" CACHE STRING "Path to lidar test data" )
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/tests/config_data_test.h.cmake.in ${CMAKE_CURRENT_SOURCE_DIR}/tests/config_data_test.h @only immediate)
 
 
