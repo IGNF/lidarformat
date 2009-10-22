@@ -117,15 +117,16 @@ int main()
 
 
 	/**** Basic operations on container ****/
+	{
+		std::cout << "\n\nBasic operations on container:\n";
 
-	std::cout << "\n\nBasic operations on container:\n";
+		//copy
+		LidarDataContainer anotherLidarContainer(lidarContainer);
 
-	//copy
-	LidarDataContainer anotherLidarContainer(lidarContainer);
+		std::cout << "size:" << anotherLidarContainer.size();
 
-	std::cout << "size:" << anotherLidarContainer.size();
-
-	anotherLidarContainer.clear();
+		anotherLidarContainer.clear();
+	}
 
 
 	/**** Walk through container using iterators ****/
@@ -164,16 +165,17 @@ int main()
 		for(; itb != ite; ++itb)
 			itb.value<float64>("x") = 5.;
 
-		//second possibility, mre efficient: store the shift for one attribute
-		const unsigned int shiftY = lidarContainer.getDecalage("y");
+		//second possibility, more efficient: store the stride for one attribute
+		const unsigned int strideY = lidarContainer.getDecalage("y");
 		for(; itb != ite; ++itb)
-			itb.value<float64>(shiftY) = 3.;
+			itb.value<float64>(strideY) = 3.;
 
 	}
 
 
 	/**** Create new container ****/
 	{
+		std::cout << "\n\nCreating new container:\n";
 		LidarDataContainer newContainer;
 
 		//add attributes ...
@@ -200,6 +202,41 @@ int main()
 			itb.value<float64>(shiftY) = 2.*i;
 			itb.value<float64>(shiftZ) = 3.*i;
 		}
+
+		//Print content using output_iterator on the console
+		ostream_iterator<LidarEcho> itOutputEcho( cout, "\n" );
+		std::cout << "\n\ncontainer content:\n";
+		newContainer.printHeader(cout);
+		copy(newContainer.begin(), newContainer.end(), itOutputEcho);
+
+
+		//Add attributes to an existing container
+		//warning: new values are not initialized
+		newContainer.addAttribute("intensity", LidarDataType::int32);
+
+		//initialize new intensity values
+		fill(newContainer.beginAttribute<int>("intensity"), newContainer.endAttribute<int>("intensity"), 0);
+
+		std::cout << "\nContainer content after adding attributes:\n";
+		newContainer.printHeader(cout);
+		copy(newContainer.begin(), newContainer.end(), itOutputEcho);
+
+
+		//Add multiple attributes to an existing container
+		//warning: new values are not initialized
+		vector<pair<string, EnumLidarDataType> > attributes;
+		attributes.push_back(make_pair("width", LidarDataType::float64));
+		attributes.push_back(make_pair("echoNumber", LidarDataType::int32));
+
+		newContainer.addAttributeList(attributes);
+
+		//initialize new values
+		fill(newContainer.beginAttribute<double>("width"), newContainer.endAttribute<double>("width"), 0);
+		fill(newContainer.beginAttribute<int>("echoNumber"), newContainer.endAttribute<int>("echoNumber"), 0);
+
+		std::cout << "\nContainer content after adding multiple attributes:\n";
+		newContainer.printHeader(cout);
+		copy(newContainer.begin(), newContainer.end(), itOutputEcho);
 
 	}
 

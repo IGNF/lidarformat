@@ -100,12 +100,6 @@ class LidarDataContainer
 
 
 
-//		template<typename T>
-//		void addAttribute(const std::string &name, const T initValue = 0);
-//
-//		void delAttribute(const std::string &name);
-
-
 		///Interface semblable au vector :
 		bool empty() const;
 		void push_back(const LidarEcho& echo);
@@ -132,10 +126,6 @@ class LidarDataContainer
 
 		reference operator[](const unsigned int index);
 		const_reference operator[](const unsigned int index) const;
-
-
-//		template<typename TAttributeType> const TAttributeType& value( const std::string &attributeName, const IndexType index ) const;
-//		template<typename TAttributeType> TAttributeType& value( const std::string &attributeName, const IndexType index );
 
 
 
@@ -168,6 +158,7 @@ class LidarDataContainer
 		///  ATTENTION : l'appel à cette fonction rend obsolète tous les itérateurs en cours, et rend incompatible les anciens LidarEcho avec les nouveaux
 		///  La fonction retourne false si l'attribut était déjà présent dans le container
 		bool addAttribute(const std::string& attributeName, const EnumLidarDataType type);
+		void addAttributeList(const std::vector<std::pair<std::string, EnumLidarDataType> > attributes);
 
 		bool checkAttributeIsPresent(const std::string& attributeName);
 
@@ -200,6 +191,10 @@ class LidarDataContainer
 
 	private:
 		void copy(const LidarDataContainer& rhs);
+
+		///Update container content after having added attributes
+		void updateAttributeContent(const unsigned int oldPointSize);
+		bool addAttributeHelper(const std::string& attributeName, const EnumLidarDataType type);
 
 
 		/////Structure interne

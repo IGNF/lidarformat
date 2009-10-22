@@ -147,7 +147,8 @@ BOOST_AUTO_TEST_CASE( LidarIteratorAttribute_tests )
 
 	BOOST_CHECK_EQUAL(*itBeforeEndLidarContainerX, lastX);
 	BOOST_CHECK_EQUAL(*itBeforeEndLidarContainerY, lastY);
-	BOOST_CHECK_EQUAL(*itBeforeEndLidarContainerZ, lastZ);}
+	BOOST_CHECK_EQUAL(*itBeforeEndLidarContainerZ, lastZ);
+}
 
 
 

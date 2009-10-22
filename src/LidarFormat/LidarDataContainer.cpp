@@ -164,7 +164,25 @@ struct PointSizeFunctor
 };
 
 
-bool LidarDataContainer::addAttribute(const std::string& attributeName, const EnumLidarDataType type)
+void LidarDataContainer::updateAttributeContent(const unsigned int oldPointSize)
+{
+	lidarData_.resize(lidarData_.size()/oldPointSize*pointSize_);
+
+	///MAJ des données ! décalage des attributs + initialisation du nouvel attribut
+	const LidarDataContainerType::const_iterator itBegin = lidarData_.begin();
+	LidarDataContainerType::const_iterator itOldEndElement = itBegin + (size()-1)*oldPointSize;
+
+	LidarDataContainerType::iterator itNewEndElement = lidarData_.begin() + (size()-1)*pointSize_;
+
+	while(itOldEndElement > itBegin)
+	{
+		std::copy(itOldEndElement, itOldEndElement + oldPointSize, itNewEndElement);
+		itOldEndElement -= oldPointSize;
+		itNewEndElement -= pointSize_;
+	}
+}
+
+bool LidarDataContainer::addAttributeHelper(const std::string& attributeName, const EnumLidarDataType type)
 {
 	//si l'attribut existe déjà, on sort et retourne false
 	if(attributeMap_->find(attributeName)!=attributeMap_->end())
@@ -196,11 +214,40 @@ bool LidarDataContainer::addAttribute(const std::string& attributeName, const En
 	sizeLastInsertedAttribute = apply<PointSizeFunctor, unsigned int>(type);
 	pointSize_ = infos.decalage + sizeLastInsertedAttribute;
 
+	return true;
+}
 
-	//TODO
-	///MAJ des données ! décalage des attributs + initialisation du nouvel attribut
+
+bool LidarDataContainer::addAttribute(const std::string& attributeName, const EnumLidarDataType type)
+{
+	const unsigned int oldPointSize = pointSize_;
+
+	bool attributeAdded = addAttributeHelper(attributeName, type);
+
+	if(!attributeAdded)
+		return false;
+
+	if(!empty())
+		updateAttributeContent(oldPointSize);
 
 	return true;
+}
+
+
+void LidarDataContainer::addAttributeList(const std::vector<std::pair<std::string, EnumLidarDataType> > attributes)
+{
+	const unsigned int oldPointSize = pointSize_;
+
+
+	std::vector<std::pair<std::string, EnumLidarDataType> >::const_iterator itb = attributes.begin();
+	const std::vector<std::pair<std::string, EnumLidarDataType> >::const_iterator ite = attributes.end();
+
+
+	for( ; itb != ite; ++itb)
+		addAttributeHelper(itb->first, itb->second);
+
+	if(!empty())
+		updateAttributeContent(oldPointSize);
 }
 
 
