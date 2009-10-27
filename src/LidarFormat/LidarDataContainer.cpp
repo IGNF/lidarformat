@@ -195,7 +195,7 @@ bool LidarDataContainer::addAttributeHelper(const std::string& attributeName, co
 	if(!attributeMap_->empty())
 		sizeLastAttribute = apply<PointSizeFunctor, unsigned int>(attributeMap_->back().second.type);
 
-	//ajout de l'attribut dans les maps et mise à jour des décalages qui suivent l'attribut inséré
+	//ajout de l'attribut dans les maps
 	AttributesInfo infos;
 	infos.type = type;
 	if(!attributeMap_->empty())
@@ -248,6 +248,59 @@ void LidarDataContainer::addAttributeList(const std::vector<std::pair<std::strin
 
 	if(!empty())
 		updateAttributeContent(oldPointSize);
+}
+
+struct predicate_true
+{
+		template<typename T>
+		bool operator()(T)
+		{
+			return true;
+		}
+};
+
+
+bool LidarDataContainer::delAttribute(const std::string& attributeName)
+{
+	//si l'attribut n'existe pas, on sort
+	if (!checkAttributeIsPresent(attributeName))
+		return false;
+
+	//décalage et taille de l'attribut à supprimer
+	const unsigned int strideAttribute = getDecalage(attributeName);
+	const unsigned int sizeAttribute = apply<PointSizeFunctor, unsigned int>(getAttributeType(attributeName));
+
+	//Mise à jour de la pointSize :
+	const unsigned int oldPointSize = pointSize_;
+	const unsigned int nbPoints = size();
+	pointSize_ -= sizeAttribute;
+
+
+	///MAJ des données ! décalage des attributs
+	LidarDataContainerType::iterator itOldAttributePosition = lidarData_.begin() + strideAttribute;
+	LidarDataContainerType::iterator itNewAttributePosition = lidarData_.begin() + strideAttribute;
+	const LidarDataContainerType::iterator ite = lidarData_.end() - oldPointSize;
+
+	for(; itOldAttributePosition < ite; itOldAttributePosition += oldPointSize, itNewAttributePosition += pointSize_)
+		std::copy(itOldAttributePosition + sizeAttribute, itOldAttributePosition + oldPointSize, itNewAttributePosition);
+
+
+	lidarData_.erase(lidarData_.begin() + nbPoints*pointSize_, lidarData_.end());
+
+
+	//suppression de l'attribut dans les maps et mise à jour des décalages qui suivent l'attribut supprimé
+	AttributeMapType::iterator itSuccessor = attributeMap_->erase(attributeMap_->find(attributeName));
+
+	for(; itSuccessor != attributeMap_->end(); ++itSuccessor)
+		itSuccessor->second.decalage -= sizeAttribute;
+
+	return true;
+}
+
+void LidarDataContainer::delAttributeList(const std::vector<std::string>& attributeNames)
+{
+	for(std::vector<std::string>::const_iterator it = attributeNames.begin(); it != attributeNames.end(); ++it)
+		delAttribute(*it);
 }
 
 
