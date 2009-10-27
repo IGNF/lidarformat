@@ -160,6 +160,9 @@ class LidarDataContainer
 		bool addAttribute(const std::string& attributeName, const EnumLidarDataType type);
 		void addAttributeList(const std::vector<std::pair<std::string, EnumLidarDataType> > attributes);
 
+		bool delAttribute(const std::string& attributeName);
+		void delAttributeList(const std::vector<std::string>& attributeNames);
+
 		bool checkAttributeIsPresent(const std::string& attributeName);
 
 		bool checkAttributeIsPresentAndType(const std::string& attributeName, const EnumLidarDataType type);
@@ -234,18 +237,6 @@ inline LidarEcho LidarDataContainer::createEcho() const
 {
 	return LidarEcho(pointSize(), boost::shared_array<BaseType>(new BaseType[pointSize()]).get(), attributeMap_);
 }
-
-//template<typename TAttributeType>
-//inline const TAttributeType& LidarDataContainer::value(const std::string &attributeName, const IndexType index) const
-//{
-//	return *reinterpret_cast<TAttributeType*>(rawData(index) + getDecalage(attributeName));
-//}
-//
-//template<typename TAttributeType>
-//inline TAttributeType& LidarDataContainer::value(const std::string &attributeName, const IndexType index)
-//{
-//	return *reinterpret_cast<TAttributeType*>(rawData(index) + getDecalage(attributeName));
-//}
 
 
 template<typename T>

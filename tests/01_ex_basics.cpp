@@ -238,6 +238,17 @@ int main()
 		newContainer.printHeader(cout);
 		copy(newContainer.begin(), newContainer.end(), itOutputEcho);
 
+
+		//Delete attributes
+		vector<string> attributesToDelete;
+		attributesToDelete.push_back("echoNumber");
+		attributesToDelete.push_back("intensity");
+		newContainer.delAttributeList(attributesToDelete);
+
+		std::cout << "\nContainer content after deleting multiple attributes:\n";
+		newContainer.printHeader(cout);
+		copy(newContainer.begin(), newContainer.end(), itOutputEcho);
+
 	}
 
 

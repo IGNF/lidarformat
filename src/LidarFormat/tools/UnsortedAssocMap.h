@@ -79,6 +79,11 @@ class UnsortedAssocMap
 			container_.push_back(value);
 		}
 
+		iterator erase(const iterator& it)
+		{
+			return container_.erase(it);
+		}
+
 		const value_type& back() const
 		{
 			return container_.back();
