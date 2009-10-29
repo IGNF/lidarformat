@@ -27,3 +27,4 @@ install_manifest.txt
 LidarFormatConfig.cmake
 libLidarFormat.so
 README~
+.settings

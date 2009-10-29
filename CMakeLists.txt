@@ -59,6 +59,15 @@ AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/extern/matis  SRC_EXTERN_MATIS)
 SET(SRC_MODELS_DIR ${SRC_DIR}/LidarFormat/models)
 SET(SRC_MODELS  ${SRC_MODELS_DIR}/format_me.cxx)
 
+####
+#### Python bindings
+####
+OPTION( BUILD_PYTHON_BINDINGS "Build Python bindings" OFF )
+if(BUILD_PYTHON_BINDINGS)
+    INCLUDE( cmake/LidarFormat_python_bindings.cmake )
+endif(BUILD_PYTHON_BINDINGS)
+
+
 # Une variable regroupant toutes les sources ...
 SET( ALL_SOURCES 
         ${SRC_LIDAR_FORMAT} 
@@ -68,6 +77,8 @@ SET( ALL_SOURCES
         ${SRC_FILE_FORMATS}
         ${SRC_FILE_FORMATS_STANDARD}
         ${SRC_EXTERN_MATIS} 
+        
+        ${SRC_PYTHON}
    )
 
 SET( ALL_HEADERS ${ALL_LIDAR_FORMAT_HEADER_FILES} ${ALL_MODELS_HEADER_FILES} ${ALL_GEOMETRY_HEADER_FILES})
@@ -161,7 +172,10 @@ endif(BUILD_TESTS)
 ####
 #### Documentation ( create a doc traget for generating doxygen pages)
 ####
-OPTION( BUILD_DOC "Build doc " OFF )
-if(BUILD_DOC)
-    INCLUDE( cmake/LidarFormat_doc.cmake )
-endif(BUILD_DOC)
+#OPTION( BUILD_DOC "Build doc " OFF )
+#if(BUILD_DOC)
+#    INCLUDE( cmake/LidarFormat_doc.cmake )
+#endif(BUILD_DOC)
+
+
+
