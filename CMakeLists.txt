@@ -19,13 +19,30 @@ FILE( GLOB ALL_TOOLS_HEADER_FILES src/LidarFormat/tools/*.h src/LidarFormat/tool
 FILE( GLOB ALL_MODELS_HEADER_FILES src/LidarFormat/models/*.h src/LidarFormat/models/*.hpp)
 FILE( GLOB ALL_EXTERN_HEADER_FILES src/LidarFormat/extern/matis/*.h)
 
+#Pour utiliser le find xerces et xsd:
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+FIND_PACKAGE(XercesC)
+IF( XERCESC_FOUND )
+	INCLUDE_DIRECTORIES( ${XERCESC_INCLUDE_DIR} )
+	SET(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES} ${XERCESC_LIBRARIES})
+ELSE()
+	MESSAGE( FATAL_ERROR "XercesC not found ! Please set XercesC path ..." )
+ENDIF()
+
+FIND_PACKAGE(Xsd)
+IF( XSD_FOUND )
+	INCLUDE_DIRECTORIES( ${XSD_INCLUDE_DIR} )
+	MESSAGE("XSD Include Path : " ${XSD_INCLUDE_DIR} )
+ELSE()
+	MESSAGE( FATAL_ERROR "XSD not found ! Please set XSD path ..." )
+ENDIF()
 
 #Génération du code de parse des fichiers xml (gestion du format lidar)
 ADD_CUSTOM_COMMAND(
     OUTPUT  ${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me.cxx 
 			${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me.hxx 
 			${CMAKE_SOURCE_DIR}/src/LidarFormat/models/format_me-fwd.hxx
-    COMMAND xsd cxx-tree 	--function-naming lcc 
+    COMMAND ${XSD_EXECUTABLE} cxx-tree 	--function-naming lcc 
 							--type-naming ucc 
 							--generate-polymorphic 
 							--generate-comparison 
@@ -86,27 +103,11 @@ SET( ALL_HEADERS ${ALL_LIDAR_FORMAT_HEADER_FILES} ${ALL_MODELS_HEADER_FILES} ${A
 ####
 #### Recherche des libs
 ####	
-#Pour utiliser le find xerces et xsd:
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-FIND_PACKAGE(XercesC)
-IF( XERCESC_FOUND )
-	INCLUDE_DIRECTORIES( ${XERCESC_INCLUDE_DIR} )
-	SET(LidarFormat_LIBRAIRIES ${LidarFormat_LIBRAIRIES} ${XERCESC_LIBRARIES})
-ELSE()
-	MESSAGE( FATAL_ERROR "XercesC not found ! Please set XercesC path ..." )
-ENDIF()
 
-FIND_PACKAGE(Xsd)
-IF( XSD_FOUND )
-	INCLUDE_DIRECTORIES( ${XSD_INCLUDE_DIR} )
-	#MESSAGE("XSD Include Path : " ${XSD_INCLUDE_DIR} )
-ELSE()
-	MESSAGE( FATAL_ERROR "XSD not found ! Please set XSD path ..." )
-ENDIF()
 
 # Find BOOST
 # CMake does not include boost version 1.39
-SET(Boost_ADDITIONAL_VERSIONS "1.39.0" "1.39" "1.38.0" "1.38" "1.37.0" "1.37")
+SET(Boost_ADDITIONAL_VERSIONS "1.39.0" "1.39" "1.38.0" "1.38" "1.37.0" "1.37" "1.40" "1.41" "1.42" "1.43" "1.44")
 FIND_PACKAGE( Boost 1.36 COMPONENTS filesystem system unit_test_framework REQUIRED)
 if( Boost_FOUND )
 	INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
