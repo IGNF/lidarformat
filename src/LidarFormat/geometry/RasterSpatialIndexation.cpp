@@ -42,7 +42,7 @@ Contributors:
 
 #include <iostream>
 #include <stdexcept>
-
+#include <iterator>
 #include "RasterSpatialIndexation.h"
 
 namespace Lidar
