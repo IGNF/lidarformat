@@ -44,9 +44,9 @@ IF(WIN32)
 	INSTALL( FILES ${ALL_TOOLS_HEADER_FILES} DESTINATION include/LidarFormat/tools COMPONENT headers)
 	INSTALL( FILES ${ALL_EXTERN_HEADER_FILES} DESTINATION include/LidarFormat/extern/matis COMPONENT headers)
 	
-	INSTALL ( TARGETS LidarFormat DESTINATION lib COMPONENT library)
-	INSTALL (	EXPORT LidarFormat-targets 
-				DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/LidarFormat)
+	INSTALL ( TARGETS LidarFormat EXPORT LidarFormat-targets DESTINATION lib COMPONENT library)
+	INSTALL (EXPORT LidarFormat-targets 
+				DESTINATION lib/LidarFormat)
 	INSTALL (FILES LidarFormatConfig.cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/LidarFormat)
 ENDIF(WIN32)
 
