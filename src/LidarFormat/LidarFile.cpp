@@ -72,7 +72,8 @@ std::string LidarFile::getMetaData() const
 
 	if(m_xmlData->attributes().dataFileName().present())
 	{
-		result << basename(m_xmlData->attributes().dataFileName().get()) << "\n";
+                std::string datafilename=m_xmlData->attributes().dataFileName().get();
+		result << basename(datafilename) << "\n";
 	}
 	else
 	{
@@ -98,7 +99,8 @@ std::string LidarFile::getBinaryDataFileName() const
 
 	if(m_xmlData->attributes().dataFileName().present())
 	{
-		fileName /= m_xmlData->attributes().dataFileName().get();
+                std::string datafilename= m_xmlData->attributes().dataFileName().get();
+		fileName /= datafilename;
 	}
 	else
 	{
