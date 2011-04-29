@@ -7,12 +7,13 @@
 # XSD_EXECUTABLE, where is the xsd compiler
 # XSD_FOUND, If false, don't try to use xsd
 
-FIND_PATH(XSD_INCLUDE_DIR cxx/parser/elements.hxx
-  "C:/Program Files/CodeSynthesis XSD 3.2/include/xsd"
+FIND_PATH(XSD_INCLUDE_DIR xsd/cxx/parser/elements.hxx
+  "C:/Program Files/CodeSynthesis XSD 3.2/include"
+   "C:/Program Files/CodeSynthesis XSD 3.3/include"
   $ENV{XSDDIR}/include
-  $ENV{CODESYNTH}/include/xsd
-  /usr/local/include/xsd
-  /usr/include/xsd
+  $ENV{CODESYNTH}/include
+  /usr/local/include
+  /usr/include
 )
 
 FIND_PROGRAM(XSD_EXECUTABLE 
@@ -20,6 +21,7 @@ FIND_PROGRAM(XSD_EXECUTABLE
     xsd
   PATHS
 	"C:/Program Files/CodeSynthesis XSD 3.2/bin"
+	"C:/Program Files/CodeSynthesis XSD 3.3/bin"
     "[HKEY_CURRENT_USER\\xsd\\bin"
     $ENV{XSDDIR}/bin 
     /usr/local/bin
