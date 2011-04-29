@@ -3,6 +3,7 @@ CMAKE_MINIMUM_REQUIRED( VERSION 2.6.2 )
 #Nom du projet
 PROJECT(LidarFormat)
 
+SET(LidarFormat_version "000102")
 # Useful for Eclipse code STL completion
 if(UNIX)
 	exec_program( gcc ARGS -dumpversion OUTPUT_VARIABLE GCC_VERSION )
