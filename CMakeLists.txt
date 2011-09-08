@@ -15,6 +15,7 @@ endif()
 #### On recherche tous les fichiers ".h", ".hpp", ".hxx" et "*.inl"
 ####
 FILE( GLOB ALL_LIDAR_FORMAT_HEADER_FILES src/LidarFormat/*.h )
+FILE( GLOB ALL_FILE_FORMATS_HEADER_FILES src/LidarFormat/file_formats/*.h )
 FILE( GLOB ALL_GEOMETRY_HEADER_FILES src/LidarFormat/geometry/*.h )
 FILE( GLOB ALL_TOOLS_HEADER_FILES src/LidarFormat/tools/*.h src/LidarFormat/tools/*.hpp)
 FILE( GLOB ALL_MODELS_HEADER_FILES src/LidarFormat/models/*.h src/LidarFormat/models/*.hpp)
