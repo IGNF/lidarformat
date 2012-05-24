@@ -18,7 +18,7 @@ FIND_PATH(XSD_INCLUDE_DIR xsd/cxx/parser/elements.hxx
 
 FIND_PROGRAM(XSD_EXECUTABLE 
   NAMES 
-    xsd
+    xsd xsdcxx
   PATHS
 	"C:/Program Files/CodeSynthesis XSD 3.2/bin"
 	"C:/Program Files/CodeSynthesis XSD 3.3/bin"

@@ -19,11 +19,11 @@ IF(UNIX)
 	CONFIGURE_FILE(${LIDARFORMAT_CMAKE_SELF_DIR}/LidarFormatConfig.cmake.in ${CMAKE_CURRENT_SOURCE_DIR}/LidarFormatConfig.cmake @ONLY)
 	#install include file
 	INSTALL (FILES ${ALL_LIDAR_FORMAT_HEADER_FILES} DESTINATION include/LidarFormat COMPONENT headers)
-	INSTALL (FILES ${ALL_FILE_FORMATS_HEADER_FILES} DESTINATION include/LidarFormat/file_formats COMPONENT headers)
 	INSTALL( FILES ${ALL_MODELS_HEADER_FILES} DESTINATION include/LidarFormat/models COMPONENT headers)
 	INSTALL( FILES ${ALL_GEOMETRY_HEADER_FILES} DESTINATION include/LidarFormat/geometry COMPONENT headers)
 	INSTALL( FILES ${ALL_TOOLS_HEADER_FILES} DESTINATION include/LidarFormat/tools COMPONENT headers)
 	INSTALL( FILES ${ALL_EXTERN_HEADER_FILES} DESTINATION include/LidarFormat/extern/matis COMPONENT headers)
+	INSTALL( FILES ${ALL_FILE_FORMATS_HEADER_FILES} DESTINATION include/LidarFormat/file_formats COMPONENT headers)
 	#install lib and target config file
 	INSTALL ( TARGETS LidarFormat EXPORT LidarFormat-targets DESTINATION lib COMPONENT library ) 
 	INSTALL ( EXPORT LidarFormat-targets 
@@ -41,7 +41,6 @@ IF(WIN32)
 	
 	INSTALL (FILES ${ALL_LIDAR_FORMAT_HEADER_FILES} DESTINATION include/LidarFormat COMPONENT headers)
 	INSTALL( FILES ${ALL_MODELS_HEADER_FILES} DESTINATION include/LidarFormat/models COMPONENT headers)
-	INSTALL (FILES ${ALL_FILE_FORMATS_HEADER_FILES} DESTINATION include/LidarFormat/file_formats COMPONENT headers)
 	INSTALL( FILES ${ALL_GEOMETRY_HEADER_FILES} DESTINATION include/LidarFormat/geometry COMPONENT headers)
 	INSTALL( FILES ${ALL_TOOLS_HEADER_FILES} DESTINATION include/LidarFormat/tools COMPONENT headers)
 	INSTALL( FILES ${ALL_EXTERN_HEADER_FILES} DESTINATION include/LidarFormat/extern/matis COMPONENT headers)
