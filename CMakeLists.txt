@@ -102,6 +102,8 @@ SET( ALL_SOURCES
 
 SET( ALL_HEADERS ${ALL_LIDAR_FORMAT_HEADER_FILES} ${ALL_MODELS_HEADER_FILES} ${ALL_GEOMETRY_HEADER_FILES})
 
+INCLUDE( cmake/LidarFormat_plugin_io.cmake )
+
 ####
 #### Recherche des libs
 ####	
