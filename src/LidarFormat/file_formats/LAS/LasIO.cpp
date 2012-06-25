@@ -159,7 +159,7 @@ boost::shared_ptr<LasIO> createLasIO()
 bool LasIO::Register()
 {
 //	std::cout << "Format cs : " << cs::DataFormatType(cs::DataFormatType::binary_one_file_ungrouped) << std::endl;
-	LidarIOFactory::Instance()->Register(cs::DataFormatType(cs::DataFormatType::las), createLasIO);
+        LidarIOFactory::instance().Register(cs::DataFormatType(cs::DataFormatType::las), createLasIO);
 	return true;
 }
 
