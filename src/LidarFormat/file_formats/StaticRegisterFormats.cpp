@@ -41,10 +41,28 @@ Contributors:
 
 #include "LidarFormat/file_formats/standard/ASCIILidarFileIO.h"
 #include "LidarFormat/file_formats/standard/BinaryLidarFileIO.h"
+#ifdef ENABLE_PLYARCHI
+#include "LidarFormat/file_formats/PlyArchi/BinaryPLYArchiLidarFileIO.h"
+#endif // ENABLE_PLYARCHI
+#ifdef ENABLE_TERRABIN
+#include "LidarFormat/file_formats/TerraBin/TerraBINLidarFileIO.h"
+#endif // ENABLE_TERRABIN
+#ifdef ENABLE_LAS
+#include "LidarFormat/file_formats/LAS/LasIO.h"
+#endif // ENABLE_LAS
 
 void registerAllFileFormats()
 {
 	using namespace Lidar;
 	ASCIILidarFileIO::Register();
 	BinaryLidarFileIO::Register();
+#ifdef ENABLE_PLYARCHI
+        BinaryPLYArchiLidarFileIO::Register();
+#endif // ENABLE_PLYARCHI
+#ifdef ENABLE_TERRABIN
+        BinaryPLYArchiLidarFileIO::Register();
+#endif // ENABLE_TERRABIN
+#ifdef ENABLE_LAS
+        BinaryPLYArchiLidarFileIO::Register();
+#endif // ENABLE_LAS
 }
