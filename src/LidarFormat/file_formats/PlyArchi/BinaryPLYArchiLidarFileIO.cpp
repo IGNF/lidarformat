@@ -50,58 +50,25 @@ namespace Lidar
 
 	void BinaryPLYArchiLidarFileIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData& lidarMetaData, const XMLAttributeMetaDataContainerType& attributesDescription)
 	{
-		std::cout << lidarMetaData.binaryDataFileName_.c_str() << std::endl;
-		std::streampos endHeader;
+
+		// BV: very subtle problem: windows endlines are counted double in ascii (\R\N), but not in binary (0a)
+		// so under windows there will be a shift between ascii and binary positions
+		// My solution: we get the data size from the xml and get the end header position from end of file based on it
+		// TODO: more careful checking of xml/ply coherence
+		std::ifstream fileInBin(lidarMetaData.binaryDataFileName_.c_str(), std::ios::binary);
+		if(fileInBin.good())
 		{
-			// ouverture du fichier en lecture ascii pour determiner la taille du header
-			std::ifstream fileInASCII(lidarMetaData.binaryDataFileName_.c_str());
-			if ( !fileInASCII.good() )
-			{
-				std::cout << "Unable to open file " << lidarMetaData.binaryDataFileName_.c_str() << std::endl;
-				return;
-			}
-			char line[1024];
-			int n_line=0;
-			while( std::string(line).substr(0,10) != "end_header" )
-			{
-				fileInASCII.getline(line,1024);
-				std::cout << line << std::endl;
-				n_line++;
-			}
-			endHeader = fileInASCII.tellg();
-			fileInASCII.close();
-#ifdef _WIN32
-			// BV: very subtle: windows endlines are double in ascii (\R\N), but not in binary
-			endHeader -= n_line;
-#endif _WIN32
-
-			//calcul de la taille
-			std::ifstream fileIn(lidarMetaData.binaryDataFileName_.c_str(), std::ios::binary );
-			fileIn.seekg(0, std::ios::end);
-			const unsigned int endFile = fileIn.tellg(), binSize = endFile-endHeader;
-			std::cout << "End header: " << endHeader << ", end file: " << endFile << " => bin size (octets): " << binSize << std::endl;
-			const unsigned int echoSize = lidarContainer.pointSize();
-			std::cout << "Echo size : " << echoSize << std::endl;
-			const unsigned int nbPts = binSize/echoSize;
-			std::cout << "Nb points : " << nbPts << std::endl;
-
-			if(lidarMetaData.nbPoints_ != nbPts)
-				std::cout << "Attention : la structure d'attributs du fichier xml ne correspond pas au contenu du fichier binaire !" << std::endl;
-
-
-			//	lidarContainer.allocate(nbPts);
-		}
-
-		std::ifstream fileIn(lidarMetaData.binaryDataFileName_.c_str(), std::ios::binary);
-		if(fileIn.good())
-		{
-			fileIn.seekg(endHeader, std::ios::beg);
-			fileIn.read(lidarContainer.rawData(), lidarMetaData.nbPoints_ * lidarContainer.pointSize());
+			fileInBin.seekg(0, std::ios::end);
+			const int dataSize = lidarMetaData.nbPoints_*lidarContainer.pointSize();
+			if(fileInBin.tellg() < dataSize)
+				std::cout << "ERROR (BinaryPLYArchiLidarFileIO::loadData) binary file size " << fileInBin.tellg() << "< what xml expects: " << dataSize << std::endl;
+			fileInBin.seekg(-dataSize, std::ios::end);
+			std::cout << "Binary part starts at " << fileInBin.tellg() << std::endl;
+			// lidarContainer.allocate(lidarMetaData.nbPoints_); // BV: do we need that ? works well without
+			fileInBin.read(lidarContainer.rawData(), dataSize);
 		}
 		else
-			throw std::logic_error("Erreur au chargement du fichier dans BinaryPLYArchiLidarFileIO::loadData : le fichier n'existe pas ou n'est pas accessible en lecture ! \n");
-
-
+			throw std::logic_error("ERROR (BinaryPLYArchiLidarFileIO::loadData) binary file does not exist or cannot be accessed ! \n");
 	}
 
 	void BinaryPLYArchiLidarFileIO::save(const LidarDataContainer& lidarContainer, const std::string& binaryDataFileName)
