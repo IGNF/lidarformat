@@ -7,7 +7,8 @@ CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/tests/config_data_test.h.cmake.in ${
 
 
 SET( all_tests  
-        concepts 
+        concepts
+        lfinfo
         unit_tests
         01_ex_basics
         02_ex_filtering
