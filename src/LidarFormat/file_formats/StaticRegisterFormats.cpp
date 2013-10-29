@@ -63,6 +63,6 @@ void registerAllFileFormats()
         BinaryPLYArchiLidarFileIO::Register();
 #endif // ENABLE_TERRABIN
 #ifdef ENABLE_LAS
-        BinaryPLYArchiLidarFileIO::Register();
+        LasIO::Register();
 #endif // ENABLE_LAS
 }
