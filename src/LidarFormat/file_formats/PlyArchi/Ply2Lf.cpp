@@ -130,7 +130,7 @@ std::string WriteXmlHeader(const std::string& ply_filename)
     }
 
     // write header
-    std::string xml_filename = RemoveExtention(ply_filename) + ".xml";
+    std::string xml_filename = RemoveExtention(ply_filename) + "xml";
     std::cout << "Writing LF .xml header: " << xml_filename << std::endl;
     std::ofstream ofs(xml_filename.c_str());
     ofs << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n";
