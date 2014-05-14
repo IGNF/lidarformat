@@ -175,7 +175,7 @@ void SavePly(const LidarDataContainer& container,
     // write text header
     fileOut << "ply\nformat binary_little_endian 1.0" << std::endl;
     fileOut << "comment LidarFormat export" << std::endl;
-    fileOut << "comment IGN offset GPS Pos " << transfo.x() << " " << transfo.y() << " 0" << std::endl;
+    fileOut << "comment IGN offset Pos " << transfo.x() << " " << transfo.y() << " 0" << std::endl;
     fileOut << "element vertex " << container.size() << std::endl;
     std::vector<std::string> attrib_liste;
     container.getAttributeList(attrib_liste);
