@@ -47,6 +47,7 @@ Contributors:
 #include <boost/filesystem.hpp>
 
 #include <algorithm>
+#include <time.h>
 
 #include "config_data_test.h"
 
@@ -57,36 +58,91 @@ Contributors:
 using namespace Lidar;
 using namespace std;
 
-template<typename T> struct FonctorBound
+// new way
+class AbstractBound
 {
-    FonctorBound<T>(const unsigned int decalage):
-        m_decalage(decalage),
+public:
+    AbstractBound(const EnumLidarDataType type):m_type(type){}
+    virtual void Add(const Lidar::LidarEcho& echo) = 0;
+    virtual void Print() = 0;
+
+    std::string m_name;
+    unsigned int m_decalage;
+    EnumLidarDataType m_type;
+};
+
+template<typename T> class TBound : public AbstractBound
+{
+public:
+    TBound(const EnumLidarDataType type):
+        AbstractBound(type),
         m_min(std::numeric_limits<T>::max()),
         m_max(std::numeric_limits<T>::min())
     {
         if(!std::numeric_limits<T>::is_integer) m_max=-m_min;
     }
 
-    void operator()(const Lidar::LidarEcho& echo)
+    void Add(const Lidar::LidarEcho& echo)
     {
         double val = echo.value<T>(m_decalage);
         if(val < m_min) m_min = val;
         if(val > m_max) m_max = val;
     }
-    unsigned int m_decalage;
-    T m_min, m_max;
 
+    void Print()
+    {
+        cout << m_name << " (" << LidarTypeTraits<T>::name() << "/" <<
+                LidarTypeTraits<T>::old_name() << ") ";
+        // convert (unsigned) char to int
+        if(std::numeric_limits<T>::is_integer)
+            cout << (int)m_min << " to " << (int)m_max << " = " << (int)m_max - (int)m_min + 1 << endl;
+        else cout << m_min << " to " << m_max << " = " << m_max-m_min << endl;
+    }
+
+    T m_min, m_max;
 };
 
-template<typename T> void TGetMinMax(const LidarDataContainer & ldc, const std::string & attrib)
+struct FonctorMultiAbstractBound
 {
-    FonctorBound<T> fb(ldc.getDecalage(attrib));
-    fb = for_each (ldc.begin(), ldc.end(), fb);
-    cout << "-" << attrib << " (" << LidarTypeTraits<T>::name() << "=" <<
-            LidarTypeTraits<T>::old_name() << ") ";
-    if(std::numeric_limits<T>::is_integer) cout << (int)fb.m_min << " to " << (int)fb.m_max << endl;
-    else cout << fb.m_min << " to " << fb.m_max << endl;
-}
+    FonctorMultiAbstractBound(){}
+    void AddAttribute(const std::string & name, const unsigned int decalage, const EnumLidarDataType type)
+    {
+        AbstractBound* p_bound=NULL;
+        switch(type)
+        {
+        case LidarDataType::float32: p_bound = new TBound<float32>(type); break;
+        case LidarDataType::float64: p_bound = new TBound<float64>(type); break;
+        case LidarDataType::int8: p_bound = new TBound<int8>(type); break;
+        case LidarDataType::int16: p_bound = new TBound<int16>(type); break;
+        case LidarDataType::int32: p_bound = new TBound<int32>(type); break;
+        case LidarDataType::int64: p_bound = new TBound<int64>(type); break;
+        case LidarDataType::uint8: p_bound = new TBound<uint8>(type); break;
+        case LidarDataType::uint16: p_bound = new TBound<uint16>(type); break;
+        case LidarDataType::uint32: p_bound = new TBound<uint32>(type); break;
+        case LidarDataType::uint64: p_bound = new TBound<uint64>(type); break;
+        }
+        if(p_bound)
+        {
+            p_bound->m_name = name;
+            p_bound->m_decalage = decalage;
+            mvp_attrib.push_back(p_bound);
+        }
+    }
+
+    void operator()(const Lidar::LidarEcho& echo)
+    {
+        for(std::vector<AbstractBound*>::iterator it=mvp_attrib.begin(); it!=mvp_attrib.end(); it++)
+            (*it)->Add(echo);
+    }
+    void Print()
+    {
+        for(std::vector<AbstractBound*>::iterator it=mvp_attrib.begin(); it!=mvp_attrib.end(); it++)
+            (*it)->Print();
+    }
+    std::vector<AbstractBound*> mvp_attrib;
+};
+
+// main
 
 int main(int argc, char** argv)
 {
@@ -97,6 +153,7 @@ int main(int argc, char** argv)
     }
     for(int i=1; i<argc; i++)
     {
+        time_t timer = clock();
         LidarFile file(argv[i]);
         LidarDataContainer ldc;
         file.loadData(ldc);
@@ -106,24 +163,15 @@ int main(int argc, char** argv)
 
         std::vector<std::string> attrib_list;
         ldc.getAttributeList(attrib_list);
-        cout << "Attribute (type=old_type) min to max:" << endl;
+        cout << "Attribute (type/old_type) min to max = max-min:" << endl;
 
+        FonctorMultiAbstractBound fmb;
         for(std::vector<std::string>::iterator it = attrib_list.begin(); it != attrib_list.end(); it++)
-        {
-            switch(ldc.getAttributeType(*it))
-            {
-            case LidarDataType::float32: TGetMinMax<float32>(ldc,*it); break;
-            case LidarDataType::float64: TGetMinMax<float64>(ldc,*it); break;
-            case LidarDataType::int8: TGetMinMax<int8>(ldc,*it); break;
-            case LidarDataType::int16: TGetMinMax<int16>(ldc,*it); break;
-            case LidarDataType::int32: TGetMinMax<int32>(ldc,*it); break;
-            case LidarDataType::int64: TGetMinMax<int64>(ldc,*it); break;
-            case LidarDataType::uint8: TGetMinMax<uint8>(ldc,*it); break;
-            case LidarDataType::uint16: TGetMinMax<uint16>(ldc,*it); break;
-            case LidarDataType::uint32: TGetMinMax<uint32>(ldc,*it); break;
-            case LidarDataType::uint64: TGetMinMax<uint64>(ldc,*it); break;
-            }
-        }
+            fmb.AddAttribute(*it, ldc.getDecalage(*it), ldc.getAttributeType(*it));
+        fmb = for_each (ldc.begin(), ldc.end(), fmb);
+        fmb.Print();
+        timer = clock()-timer;
+        std::cout << "Time: " << ( double ) timer/CLOCKS_PER_SEC << " s" << std::endl;
     }
     return 0;
 }
