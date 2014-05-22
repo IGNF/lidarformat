@@ -68,7 +68,7 @@ namespace Lidar
             fileInBin.read(lidarContainer.rawData(), dataSize);
         }
         else
-            throw std::logic_error("ERROR (BinaryPLYArchiLidarFileIO::loadData) binary file does not exist or cannot be accessed ! \n");
+            throw std::logic_error("ERROR (BinaryPLYArchiLidarFileIO::loadData) binary file " + lidarMetaData.binaryDataFileName_ + " does not exist or cannot be accessed ! \n");
     }
 
     void BinaryPLYArchiLidarFileIO::save(const LidarDataContainer& lidarContainer, const std::string& binaryDataFileName)

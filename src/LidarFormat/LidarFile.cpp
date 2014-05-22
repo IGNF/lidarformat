@@ -99,8 +99,10 @@ std::string LidarFile::getBinaryDataFileName() const
 
 	if(m_xmlData->attributes().dataFileName().present())
 	{
-                std::string datafilename= m_xmlData->attributes().dataFileName().get();
-		fileName /= datafilename;
+        path datafilename(std::string(m_xmlData->attributes().dataFileName().get()));
+        // BV: check if path is absolute or relative
+        if(datafilename.is_absolute()) fileName = datafilename;
+        else fileName /= datafilename;
 	}
 	else
 	{
