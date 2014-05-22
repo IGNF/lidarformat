@@ -53,15 +53,39 @@ std::string GetFilename(std::string path)
 std::string WriteXmlHeader(const std::string& ply_filename)
 {
     // load ply header
-    std::cout << "Loading ply header from " << ply_filename << std::endl;
     std::ifstream ifs(ply_filename.c_str());
+//    if(!ifs.good())
+//    {
+//        std::cout << "Failed to open " << ply_filename << std::endl;
+//        return "";
+//    }
     std::string line;
     std::getline(ifs, line);
     if(line != "ply")
     {
-        std::cerr << "not a PLY file" << std::endl;
+        std::cout << "not a PLY file: starts with " << line << std::endl;
         return "";
     }
+
+    // attempt to create xml header
+    bool need_absolute = false;
+    std::string xml_filename = RemoveExtention(ply_filename) + "xml";
+    std::ofstream ofs(xml_filename.c_str());
+    if(!ofs.good())
+    {
+        std::cout << "Failed to create " << xml_filename << " -> attempting in cwd" << std::endl;
+        need_absolute = true; // if xml is local, it is not with its data file so the data file path should be absolute
+        xml_filename = GetFilename(xml_filename); // remove path
+        ofs.open(xml_filename.c_str());
+        if(!ofs.good())
+        {
+            std::cout << "Failed to open " << xml_filename << std::endl;
+            return "";
+        }
+    }
+
+    std::cout << "Loading ply header from " << ply_filename << std::endl;
+
     int data_size = 0;
     double tx=0., ty=0., tz=0.;
     std::vector< std::pair<std::string, std::string> > v_type_name;
@@ -130,16 +154,15 @@ std::string WriteXmlHeader(const std::string& ply_filename)
     }
 
     // write header
-    std::string xml_filename = RemoveExtention(ply_filename) + "xml";
     std::cout << "Writing LF .xml header: " << xml_filename << std::endl;
-    std::ofstream ofs(xml_filename.c_str());
     ofs << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n";
     ofs << "<LidarData xmlns=\"cs\">\n";
 
     int slashpos = ply_filename.find_last_of('/')+1;
-    std::string ply_realtive_filename = ply_filename.substr(slashpos, ply_filename.size()-slashpos);
+    std::string ply_filename_to_write = ply_filename;
+    if(!need_absolute) ply_filename_to_write = ply_filename.substr(slashpos, ply_filename.size()-slashpos);
     ofs << "  <Attributes DataFormat=\"plyarchi\" DataSize=\"" << data_size
-        << "\" DataFileName=\"" << ply_realtive_filename << "\">\n";
+        << "\" DataFileName=\"" << ply_filename_to_write << "\">\n";
     for(unsigned int i=0; i<v_type_name.size(); i++)
     {
         ofs << "    <Attribute DataType=\"" << Ply2Lf(v_type_name[i].first)
