@@ -51,11 +51,12 @@ Contributors:
 namespace Lidar
 {
 
-
 struct AttributesInfo
 {
 	EnumLidarDataType type;
 	unsigned int decalage;
+    bool dirty;
+    double min, max;
 };
 
 typedef UnsortedAssocMap<std::string, AttributesInfo> AttributeMapType;

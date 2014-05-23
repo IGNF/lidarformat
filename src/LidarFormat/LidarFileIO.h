@@ -67,13 +67,15 @@ struct XMLLidarMetaData
 
 struct XMLAttributeMetaData
 {
-	XMLAttributeMetaData(): name_(""), type_(LidarDataType::int8), loaded_(false) {}
-	explicit XMLAttributeMetaData(const std::string &name, const EnumLidarDataType type, const bool loaded):
-		name_(name), type_(type), loaded_(loaded) {}
+    XMLAttributeMetaData(): name_(""), type_(LidarDataType::int8), loaded_(false), min_(0.), max_(0.) {}
+    explicit XMLAttributeMetaData(const std::string &name, const EnumLidarDataType type, const bool loaded,
+                                  const bool dirty, const double min=0., const double max=0.):
+        name_(name), type_(type), loaded_(loaded), dirty_(dirty), min_(min), max_(max) {}
 	std::string name_; //atribute name
 	EnumLidarDataType type_; //attribute type
 //	unsigned int size_; //taille d'un attribut
-	bool loaded_;
+    bool loaded_, dirty_; // attribute is loaded, attribute bounds are dirty (need recompute)
+    double min_, max_; // min/max attribute value
 };
 typedef std::vector<XMLAttributeMetaData> XMLAttributeMetaDataContainerType;
 

@@ -157,7 +157,8 @@ class LidarDataContainer
 		///Ajoute un attribut avec son type dans le container
 		///  ATTENTION : l'appel à cette fonction rend obsolète tous les itérateurs en cours, et rend incompatible les anciens LidarEcho avec les nouveaux
 		///  La fonction retourne false si l'attribut était déjà présent dans le container
-		bool addAttribute(const std::string& attributeName, const EnumLidarDataType type);
+        bool addAttribute(const std::string& attributeName, const EnumLidarDataType type,
+                          bool dirty=true, double min=0., double max=0.);
 		void addAttributeList(const std::vector<std::pair<std::string, EnumLidarDataType> > attributes);
 
 		bool delAttribute(const std::string& attributeName);
@@ -168,6 +169,18 @@ class LidarDataContainer
 		bool checkAttributeIsPresentAndType(const std::string& attributeName, const EnumLidarDataType type);
 
 		EnumLidarDataType getAttributeType(const std::string &attributeName) const;
+
+        /// only sets min and max if bounds are present, else returns false
+        bool getAttributeBounds(const std::string &attributeName,
+                                double & min, double & max) const;
+
+        /// always set min and max and recomputes them if dirty or force_recompute is true
+        void getAttributeCleanBounds(const std::string &attributeName,
+                                double & min, double & max,
+                                bool force_recompute=false); // not const because bounds might be recomputed
+
+        /// recomputes attribute bounds if they are dirty or force_recompute is true
+        void recomputeBounds(bool force_recompute=false);
 
 		const unsigned int pointSize() const { return pointSize_; }
 
@@ -197,7 +210,8 @@ class LidarDataContainer
 
 		///Update container content after having added attributes
 		void updateAttributeContent(const unsigned int oldPointSize);
-		bool addAttributeHelper(const std::string& attributeName, const EnumLidarDataType type);
+        bool addAttributeHelper(const std::string& attributeName, const EnumLidarDataType type,
+                                bool dirty=true, double min=0., double max=0.);
 
 
 		/////Structure interne
@@ -484,8 +498,6 @@ inline EnumLidarDataType LidarDataContainer::getAttributeType(const std::string 
 	assert(attributeMap_->find(attributeName) != attributeMap_->end());
 	return attributeMap_->find(attributeName)->second.type;
 }
-
-
 
 } //namespace Lidar
 

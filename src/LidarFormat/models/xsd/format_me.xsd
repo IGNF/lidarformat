@@ -60,10 +60,12 @@
             <xs:enumeration value="float64"/>
         </xs:restriction>
     </xs:simpleType>
-
+    
     <xs:complexType name="AttributeType">
         <xs:attribute name="DataType" type="AttributeDataType" use="required"/>
         <xs:attribute name="Name" type="xs:string" use="required"/>
+        <xs:attribute name="min" type="xs:double"/>
+        <xs:attribute name="max" type="xs:double"/>
     </xs:complexType>
     
     

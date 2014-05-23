@@ -69,17 +69,7 @@ std::string LidarFile::getMetaData() const
     ostringstream result;
     result << "Nb of points : " << m_xmlData->attributes().dataSize() << "\n";
     result << "Format : " << m_xmlData->attributes().dataFormat() << "\n";
-    result << "Binary filename : ";
-
-    if(m_xmlData->attributes().dataFileName().present())
-    {
-        std::string datafilename=m_xmlData->attributes().dataFileName().get();
-        result << basename(datafilename) << "\n";
-    }
-    else
-    {
-        result << basename(m_xmlFileName) + ".bin";
-    }
+    result << "Binary filename : " << getBinaryDataFileName() << "\n";
     return result.str();
 }
 
@@ -196,7 +186,11 @@ void LidarFile::loadTransfo(LidarCenteringTransfo& transfo) const
 
 }
 
-shared_ptr<cs::LidarDataType> LidarFile::createXMLStructure(const LidarDataContainer& lidarContainer, const std::string& xmlFileName, const LidarCenteringTransfo& transfo, const cs::DataFormatType format)
+shared_ptr<cs::LidarDataType> LidarFile::createXMLStructure(
+        const LidarDataContainer& lidarContainer,
+        const std::string& xmlFileName,
+        const LidarCenteringTransfo& transfo,
+        const cs::DataFormatType format)
 {
     //génération du fichier xml
     cs::LidarDataType::AttributesType attributes(lidarContainer.size(), format);
@@ -205,7 +199,13 @@ shared_ptr<cs::LidarDataType> LidarFile::createXMLStructure(const LidarDataConta
     const AttributeMapType& attributeMap = lidarContainer.getAttributeMap();
     for(AttributeMapType::const_iterator it=attributeMap.begin(); it!=attributeMap.end(); ++it)
     {
-        attributes.attribute().push_back(cs::AttributeType(it->second.type, it->first));
+        cs::AttributeType attrib_type(it->second.type, it->first);
+        if(!it->second.dirty)
+        {
+            attrib_type.min(it->second.min);
+            attrib_type.max(it->second.max);
+        }
+        attributes.attribute().push_back(attrib_type);
     }
 
     //cas de la transfo
@@ -218,7 +218,9 @@ shared_ptr<cs::LidarDataType> LidarFile::createXMLStructure(const LidarDataConta
     return xmlStructure;
 }
 
-void LidarFile::save(const LidarDataContainer& lidarContainer, const std::string& xmlFileName, const cs::LidarDataType& xmlStructure)
+void LidarFile::save(const LidarDataContainer& lidarContainer,
+                     const std::string& xmlFileName,
+                     const cs::LidarDataType& xmlStructure)
 {
     //sauvegarde du xml
     xml_schema::NamespaceInfomap map;
@@ -232,20 +234,26 @@ void LidarFile::save(const LidarDataContainer& lidarContainer, const std::string
     writer->save(lidarContainer, (path(xmlFileName).branch_path() / (basename(xmlFileName) + ".bin")).string());
 }
 
-void LidarFile::save(const LidarDataContainer& lidarContainer, const std::string& xmlFileName, const LidarCenteringTransfo& transfo, const cs::DataFormatType format)
+void LidarFile::save(const LidarDataContainer& lidarContainer,
+                     const std::string& xmlFileName,
+                     const LidarCenteringTransfo& transfo,
+                     const cs::DataFormatType format)
 {
     shared_ptr<cs::LidarDataType> xmlStructure = createXMLStructure(lidarContainer, xmlFileName, transfo, format);
 
     save(lidarContainer, xmlFileName, *xmlStructure);
 }
 
-void LidarFile::save(const LidarDataContainer& lidarContainer, const std::string& xmlFileName, const cs::DataFormatType format)
+void LidarFile::save(const LidarDataContainer& lidarContainer,
+                     const std::string& xmlFileName,
+                     const cs::DataFormatType format)
 {
     save(lidarContainer, xmlFileName, LidarCenteringTransfo(), format);
 }
 
 
-void LidarFile::saveInPlace(const LidarDataContainer& lidarContainer, const std::string& xmlFileName)
+void LidarFile::saveInPlace(const LidarDataContainer& lidarContainer,
+                            const std::string& xmlFileName)
 {
     std::auto_ptr<cs::LidarDataType> xmlData(cs::lidarData(xmlFileName, xml_schema::Flags::dont_validate));
 
@@ -267,7 +275,9 @@ void LidarFile::loadMetaDataFromXML()
     for (cs::LidarDataType::AttributesType::AttributeIterator itAttribute = attributes.attribute().begin(); itAttribute != attributes.attribute().end(); ++itAttribute)
     {
         //TODO adapter si on ne load pas tout
-        m_attributeMetaData.push_back( XMLAttributeMetaData(itAttribute->name(), itAttribute->dataType(), true) );
+        m_attributeMetaData.push_back( XMLAttributeMetaData(itAttribute->name(), itAttribute->dataType(), true,
+                                                            !(itAttribute->min().present() && itAttribute->max().present()),
+                                                            itAttribute->min().get(), itAttribute->max().get()));
 
     }
 
@@ -297,7 +307,7 @@ void LidarFile::setMapsFromXML(LidarDataContainer& lidarContainer) const
     {
         if(it->loaded_)
         {
-            lidarContainer.addAttribute(it->name_, it->type_);
+            lidarContainer.addAttribute(it->name_, it->type_, it->dirty_, it->min_, it->max_);
         }
     }
 
