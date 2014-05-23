@@ -50,21 +50,43 @@ std::string GetFilename(std::string path)
     return path.substr(slashpos, path.size()-slashpos);
 }
 
+struct ply_attrib_info
+{
+    ply_attrib_info(std::string type_, std::string name_):
+        type(type_), name(name_),
+        bounds(false), min(0.), max(0.){}
+    std::string type, name;
+    bool bounds;
+    double min, max;
+};
+
+void RobustGetLine(std::ifstream & ifs, std::string & line)
+{
+    std::getline(ifs, line);
+    if(line[line.size()-1] == '\r')
+        line.erase(line.size()-1);
+}
+
 std::string WriteXmlHeader(const std::string& ply_filename)
 {
     // load ply header
     std::ifstream ifs(ply_filename.c_str());
-//    if(!ifs.good())
-//    {
-//        std::cout << "Failed to open " << ply_filename << std::endl;
-//        return "";
-//    }
-    std::string line;
-    std::getline(ifs, line);
-    if(line != "ply")
+    if(!ifs.good())
     {
-        std::cout << "not a PLY file: starts with " << line << std::endl;
+        std::cout << "Failed to open " << ply_filename << std::endl;
         return "";
+    }
+    std::string line;
+    RobustGetLine(ifs, line);
+    { // line == "ply" does not always work (weird char at end of line)
+        std::istringstream iss(line);
+        std::string word;
+        iss >> word;
+        if(word != "ply")
+        {
+            std::cout << "not a PLY file: starts with " << word << std::endl;
+            return "";
+        }
     }
 
     // attempt to create xml header
@@ -88,11 +110,13 @@ std::string WriteXmlHeader(const std::string& ply_filename)
 
     int data_size = 0;
     double tx=0., ty=0., tz=0.;
-    std::vector< std::pair<std::string, std::string> > v_type_name;
+    std::vector< ply_attrib_info > v_ply_attrib_info;
     std::string element="";
-    while(!ifs.eof() && line != "end_header")
+    int i_line=0;
+    bool end_reached = false;
+    while(!ifs.eof() && !end_reached && i_line++<100)
     {
-        std::getline(ifs, line);
+        RobustGetLine(ifs, line);
         std::cout << line;
         std::istringstream iss(line);
         std::string word;
@@ -122,6 +146,17 @@ std::string WriteXmlHeader(const std::string& ply_filename)
                     }
                     else std::cout << "->unknown IGN Offset";
                 }
+                else if(word == "bounds")
+                {
+                    if(v_ply_attrib_info.empty()) std::cout << "->Bounds without attrib, dropping";
+                    double min, max;
+                    iss >> min >> max;
+                    std::cout << "->min=" << min << ", max=" << max;
+                    v_ply_attrib_info.back().min=min;
+                    v_ply_attrib_info.back().max=max;
+                    v_ply_attrib_info.back().bounds=true;
+                }
+                else if(word == "BBox") std::cout << "->Old BBox format, only new one supported";
                 else std::cout << "->unknown IGN comment";
             }
             else std::cout << "->unknown comment";
@@ -143,10 +178,15 @@ std::string WriteXmlHeader(const std::string& ply_filename)
             {
                 std::string type, name;
                 iss >> type >> name;
-                v_type_name.push_back(std::pair<std::string, std::string>(type, name));
+                v_ply_attrib_info.push_back(ply_attrib_info(type, name));
             } else std::cout << "->ignored";
         }
-        else if(word != "end_header")
+        else if(word == "end_header")
+        {
+            std::cout << "->stopping";
+            end_reached = true;
+        }
+        else
         {
             std::cout << "->not recognized";
         }
@@ -163,10 +203,14 @@ std::string WriteXmlHeader(const std::string& ply_filename)
     if(!need_absolute) ply_filename_to_write = ply_filename.substr(slashpos, ply_filename.size()-slashpos);
     ofs << "  <Attributes DataFormat=\"plyarchi\" DataSize=\"" << data_size
         << "\" DataFileName=\"" << ply_filename_to_write << "\">\n";
-    for(unsigned int i=0; i<v_type_name.size(); i++)
+    for(unsigned int i=0; i<v_ply_attrib_info.size(); i++)
     {
-        ofs << "    <Attribute DataType=\"" << Ply2Lf(v_type_name[i].first)
-            << "\" Name=\"" << v_type_name[i].second << "\"/>\n";
+        ofs << "    <Attribute DataType=\"" << Ply2Lf(v_ply_attrib_info[i].type)
+            << "\" Name=\"" << v_ply_attrib_info[i].name << "\"";
+        if(v_ply_attrib_info[i].bounds)
+            ofs << " min=\"" << v_ply_attrib_info[i].min <<
+                   "\" max=\"" << v_ply_attrib_info[i].max << "\" ";
+        ofs << "/>\n";
     }
     if(tx != 0. || ty != 0.)
         ofs << "    <CenteringTransfo tx=\"" << tx << "\" ty=\"" << ty << "\"/>\n";
@@ -205,9 +249,14 @@ void SavePly(const LidarDataContainer& container,
     for(std::vector<std::string>::iterator it = attrib_liste.begin(); it != attrib_liste.end();it++)
     {
         fileOut << "property " << Lf2Ply(container.getAttributeType(*it)) << " " << *it << std::endl;
+        double min=0., max=0.;
+        if(container.getAttributeBounds(*it, min, max))
+            fileOut << "comment IGN bounds " << min << " " << max << std::endl;
     }
     fileOut << "end_header" << std::endl;
     fileOut.write(container.rawData(), container.size() * container.pointSize());
+    fileOut.close();
+    WriteXmlHeader(ply_filename);
 }
 
 void SavePly(const LidarDataContainer& container, const std::string& ply_filename)
