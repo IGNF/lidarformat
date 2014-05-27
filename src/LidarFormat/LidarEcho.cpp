@@ -84,7 +84,7 @@ std::ostream& operator<<( std::ostream& os, const LidarEcho& echo )
 
 	for(AttributeMapType::const_iterator it = echo.attributeMap_->begin(); it != echo.attributeMap_->end(); ++it)
 	{
-		EnumLidarDataType type = it->second.type;
+        EnumLidarDataType type = it->second.dataType();
 		apply<PrintFunctor, void, std::ostream &, const LidarEcho &, const std::string &>(type, os, echo, it->first);
 
 	}

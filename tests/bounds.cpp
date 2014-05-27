@@ -50,7 +50,7 @@ Contributors:
 #include "LidarFormat/LidarFile.h"
 #include "LidarFormat/geometry/LidarCenteringTransfo.h"
 #include "LidarFormat/tools/AttributeBounds.h"
-#include "LidarFormat/file_formats/Ply2Lf.h"
+//#include "LidarFormat/file_formats/Ply2Lf.h"
 
 using namespace Lidar;
 using namespace std;
@@ -74,8 +74,8 @@ int main(int argc, char** argv)
 
         ldc.recomputeBounds(true);
 
-        //LidarFile::save(ldc, argv[i], transfo);
-        SavePly(ldc, transfo, argv[i]);
+        LidarFile::save(ldc, argv[i], transfo);
+        //SavePly(ldc, transfo, argv[i]);
         std::cout << "Time: " << ( double ) timer/CLOCKS_PER_SEC << " s" << std::endl;
     }
     return 0;

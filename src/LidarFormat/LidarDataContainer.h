@@ -157,8 +157,8 @@ class LidarDataContainer
 		///Ajoute un attribut avec son type dans le container
 		///  ATTENTION : l'appel à cette fonction rend obsolète tous les itérateurs en cours, et rend incompatible les anciens LidarEcho avec les nouveaux
 		///  La fonction retourne false si l'attribut était déjà présent dans le container
-        bool addAttribute(const std::string& attributeName, const EnumLidarDataType type,
-                          bool dirty=true, double min=0., double max=0.);
+        bool addAttribute(cs::LidarDataType::AttributesType::AttributeIterator it);
+        bool addAttribute(std::string name, EnumLidarDataType type);
 		void addAttributeList(const std::vector<std::pair<std::string, EnumLidarDataType> > attributes);
 
 		bool delAttribute(const std::string& attributeName);
@@ -210,8 +210,7 @@ class LidarDataContainer
 
 		///Update container content after having added attributes
 		void updateAttributeContent(const unsigned int oldPointSize);
-        bool addAttributeHelper(const std::string& attributeName, const EnumLidarDataType type,
-                                bool dirty=true, double min=0., double max=0.);
+        bool addAttributeHelper(cs::LidarDataType::AttributesType::AttributeIterator it);
 
 
 		/////Structure interne
@@ -236,6 +235,7 @@ class LidarDataContainer
 		///data
 		mutable LidarDataContainerType lidarData_;
 		shared_ptr<AttributeMapType> attributeMap_; //infos sur les attributs
+        shared_ptr<cs::LidarDataType> m_xmlData; // data from the xml, can be modified by accessors
 
 		unsigned int pointSize_;
 
@@ -487,7 +487,7 @@ inline bool LidarDataContainer::checkAttributeIsPresentAndType(const std::string
 
 	if(it != attributeMap_->end())
 	{
-		return it->second.type == type;
+        return it->second.dataType() == type;
 	}
 
 	return false;
@@ -495,8 +495,9 @@ inline bool LidarDataContainer::checkAttributeIsPresentAndType(const std::string
 
 inline EnumLidarDataType LidarDataContainer::getAttributeType(const std::string &attributeName) const
 {
-	assert(attributeMap_->find(attributeName) != attributeMap_->end());
-	return attributeMap_->find(attributeName)->second.type;
+    AttributeMapType::iterator it = attributeMap_->find(attributeName);
+    assert(it != attributeMap_->end());
+    return it->second.dataType();
 }
 
 } //namespace Lidar

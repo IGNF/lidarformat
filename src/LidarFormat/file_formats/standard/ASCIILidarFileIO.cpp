@@ -82,7 +82,9 @@ struct ReadValueFunctor<LidarDataType::uint8>
 	}
 };
 
-void ASCIILidarFileIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData& lidarMetaData, const XMLAttributeMetaDataContainerType& attributesDescription)
+void ASCIILidarFileIO::loadData(LidarDataContainer& lidarContainer,
+                                const XMLLidarMetaData& lidarMetaData,
+                                const XMLAttributeMetaDataContainerType& attributesDescription)
 {
 	std::ifstream fileIn(lidarMetaData.binaryDataFileName_.c_str());
 
@@ -102,7 +104,8 @@ void ASCIILidarFileIO::loadData(LidarDataContainer& lidarContainer, const XMLLid
 		AttributeMapType::const_iterator itb = itMapBegin;
 		for(; itb!=ite; ++itb)
 		{
-			apply<ReadValueFunctor, void, std::istream &, const LidarIteratorEcho&, const unsigned int>(itb->second.type, fileIn, itbEcho, itb->second.decalage);
+            apply<ReadValueFunctor, void, std::istream &, const LidarIteratorEcho&, const unsigned int>(
+                        itb->second.dataType(), fileIn, itbEcho, itb->second.decalage);
 		}
 	}
 }

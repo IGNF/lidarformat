@@ -2,11 +2,11 @@
 
 This file is part of the LidarFormat project source files.
 
-LidarFormat is an open source library for efficiently handling 3D point 
-clouds with a variable number of attributes at runtime. 
+LidarFormat is an open source library for efficiently handling 3D point
+clouds with a variable number of attributes at runtime.
 
 
-Homepage: 
+Homepage:
 
     http://code.google.com/p/lidarformat
 
@@ -14,7 +14,7 @@ Copyright:
 
     Institut Geographique National & CEMAGREF (2009)
 
-Author: 
+Author:
 
     Adrien Chauve
 
@@ -92,8 +92,8 @@ bool LidarDataContainer::getAttributeBounds(const std::string &attributeName, do
     AttributeMapType::iterator it = attributeMap_->find(attributeName);
     assert(it != attributeMap_->end());
     AttributesInfo & info = it->second;
-    if(info.dirty) return false;
-    min = info.min; max = info.max;
+    if(info.Dirty()) return false;
+    min = info.min().get(); max = info.max().get();
     return true;
 }
 
@@ -102,43 +102,45 @@ void LidarDataContainer::getAttributeCleanBounds(const std::string &attributeNam
     AttributeMapType::iterator it = attributeMap_->find(attributeName);
     assert(it != attributeMap_->end());
     AttributesInfo & info = it->second;
-    if(force_recompute || info.dirty)
+    if(force_recompute || info.Dirty())
     {
         FonctorMultiAbstractBound fmab;
-        fmab.AddAttribute(it->first, info.decalage, info.type);
+        fmab.AddAttribute(it->first, info.decalage, info.dataType());
         fmab = std::for_each (begin(), end(), fmab);
-        fmab.mvp_attrib[0]->Get(info.min, info.max);
-        info.dirty = false;
+        fmab.mvp_attrib[0]->Get(min, max);
+        info.min(min); info.max(max);
     }
-    min = info.min; max = info.max;
+    min = info.min().get(); max = info.max().get();
 }
 
 void LidarDataContainer::recomputeBounds(bool force_recompute)
 {
     FonctorMultiAbstractBound fmab;
     for(AttributeMapType::iterator it = attributeMap_->begin(); it != attributeMap_->end(); it++)
-        if(force_recompute || it->second.dirty)
+        if(force_recompute || it->second.Dirty())
         {
-            fmab.AddAttribute(it->first, it->second.decalage, it->second.type);
+            fmab.AddAttribute(it->first, it->second.decalage, it->second.dataType());
         }
     fmab = std::for_each (begin(), end(), fmab);
     int i=0;
     for(AttributeMapType::iterator it = attributeMap_->begin(); it != attributeMap_->end(); it++)
-        if(force_recompute || it->second.dirty)
+        if(force_recompute || it->second.Dirty())
         {
-            fmab.mvp_attrib[i++]->Get(it->second.min, it->second.max);
-            it->second.dirty = false;
+            double min, max;
+            fmab.mvp_attrib[i++]->Get(min, max);
+            it->second.min(min); it->second.max(max); // sets optional attribute as present => not dirty
         }
 }
 
 LidarDataContainer::LidarDataContainer():
-    attributeMap_(new AttributeMapType)
+    attributeMap_(new AttributeMapType),
+    m_xmlData(new cs::LidarDataType(cs::LidarDataType::AttributesType(0, cs::DataFormatType::binary)))
 {
-
 }
 
 LidarDataContainer::LidarDataContainer(const LidarDataContainer& rhs):
-    attributeMap_(new AttributeMapType)
+    attributeMap_(new AttributeMapType),
+    m_xmlData(new cs::LidarDataType(cs::LidarDataType::AttributesType(0, cs::DataFormatType::binary)))
 {
     copy(rhs);
 }
@@ -154,6 +156,7 @@ LidarDataContainer& LidarDataContainer::operator=(const LidarDataContainer& rhs)
 void LidarDataContainer::copy(const LidarDataContainer& rhs)
 {
     *attributeMap_ = *rhs.attributeMap_;
+    *m_xmlData = *rhs.m_xmlData;
 
     lidarData_ = rhs.lidarData_;
     pointSize_ = rhs.pointSize_;
@@ -226,50 +229,40 @@ void LidarDataContainer::updateAttributeContent(const unsigned int oldPointSize)
     }
 }
 
-bool LidarDataContainer::addAttributeHelper(const std::string& attributeName, const EnumLidarDataType type,
-                                            bool dirty, double min, double max)
+bool LidarDataContainer::addAttributeHelper(cs::LidarDataType::AttributesType::AttributeIterator it)
 {
     //si l'attribut existe déjà, on sort et retourne false
-    if(attributeMap_->find(attributeName)!=attributeMap_->end())
+    if(attributeMap_->find(it->name()) != attributeMap_->end())
         return false;
-
 
     //calcul du nouveau décalage
     unsigned int sizeLastAttribute=0;
 
     if(!attributeMap_->empty())
-        sizeLastAttribute = apply<PointSizeFunctor, unsigned int>(attributeMap_->back().second.type);
+        sizeLastAttribute = apply<PointSizeFunctor, unsigned int>(attributeMap_->back().second.dataType());
 
     //ajout de l'attribut dans les maps
-    AttributesInfo infos;
-    infos.type = type;
+    AttributesInfo infos(*it);
     if(!attributeMap_->empty())
-    {
         infos.decalage = sizeLastAttribute + attributeMap_->back().second.decalage;
-    }
-    else
-        infos.decalage = sizeLastAttribute;
-    infos.dirty = dirty;
-    infos.min = min;
-    infos.max = max;
+    else infos.decalage = sizeLastAttribute;
 
-    attributeMap_->push_back(AttributeMapType::value_type(attributeName, infos));
+    attributeMap_->push_back(AttributeMapType::value_type(it->name(), infos));
 
     //Mise à jour de la pointSize :
     unsigned int sizeLastInsertedAttribute;
-    sizeLastInsertedAttribute = apply<PointSizeFunctor, unsigned int>(type);
+    sizeLastInsertedAttribute = apply<PointSizeFunctor, unsigned int>(it->dataType());
     pointSize_ = infos.decalage + sizeLastInsertedAttribute;
 
     return true;
 }
 
 
-bool LidarDataContainer::addAttribute(const std::string& attributeName, const EnumLidarDataType type,
-                                      bool dirty, double min, double max)
+bool LidarDataContainer::addAttribute(cs::LidarDataType::AttributesType::AttributeIterator it)
 {
     const unsigned int oldPointSize = pointSize_;
 
-    bool attributeAdded = addAttributeHelper(attributeName, type, dirty, min, max);
+    bool attributeAdded = addAttributeHelper(it);
 
     if(!attributeAdded)
         return false;
@@ -278,6 +271,14 @@ bool LidarDataContainer::addAttribute(const std::string& attributeName, const En
         updateAttributeContent(oldPointSize);
 
     return true;
+}
+
+bool LidarDataContainer::addAttribute(std::string name, EnumLidarDataType type)
+{
+    cs::AttributeType attrib_type(type, name);
+    m_xmlData->attributes().attribute().push_back(attrib_type);
+    cs::LidarDataType::AttributesType::AttributeIterator it = m_xmlData->attributes().attribute().end(); it--;
+    return addAttribute(it);
 }
 
 
@@ -289,10 +290,13 @@ void LidarDataContainer::addAttributeList(const std::vector<std::pair<std::strin
     std::vector<std::pair<std::string, EnumLidarDataType> >::const_iterator itb = attributes.begin();
     const std::vector<std::pair<std::string, EnumLidarDataType> >::const_iterator ite = attributes.end();
 
-
     for( ; itb != ite; ++itb)
-        addAttributeHelper(itb->first, itb->second);
-
+    {
+        cs::AttributeType attrib_type(itb->second, itb->first);
+        m_xmlData->attributes().attribute().push_back(attrib_type);
+        cs::LidarDataType::AttributesType::AttributeIterator it = m_xmlData->attributes().attribute().end(); it--;
+        addAttributeHelper(it);
+    }
     if(!empty())
         updateAttributeContent(oldPointSize);
 }

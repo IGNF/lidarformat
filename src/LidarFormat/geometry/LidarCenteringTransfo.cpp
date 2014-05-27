@@ -183,7 +183,10 @@ struct FunctorCenter
 			{
 				if(itbAttribute->first!=x && itbAttribute->first!=y && itbAttribute->first!=z)
 				{
-					apply<ReadValueFunctor, void, LidarEcho&, const unsigned int, LidarEcho&, const unsigned int>(itbAttribute->second.type, echo, itbAttribute->second.decalage, echoInitial, itbAttributeInitial->second.decalage);
+                    apply<ReadValueFunctor, void, LidarEcho&, const unsigned int, LidarEcho&,const unsigned int>(
+                                itbAttribute->second.dataType(),
+                                echo, itbAttribute->second.decalage,
+                                echoInitial, itbAttributeInitial->second.decalage);
 				}
 			}
 
@@ -218,7 +221,7 @@ shared_ptr<LidarDataContainer> LidarCenteringTransfo::centerLidarDataContainer(c
 		if(it->first == x || it->first == y || it->first == z)
 			type = LidarDataType::float32;
 		else
-			type = it->second.type;
+            type = it->second.dataType();
 
 		centeredContainer->addAttribute(it->first, type);
 	}
