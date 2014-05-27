@@ -199,13 +199,7 @@ shared_ptr<cs::LidarDataType> LidarFile::createXMLStructure(
     const AttributeMapType& attributeMap = lidarContainer.getAttributeMap();
     for(AttributeMapType::const_iterator it=attributeMap.begin(); it!=attributeMap.end(); ++it)
     {
-        cs::AttributeType attrib_type(it->second.type, it->first);
-        if(!it->second.dirty)
-        {
-            attrib_type.min(it->second.min);
-            attrib_type.max(it->second.max);
-        }
-        attributes.attribute().push_back(attrib_type);
+        attributes.attribute().push_back(it->second);
     }
 
     //cas de la transfo
@@ -269,9 +263,10 @@ void LidarFile::saveInPlace(const LidarDataContainer& lidarContainer,
 
 void LidarFile::loadMetaDataFromXML()
 {
+    // BV: pas besoin de dupliquer une information qu'on a déjà, en plus on fige la structure donc on perd tout l'interet de xsd
     //parcours du fichier xml et récupération des métadonnées sur les attributs
     //	m_lidarMetaData.ptSize_ = 0;
-    cs::LidarDataType::AttributesType attributes = m_xmlData->attributes();
+    /*cs::LidarDataType::AttributesType attributes = m_xmlData->attributes();
     for (cs::LidarDataType::AttributesType::AttributeIterator itAttribute = attributes.attribute().begin(); itAttribute != attributes.attribute().end(); ++itAttribute)
     {
         //TODO adapter si on ne load pas tout
@@ -279,13 +274,11 @@ void LidarFile::loadMetaDataFromXML()
                                                             !(itAttribute->min().present() && itAttribute->max().present()),
                                                             itAttribute->min().get(), itAttribute->max().get()));
 
-    }
+    }*/
 
     //meta données générales
     m_lidarMetaData.binaryDataFileName_ = getBinaryDataFileName();
-
-
-    m_lidarMetaData.nbPoints_ = (size_t)attributes.dataSize(); //tailleFicOctets/m_lidarMetaData.ptSize_;
+    m_lidarMetaData.nbPoints_ = (size_t)m_xmlData->attributes().dataSize(); //tailleFicOctets/m_lidarMetaData.ptSize_;
 
     //	std::cout << "taille d'un enregistrement : " << m_lidarMetaData.ptSize_ << std::endl;
     //	double reste = double(tailleFicOctets)/double(m_lidarMetaData.ptSize_) - m_lidarMetaData.nbPoints_;
@@ -303,14 +296,13 @@ void LidarFile::loadMetaDataFromXML()
 
 void LidarFile::setMapsFromXML(LidarDataContainer& lidarContainer) const
 {
-    for(XMLAttributeMetaDataContainerType::const_iterator it = m_attributeMetaData.begin(); it != m_attributeMetaData.end(); ++it)
+    cs::LidarDataType::AttributesType::AttributeIterator itAttribute;
+    for (itAttribute = m_xmlData->attributes().attribute().begin();
+         itAttribute != m_xmlData->attributes().attribute().end(); ++itAttribute)
     {
-        if(it->loaded_)
-        {
-            lidarContainer.addAttribute(it->name_, it->type_, it->dirty_, it->min_, it->max_);
-        }
+        //TODO adapter si on ne load pas tout
+        lidarContainer.addAttribute(itAttribute);
     }
-
 }
 
 LidarFile::~LidarFile()

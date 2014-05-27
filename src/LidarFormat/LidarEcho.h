@@ -127,7 +127,7 @@ class LidarEcho
 
 		Lidar::EnumLidarDataType getAttributeType(const std::string &attributeName) const
 		{
-			return attributeMap_->find(attributeName)->second.type;
+            return attributeMap_->find(attributeName)->second.dataType ();
 		}
 
 		unsigned int size() const

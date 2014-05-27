@@ -56,7 +56,7 @@ shared_ptr<LidarDataContainer> RegionOfInterest2D::cropLidarData(const LidarData
 
 	for(AttributeMapType::const_iterator it = attributeMap.begin(); it != attributeMap.end(); ++it)
 	{
-		resultContainer->addAttribute(it->first, it->second.type);
+        resultContainer->addAttribute(it->first, it->second.dataType());
 	}
 
 //	std::cout << "\tNouveau container OK..." << std::endl;
