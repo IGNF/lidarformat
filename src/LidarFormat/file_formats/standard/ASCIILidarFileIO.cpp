@@ -82,11 +82,30 @@ struct ReadValueFunctor<LidarDataType::uint8>
 	}
 };
 
+// BV: allow , ; : as separators by changing the locale
+struct field_reader: std::ctype<char>
+{
+    field_reader(): std::ctype<char>(get_table()) {}
+
+    static std::ctype_base::mask const* get_table() {
+        static std::vector<std::ctype_base::mask>
+            rc(table_size, std::ctype_base::mask());
+
+        rc['\n'] = std::ctype_base::space;
+        rc[' '] = std::ctype_base::space;
+        rc[','] = std::ctype_base::space;
+        rc[';'] = std::ctype_base::space;
+        rc[':'] = std::ctype_base::space;
+        return &rc[0];
+    }
+};
+
 void ASCIILidarFileIO::loadData(LidarDataContainer& lidarContainer,
                                 const XMLLidarMetaData& lidarMetaData,
                                 const XMLAttributeMetaDataContainerType& attributesDescription)
 {
 	std::ifstream fileIn(lidarMetaData.binaryDataFileName_.c_str());
+    fileIn.imbue(std::locale(std::locale(), new field_reader())); // use the redefined locale
 
 	if(!fileIn.good())
 		throw std::logic_error("Erreur au chargement du fichier dans ASCIILidarFileReader::loadData : le fichier n'existe pas ou n'est pas accessible en lecture ! \n");
