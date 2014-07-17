@@ -9,6 +9,7 @@ CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/tests/config_data_test.h.cmake.in ${
 SET( all_tests  
         concepts
         bounds
+        convert
         lfinfo
         unit_tests
         01_ex_basics
