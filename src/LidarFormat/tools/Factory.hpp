@@ -120,7 +120,7 @@ class Factory : public FactoryErrorPolicy<TIdentifierType,TAbstractProduct>
 //			}
 
                         //throw std::logic_error("Unknown object type passed to factory !\n");
-                        return OnUnknowType(id);
+                        return this->OnUnknowType(id);
 		}
 
 	private:

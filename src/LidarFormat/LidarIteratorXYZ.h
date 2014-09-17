@@ -248,13 +248,13 @@ class LidarIteratorXYZ : public detail::_LidarIteratorXYZBase<T>
 
 		Self& operator+= (const difference_type i)
 		{
-			incremente(i);
+            Super::incremente(i);
 			return *this;
 		}
 
 		Self& operator-= (const difference_type i)
 		{
-			incremente(-i);
+            Super::incremente(-i);
 			return *this;
 		}
 
@@ -349,13 +349,13 @@ class LidarConstIteratorXYZ : public detail::_LidarIteratorXYZBase<T>
 
 		Self& operator+= (const difference_type i)
 		{
-			incremente(i);
+            Super::incremente(i);
 			return *this;
 		}
 
 		Self& operator-= (const difference_type i)
 		{
-			incremente(-i);
+            Super::incremente(-i);
 			return *this;
 		}
 
