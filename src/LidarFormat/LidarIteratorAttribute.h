@@ -175,13 +175,13 @@ class LidarIteratorAttribute : public detail::_LidarIteratorAttributeBase<T>
 
 		Self& operator+= (const difference_type i)
 		{
-			incremente(i);
+            Super::incremente(i);
 			return *this;
 		}
 
 		Self& operator-= (const difference_type i)
 		{
-			incremente(-i);
+            Super::incremente(-i);
 			return *this;
 		}
 
@@ -271,13 +271,13 @@ class LidarConstIteratorAttribute : public detail::_LidarIteratorAttributeBase<T
 
 		Self& operator+= (const difference_type i)
 		{
-			incremente(i);
+            Super::incremente(i);
 			return *this;
 		}
 
 		Self& operator-= (const difference_type i)
 		{
-			incremente(-i);
+            Super::incremente(-i);
 			return *this;
 		}
 
