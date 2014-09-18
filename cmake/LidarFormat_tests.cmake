@@ -11,6 +11,7 @@ SET( all_tests
         bounds
         convert
         lfinfo
+        histo
         unit_tests
         01_ex_basics
         02_ex_filtering
