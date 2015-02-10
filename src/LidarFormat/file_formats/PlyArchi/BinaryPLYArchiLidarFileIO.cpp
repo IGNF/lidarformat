@@ -44,6 +44,7 @@ License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
 #include "LidarFormat/LidarDataContainer.h"
 
 #include "BinaryPLYArchiLidarFileIO.h"
+#include "Ply2Lf.h"
 
 namespace Lidar
 {
@@ -63,7 +64,7 @@ namespace Lidar
             if(fileInBin.tellg() < dataSize)
                 std::cout << "ERROR (BinaryPLYArchiLidarFileIO::loadData) binary file size " << fileInBin.tellg() << "< what xml expects: " << dataSize << std::endl;
             fileInBin.seekg(-dataSize, std::ios::end);
-            std::cout << "Binary part starts at " << fileInBin.tellg() << std::endl;
+            //std::cout << "Binary part starts at " << fileInBin.tellg() << std::endl;
             // lidarContainer.allocate(lidarMetaData.nbPoints_); // BV: do we need that ? works well without
             fileInBin.read(lidarContainer.rawData(), dataSize);
         }
@@ -73,12 +74,8 @@ namespace Lidar
 
     void BinaryPLYArchiLidarFileIO::save(const LidarDataContainer& lidarContainer, const std::string& binaryDataFileName)
     {
-        std::ofstream fileOut(binaryDataFileName.c_str(), std::ios::binary);
-
-        if(fileOut.good())
-            fileOut.write(lidarContainer.rawData(), lidarContainer.size() * lidarContainer.pointSize());
-        else
-            throw std::logic_error("Erreur à l'écriture du fichier dans BinaryOneFileUngroupedLidarFileReader::save : le fichier n'existe pas ou n'est pas accessible en écriture ! \n");
+        std::cout << "Called BinaryPLYArchiLidarFileIO::save " <<  binaryDataFileName << std::endl;
+        SavePly(lidarContainer, binaryDataFileName);
     }
 
     boost::shared_ptr<BinaryPLYArchiLidarFileIO> createBinaryPLYArchiLidarFileReader()
