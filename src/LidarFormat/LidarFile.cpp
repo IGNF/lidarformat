@@ -54,6 +54,9 @@ Contributors:
 
 #include "LidarFormat/LidarFile.h"
 #include "file_formats/PlyArchi/Ply2Lf.h"
+#ifdef ENABLE_LAS
+#include "file_formats/LAS/Las2Lf.h"
+#endif // ENABLE_LAS
 
 using namespace boost::filesystem;
 
@@ -131,7 +134,10 @@ LidarFile::LidarFile(const std::string &filename):
         }
         else // no xml found, create one
         {
-            m_xmlFileName = WriteXmlHeader(filename);
+            if(filepath.extension().string() == ".ply")  m_xmlFileName = WritePlyXmlHeader(filename);
+#ifdef ENABLE_LAS
+            if(filepath.extension().string() == ".las")  m_xmlFileName = WriteLasXmlHeader(filename);
+#endif // ENABLE_LAS
             m_isValid = !m_xmlFileName.empty();
             if(!m_isValid) std::cout << "Could not generate an xml file" << std::endl;
         }
@@ -158,7 +164,7 @@ void LidarFile::loadData(LidarDataContainer& lidarContainer)
     if(!isValid())
         throw std::logic_error("Error : Lidar xml file is not valid !\n");
 
-    //création du reader approprié au format grâce à la factory
+    //création du reader approprié au format grâce �  la factory
     boost::shared_ptr<LidarFileIO> reader = LidarIOFactory::instance().createObject(getFormat());
 
     loadMetaDataFromXML();
@@ -223,7 +229,7 @@ void LidarFile::save(const LidarDataContainer& lidarContainer,
     std::ofstream ofs (xmlFileName.c_str());
     cs::lidarData (ofs, xmlStructure, map);
 
-    //création du writer approprié au format grâce à la factory
+    //création du writer approprié au format grâce �  la factory
     boost::shared_ptr<LidarFileIO> writer = LidarIOFactory::instance().createObject(xmlStructure.attributes().dataFormat());
     writer->save(lidarContainer, (path(xmlFileName).branch_path() / (basename(xmlFileName) + ".bin")).string());
 }
@@ -254,7 +260,7 @@ void LidarFile::saveInPlace(const LidarDataContainer& lidarContainer,
     const cs::DataFormatType format = xmlData->attributes().dataFormat();
     const std::string dataFileName = (path(xmlFileName).branch_path() / (basename(xmlFileName) + ".bin")).string();
 
-    //création du writer approprié au format grâce à la factory
+    //création du writer approprié au format grâce �  la factory
     boost::shared_ptr<LidarFileIO> writer = LidarIOFactory::instance().createObject(format);
     writer->save(lidarContainer, dataFileName);
 }
@@ -263,7 +269,7 @@ void LidarFile::saveInPlace(const LidarDataContainer& lidarContainer,
 
 void LidarFile::loadMetaDataFromXML()
 {
-    // BV: pas besoin de dupliquer une information qu'on a déjà, en plus on fige la structure donc on perd tout l'interet de xsd
+    // BV: pas besoin de dupliquer une information qu'on a déj� , en plus on fige la structure donc on perd tout l'interet de xsd
     //parcours du fichier xml et récupération des métadonnées sur les attributs
     //	m_lidarMetaData.ptSize_ = 0;
     /*cs::LidarDataType::AttributesType attributes = m_xmlData->attributes();

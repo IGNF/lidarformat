@@ -22,7 +22,7 @@ std::string Lf2Ply(EnumLidarDataType lf_type);
 
 // write the xml header corresponding to the ply file
 // returns the name of the header
-std::string WriteXmlHeader(const std::string& ply_filename);
+std::string WritePlyXmlHeader(const std::string& ply_filename, bool debug=false);
 
 // directly read a ply file in lf by generating a lf .xml header (cf function above) then reading it
 void ReadPly(const std::string& ply_filename,

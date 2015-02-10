@@ -38,13 +38,13 @@ std::string Lf2Ply(EnumLidarDataType lf_type)
     return "unknown";
 }
 
-std::string RemoveExtention(std::string path)
+inline std::string RemoveExtention(std::string path)
 {
     int pointpos = path.find_last_of('.')+1;
     return path.substr(0, pointpos);
 }
 
-std::string GetFilename(std::string path)
+inline std::string GetFilename(std::string path)
 {
     int slashpos = path.find_last_of('/')+1;
     return path.substr(slashpos, path.size()-slashpos);
@@ -67,7 +67,7 @@ void RobustGetLine(std::ifstream & ifs, std::string & line)
         line.erase(line.size()-1);
 }
 
-std::string WriteXmlHeader(const std::string& ply_filename)
+std::string WritePlyXmlHeader(const std::string& ply_filename, bool debug)
 {
     // load ply header
     std::ifstream ifs(ply_filename.c_str());
@@ -106,7 +106,7 @@ std::string WriteXmlHeader(const std::string& ply_filename)
         }
     }
 
-    std::cout << "Loading ply header from " << ply_filename << std::endl;
+    if(debug) std::cout << "Loading ply header from " << ply_filename << std::endl;
 
     int data_size = 0;
     double tx=0., ty=0., tz=0.;
@@ -117,14 +117,14 @@ std::string WriteXmlHeader(const std::string& ply_filename)
     while(!ifs.eof() && !end_reached && i_line++<100)
     {
         RobustGetLine(ifs, line);
-        std::cout << line;
+        if(debug) std::cout << line;
         std::istringstream iss(line);
         std::string word;
         iss >> word;
         if(word == "format")
         {
             if(line != "format binary_little_endian 1.0")
-                std::cout << "->only binary_little_endian 1.0 format supported, use at your own risks";
+                std::cout << "->only binary_little_endian 1.0 format supported, use at your own risks" << std::endl;
         }
         else if(word == "comment")
         {
@@ -137,39 +137,39 @@ std::string WriteXmlHeader(const std::string& ply_filename)
                     iss >> word;
                     if(word == "GPS")
                     {
-                        std::cout << "->GPS Offset not handled";
+                        if(debug) std::cout << "->GPS Offset not handled";
                     }
                     else if(word == "Pos")
                     {
                         iss >> tx >> ty >> tz;
-                        std::cout << "->tx=" << tx << ", ty=" << ty << ", tz=" << tz;
+                        if(debug) std::cout << "->tx=" << tx << ", ty=" << ty << ", tz=" << tz;
                     }
-                    else std::cout << "->unknown IGN Offset";
+                    else if(debug) std::cout << "->unknown IGN Offset";
                 }
                 else if(word == "bounds")
                 {
-                    if(v_ply_attrib_info.empty()) std::cout << "->Bounds without attrib, dropping";
+                    if(v_ply_attrib_info.empty()) if(debug) std::cout << "->Bounds without attrib, dropping";
                     double min, max;
                     iss >> min >> max;
-                    std::cout << "->min=" << min << ", max=" << max;
+                    if(debug) std::cout << "->min=" << min << ", max=" << max;
                     v_ply_attrib_info.back().min=min;
                     v_ply_attrib_info.back().max=max;
                     v_ply_attrib_info.back().bounds=true;
                 }
-                else if(word == "BBox") std::cout << "->Old BBox format, only new one supported";
-                else std::cout << "->unknown IGN comment";
+                else if(word == "BBox" && debug) std::cout << "->Old BBox format, only new one supported";
+                else if(debug) std::cout << "->unknown IGN comment";
             }
-            else std::cout << "->unknown comment";
+            else if(debug) std::cout << "->unknown comment";
         }
         else if(word == "element")
         {
             iss >> element;
-            if(element != "vertex")
+            if(element != "vertex" && debug)
                 std::cout << "->only vertex supported, the following will be ignored";
             else
             {
                 iss >> data_size;
-                std::cout << "->data_size=" << data_size;
+                if(debug) std::cout << "->data_size=" << data_size;
             }
         }
         else if(word == "property")
@@ -179,18 +179,18 @@ std::string WriteXmlHeader(const std::string& ply_filename)
                 std::string type, name;
                 iss >> type >> name;
                 v_ply_attrib_info.push_back(ply_attrib_info(type, name));
-            } else std::cout << "->ignored";
+            } else if(debug) std::cout << "->ignored";
         }
         else if(word == "end_header")
         {
-            std::cout << "->stopping";
+            if(debug) std::cout << "->stopping";
             end_reached = true;
         }
         else
         {
-            std::cout << "->not recognized";
+            if(debug) std::cout << "->not recognized";
         }
-        std::cout << std::endl;
+        if(debug) std::cout << std::endl;
     }
 
     // write header
@@ -222,7 +222,7 @@ void ReadPly(const std::string& ply_filename,
              Lidar::LidarDataContainer& container,
              Lidar::LidarCenteringTransfo& transfo)
 {
-    std::string xml_filename = WriteXmlHeader(ply_filename);
+    std::string xml_filename = WritePlyXmlHeader(ply_filename);
     if(xml_filename == "") return;
     LidarFile file(xml_filename);
     file.loadData(container);
@@ -256,7 +256,7 @@ void SavePly(const LidarDataContainer& container,
     fileOut << "end_header" << std::endl;
     fileOut.write(container.rawData(), container.size() * container.pointSize());
     fileOut.close();
-    WriteXmlHeader(ply_filename);
+    WritePlyXmlHeader(ply_filename);
 }
 
 void SavePly(const LidarDataContainer& container, const std::string& ply_filename)

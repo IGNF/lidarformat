@@ -41,8 +41,8 @@ Contributors:
 
 
 
-#include <liblas/laspoint.hpp>
-#include <liblas/lasreader.hpp>
+#include <liblas/point.hpp>
+#include <liblas/reader.hpp>
 
 
 #include "LidarFormat/LidarIOFactory.h"
@@ -59,9 +59,9 @@ void LasIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData&
 {
 	std::ifstream fileIn(lidarMetaData.binaryDataFileName_.c_str(), std::ios::binary);
 
-	liblas::LASReader reader(fileIn);
+    liblas::Reader reader(fileIn);
 
-	liblas::LASHeader const& header = reader.GetHeader();
+    liblas::Header const& header = reader.GetHeader();
 	std::cout << "Reading LAS file..." << "\n";
 	std::cout << "Signature: " << header.GetFileSignature() << '\n';
 	std::cout << "Points count: " << header.GetPointRecordsCount() << '\n';
@@ -113,7 +113,7 @@ void LasIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData&
 
 	while (reader.ReadNextPoint() ) //&& itEcho!=lidarContainer.endEcho())
 	{
-	   liblas::LASPoint const& p = reader.GetPoint();
+       liblas::Point const& p = reader.GetPoint();
 //	   std::cout << p.GetX() << ", " << p.GetY() << ", " << p.GetZ() << "\n";
 
 
@@ -124,7 +124,7 @@ void LasIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData&
 	   if(decalage_intensity>0)
 		   itEcho.value<int32>(decalage_intensity) = p.GetIntensity();
 	   if(decalage_classification>0)
-		   itEcho.value<int32>(decalage_classification) = p.GetClassification();
+           itEcho.value<int32>(decalage_classification) = p.GetClassification().GetClass();
 	   if(decalage_echo>0)
 		   itEcho.value<int32>(decalage_echo) = p.GetReturnNumber();
 	   if(decalage_numberOfReturns>0)
@@ -132,7 +132,7 @@ void LasIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData&
 
 
 
-	   ++itEcho;
+       ++itEcho;
 
 	}
 
@@ -145,7 +145,7 @@ void LasIO::save(const LidarDataContainer& lidarContainer, const std::string& bi
 	if(fileOut.good())
 		fileOut.write(lidarContainer.rawData(), lidarContainer.size() * lidarContainer.pointSize());
 	else
-		throw std::logic_error("Erreur à l'écriture du fichier dans BinaryOneFileUngroupedLidarFileReader::save : le fichier n'existe pas ou n'est pas accessible en écriture ! \n");
+        throw std::logic_error("Write Error in LasIO::save : file does not exist or is not writable ! \n");
 
 }
 

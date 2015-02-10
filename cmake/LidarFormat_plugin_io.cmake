@@ -21,7 +21,12 @@ endif(ENABLE_LAS)
 OPTION( ENABLE_TERRABIN "Enable TerraBin" OFF )
 if(ENABLE_TERRABIN)
     ADD_DEFINITIONS(-DENABLE_TERRABIN)
-    AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/TerraBin  SRC_TERRABIN)
+    set(SRC_TERRABIN
+        ${SRC_DIR}/LidarFormat/file_formats/TerraBin/TerraBINLidarFileIO.cpp
+        ${SRC_DIR}/LidarFormat/file_formats/TerraBin/TerraBINLidarFileIO.h
+        ${SRC_DIR}/LidarFormat/extern/terrabin/TerraBin.cpp
+        ${SRC_DIR}/LidarFormat/extern/terrabin/TerraBin.h
+)
     SET( ALL_SOURCES ${ALL_SOURCES} ${SRC_TERRABIN})
 endif(ENABLE_TERRABIN)
 
@@ -30,7 +35,8 @@ endif(ENABLE_TERRABIN)
 #### Use PlyArchi format
 ####
 # BV: always enable because it is now used in LidarFile and it does not add any dependency
-AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/PlyArchi  SRC_PLYARCHI)
+ADD_DEFINITIONS(-DENABLE_PLYARCHI)
+AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/PlyArchi SRC_PLYARCHI)
 SET( ALL_SOURCES ${ALL_SOURCES} ${SRC_PLYARCHI})
 
 FILE( GLOB PLYARCHI_HEADERS src/LidarFormat/file_formats/PlyArchi/*.h )
