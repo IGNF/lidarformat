@@ -44,6 +44,8 @@ Contributors:
 #include <stdexcept>
 #include <fstream>
 #include <algorithm>
+#include <stdio.h>
+using namespace std;
 
 #include <boost/bind.hpp>
 #include <boost/bind/placeholders.hpp>
@@ -215,7 +217,7 @@ void LidarDataContainer::updateAttributeContent(const unsigned int oldPointSize)
 {
     lidarData_.resize(lidarData_.size()/oldPointSize*pointSize_);
 
-    ///MAJ des données ! décalage des attributs + initialisation du nouvel attribut
+    /// update data, shift attributes and initialise new attribute
     const LidarDataContainerType::const_iterator itBegin = lidarData_.begin();
     LidarDataContainerType::const_iterator itOldEndElement = itBegin + (size()-1)*oldPointSize;
 
@@ -231,7 +233,7 @@ void LidarDataContainer::updateAttributeContent(const unsigned int oldPointSize)
 
 bool LidarDataContainer::addAttributeHelper(cs::LidarDataType::AttributesType::AttributeIterator it)
 {
-    //si l'attribut existe déjà, on sort et retourne false
+    //si l'attribut existe déj� , on sort et retourne false
     if(attributeMap_->find(it->name()) != attributeMap_->end())
         return false;
 
@@ -249,7 +251,7 @@ bool LidarDataContainer::addAttributeHelper(cs::LidarDataType::AttributesType::A
 
     attributeMap_->push_back(AttributeMapType::value_type(it->name(), infos));
 
-    //Mise à jour de la pointSize :
+    //Mise �  jour de la pointSize :
     unsigned int sizeLastInsertedAttribute;
     sizeLastInsertedAttribute = apply<PointSizeFunctor, unsigned int>(it->dataType());
     pointSize_ = infos.decalage + sizeLastInsertedAttribute;
@@ -313,33 +315,39 @@ struct predicate_true
 
 bool LidarDataContainer::delAttribute(const std::string& attributeName)
 {
-    //si l'attribut n'existe pas, on sort
     if (!checkAttributeIsPresent(attributeName))
         return false;
 
-    //décalage et taille de l'attribut à supprimer
+    // shift and size of attribute to delete
     const unsigned int strideAttribute = getDecalage(attributeName);
     const unsigned int sizeAttribute = apply<PointSizeFunctor, unsigned int>(getAttributeType(attributeName));
 
-    //Mise à jour de la pointSize :
+    // update pointSize :
     const unsigned int oldPointSize = pointSize_;
     const unsigned int nbPoints = size();
     pointSize_ -= sizeAttribute;
+    //cout << "strideAttribute=" << strideAttribute << endl;
+    //cout << "sizeAttribute=" << sizeAttribute << endl;
+    //cout << "oldPointSize=" << oldPointSize << endl;
+    //cout << "pointSize_=" << pointSize_ << endl;
+    //cout << "afterAttribSize_=" << oldPointSize - strideAttribute - sizeAttribute << endl;
+    //cout << "nbPoints=" << nbPoints << endl;
 
-
-    ///MAJ des données ! décalage des attributs
+    /// update data, shift attributes
     LidarDataContainerType::iterator itOldAttributePosition = lidarData_.begin() + strideAttribute;
-    LidarDataContainerType::iterator itNewAttributePosition = lidarData_.begin() + strideAttribute;
+    LidarDataContainerType::iterator itNewAttributePosition = itOldAttributePosition;
     const LidarDataContainerType::iterator ite = lidarData_.end() - oldPointSize;
 
     for(; itOldAttributePosition < ite; itOldAttributePosition += oldPointSize, itNewAttributePosition += pointSize_)
         std::copy(itOldAttributePosition + sizeAttribute, itOldAttributePosition + oldPointSize, itNewAttributePosition);
 
+    // BV: attributes after the deleted attribute are not copied for the last echo in the for() loop above
+    std::copy(itOldAttributePosition + sizeAttribute, itOldAttributePosition + oldPointSize - strideAttribute, itNewAttributePosition);
 
+    // resize the container to its new size nbPoints*pointSize_ < old size = nbPoints*oldPointSize
     lidarData_.erase(lidarData_.begin() + nbPoints*pointSize_, lidarData_.end());
 
-
-    //suppression de l'attribut dans les maps et mise à jour des décalages qui suivent l'attribut supprimé
+    // delete attribute in the maps, update shifts after deleted attribute
     AttributeMapType::iterator itSuccessor = attributeMap_->erase(attributeMap_->find(attributeName));
 
     for(; itSuccessor != attributeMap_->end(); ++itSuccessor)
