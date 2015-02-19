@@ -23,21 +23,6 @@ std::string Ply2Lf(std::string ply_type)
     return ply_type;
 }
 
-std::string Lf2Ply(EnumLidarDataType lf_type)
-{
-    if(lf_type == LidarDataType::int8) return "char";
-    if(lf_type == LidarDataType::uint8) return "uchar";
-    if(lf_type == LidarDataType::int16) return "short";
-    if(lf_type == LidarDataType::uint16) return "ushort";
-    if(lf_type == LidarDataType::int32) return "int";
-    if(lf_type == LidarDataType::uint32) return "uint";
-    if(lf_type == LidarDataType::int64) return "long";
-    if(lf_type == LidarDataType::uint64) return "ulong";
-    if(lf_type == LidarDataType::float32) return "float";
-    if(lf_type == LidarDataType::float64) return "double";
-    return "unknown";
-}
-
 inline std::string RemoveExtention(std::string path)
 {
     int pointpos = path.find_last_of('.')+1;
@@ -248,7 +233,7 @@ void SavePly(const LidarDataContainer& container,
     container.getAttributeList(attrib_liste);
     for(std::vector<std::string>::iterator it = attrib_liste.begin(); it != attrib_liste.end();it++)
     {
-        fileOut << "property " << Lf2Ply(container.getAttributeType(*it)) << " " << *it << std::endl;
+        fileOut << "property " << OldName(container.getAttributeType(*it)) << " " << *it << std::endl;
         double min=0., max=0.;
         if(container.getAttributeBounds(*it, min, max))
             fileOut << "comment IGN bounds " << min << " " << max << std::endl;

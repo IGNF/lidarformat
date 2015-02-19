@@ -8,21 +8,21 @@ clouds with a variable number of attributes at runtime.
 
 Homepage: 
 
-	http://code.google.com/p/lidarformat
-	
+    http://code.google.com/p/lidarformat
+
 Copyright:
-	
-	Institut Geographique National & CEMAGREF (2009)
+
+    Institut Geographique National & CEMAGREF (2009)
 
 Author: 
 
-	Adrien Chauve
-	
+    Adrien Chauve
+
 Contributors:
 
-	Nicolas David, Olivier Tournaire
-	
-	
+    Nicolas David, Olivier Tournaire
+
+
 
     LidarFormat is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published
@@ -34,9 +34,9 @@ Contributors:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public 
+    You should have received a copy of the GNU Lesser General Public
     License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 ***********************************************************************/
 
 
@@ -77,13 +77,13 @@ struct LidarTypeTraits;
 #endif
 
 #define LIDAR_TYPE_TRAITS(TYPE, ENUM, NAME, OLD_NAME)\
-template <>\
-struct LidarTypeTraits<TYPE>\
+    template <>\
+    struct LidarTypeTraits<TYPE>\
 {\
-  typedef TYPE type;\
-  static const EnumLidarDataType enum_type = ENUM;\
-  static const char* name() { return NAME; }\
-  static const char* old_name() { return OLD_NAME; }\
+    typedef TYPE type;\
+    static const EnumLidarDataType enum_type = ENUM;\
+    static const char* name() { return NAME; }\
+    static const char* old_name() { return OLD_NAME; }\
 };
 
 LIDAR_TYPE_TRAITS(int8, LidarDataType::int8, "int8", "char")
@@ -110,13 +110,13 @@ struct LidarEnumTypeTraits;
 #endif
 
 #define LIDAR_ENUM_TYPE_TRAITS(TYPE, ENUM, NAME, OLD_NAME)\
-template <>\
-struct LidarEnumTypeTraits<ENUM>\
+    template <>\
+    struct LidarEnumTypeTraits<ENUM>\
 {\
-  typedef TYPE type;\
-  static const cs::AttributeDataType::Value enum_type = ENUM;\
-  static const char* name() { return NAME; }\
-  static const char* old_name() { return OLD_NAME; }\
+    typedef TYPE type;\
+    static const cs::AttributeDataType::Value enum_type = ENUM;\
+    static const char* name() { return NAME; }\
+    static const char* old_name() { return OLD_NAME; }\
 };
 
 LIDAR_ENUM_TYPE_TRAITS(int8, LidarDataType::int8, "int8", "char")
@@ -132,7 +132,39 @@ LIDAR_ENUM_TYPE_TRAITS(float64, LidarDataType::float64, "float64", "double")
 
 #undef LIDAR_ENUM_TYPE_TRAITS
 
-
+// BV: these are useful too
+inline std::string Name(EnumLidarDataType eldt, bool old=false)
+{
+    switch(eldt){
+    case LidarDataType::int8: return "int8";
+    case LidarDataType::int16: return "int16";
+    case LidarDataType::int32: return "int32";
+    case LidarDataType::int64: return "int64";
+    case LidarDataType::uint8: return "uint8";
+    case LidarDataType::uint16: return "uint16";
+    case LidarDataType::uint32: return "uint32";
+    case LidarDataType::uint64: return "uint64";
+    case LidarDataType::float32: return "float32";
+    case LidarDataType::float64: return "float64";
+    default: return "unknown";
+    }
+}
+inline std::string OldName(EnumLidarDataType eldt, bool old=false)
+{
+    switch(eldt){
+    case LidarDataType::int8: return "char";
+    case LidarDataType::int16: return "short";
+    case LidarDataType::int32: return "int";
+    case LidarDataType::int64: return "long";
+    case LidarDataType::uint8: return "uchar";
+    case LidarDataType::uint16: return "ushort";
+    case LidarDataType::uint32: return "uint";
+    case LidarDataType::uint64: return "ulong";
+    case LidarDataType::float32: return "float";
+    case LidarDataType::float64: return "double";
+    default: return "unknown";
+    }
+}
 }
 
 #endif /* LIDARDATAFORMATTYPES_H_ */
