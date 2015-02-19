@@ -14,11 +14,8 @@
 namespace Lidar
 {
 
-// conversion from ply to lf format types
+// conversion from ply to lf type names
 std::string Ply2Lf(std::string ply_type);
-
-// conversion from lf to ply format types
-std::string Lf2Ply(EnumLidarDataType lf_type);
 
 // write the xml header corresponding to the ply file
 // returns the name of the header
