@@ -72,10 +72,19 @@ namespace Lidar
             throw std::logic_error("ERROR (BinaryPLYArchiLidarFileIO::loadData) binary file " + lidarMetaData.binaryDataFileName_ + " does not exist or cannot be accessed ! \n");
     }
 
-    void BinaryPLYArchiLidarFileIO::save(const LidarDataContainer& lidarContainer, const std::string& binaryDataFileName)
+    void BinaryPLYArchiLidarFileIO::save(const LidarDataContainer& lidarContainer,
+                                         const cs::LidarDataType& xmlStructure,
+                                         const std::string& dataFileName)
     {
-        std::cout << "Called BinaryPLYArchiLidarFileIO::save " <<  binaryDataFileName << std::endl;
-        SavePly(lidarContainer, binaryDataFileName);
+        // TODO: handle transfo
+        LidarCenteringTransfo transfo;
+        if(xmlStructure.attributes().centeringTransfo().present())
+        {
+            transfo.setTransfo(xmlStructure.attributes().centeringTransfo().get().tx(),
+                               xmlStructure.attributes().centeringTransfo().get().ty());
+        }
+        //std::cout << "Called BinaryPLYArchiLidarFileIO::save " <<  dataFileName << std::endl;
+        SavePly(lidarContainer, transfo, dataFileName);
     }
 
     boost::shared_ptr<BinaryPLYArchiLidarFileIO> createBinaryPLYArchiLidarFileReader()

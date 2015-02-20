@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <boost/filesystem.hpp>
 #include "LidarFormat/LidarFile.h"
 #include "Ply2Lf.h"
 
@@ -21,18 +22,6 @@ std::string Ply2Lf(std::string ply_type)
     if(ply_type == "float") return "float32";
     if(ply_type == "double") return "float64";
     return ply_type;
-}
-
-inline std::string RemoveExtention(std::string path)
-{
-    int pointpos = path.find_last_of('.')+1;
-    return path.substr(0, pointpos);
-}
-
-inline std::string GetFilename(std::string path)
-{
-    int slashpos = path.find_last_of('/')+1;
-    return path.substr(slashpos, path.size()-slashpos);
 }
 
 struct ply_attrib_info
@@ -76,17 +65,18 @@ std::string WritePlyXmlHeader(const std::string& ply_filename, bool debug)
 
     // attempt to create xml header
     bool need_absolute = false;
-    std::string xml_filename = RemoveExtention(ply_filename) + "xml";
-    std::ofstream ofs(xml_filename.c_str());
+    boost::filesystem::path ply_filepath(ply_filename), plyxml_filepath(ply_filename);
+    plyxml_filepath.replace_extension(".xml");
+    std::ofstream ofs(plyxml_filepath.string().c_str());
     if(!ofs.good())
     {
-        std::cout << "Failed to create " << xml_filename << " -> attempting in cwd" << std::endl;
+        std::cout << "Failed to create " << plyxml_filepath << " -> attempting in cwd" << std::endl;
         need_absolute = true; // if xml is local, it is not with its data file so the data file path should be absolute
-        xml_filename = GetFilename(xml_filename); // remove path
-        ofs.open(xml_filename.c_str());
+        plyxml_filepath = plyxml_filepath.filename(); // remove path
+        ofs.open(plyxml_filepath.string().c_str());
         if(!ofs.good())
         {
-            std::cout << "Failed to open " << xml_filename << std::endl;
+            std::cout << "Failed to open " << plyxml_filepath << std::endl;
             return "";
         }
     }
@@ -179,15 +169,13 @@ std::string WritePlyXmlHeader(const std::string& ply_filename, bool debug)
     }
 
     // write header
-    std::cout << "Writing LF .xml header: " << xml_filename << std::endl;
+    std::cout << "Writing LF .xml header: " << plyxml_filepath << std::endl;
     ofs << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n";
     ofs << "<LidarData xmlns=\"cs\">\n";
 
-    int slashpos = ply_filename.find_last_of('/')+1;
-    std::string ply_filename_to_write = ply_filename;
-    if(!need_absolute) ply_filename_to_write = ply_filename.substr(slashpos, ply_filename.size()-slashpos);
+    if(!need_absolute) ply_filepath = ply_filepath.filename();
     ofs << "  <Attributes DataFormat=\"plyarchi\" DataSize=\"" << data_size
-        << "\" DataFileName=\"" << ply_filename_to_write << "\">\n";
+        << "\" DataFileName=" << ply_filepath << ">\n"; // << path adds the quotes
     for(unsigned int i=0; i<v_ply_attrib_info.size(); i++)
     {
         ofs << "    <Attribute DataType=\"" << Ply2Lf(v_ply_attrib_info[i].type)
@@ -200,7 +188,7 @@ std::string WritePlyXmlHeader(const std::string& ply_filename, bool debug)
     if(tx != 0. || ty != 0.)
         ofs << "    <CenteringTransfo tx=\"" << tx << "\" ty=\"" << ty << "\"/>\n";
     ofs << "  </Attributes>\n</LidarData>\n";
-    return xml_filename;
+    return plyxml_filepath.string();
 }
 
 void ReadPly(const std::string& ply_filename,
@@ -241,7 +229,7 @@ void SavePly(const LidarDataContainer& container,
     fileOut << "end_header" << std::endl;
     fileOut.write(container.rawData(), container.size() * container.pointSize());
     fileOut.close();
-    WritePlyXmlHeader(ply_filename);
+    // WritePlyXmlHeader(ply_filename); // header should be written by LidarFile::Save()
 }
 
 void SavePly(const LidarDataContainer& container, const std::string& ply_filename)

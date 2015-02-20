@@ -59,10 +59,9 @@ class LidarDataContainer;
 struct XMLLidarMetaData
 {
 	XMLLidarMetaData() : nbPoints_(0), xmlFileName_(""), binaryDataFileName_("") {}
-//	unsigned int ptSize_; //taille d'un point avec tous ses attributs chargés UNIQUEMENT
-	std::size_t nbPoints_; //nombre de points du fichier
-	std::string xmlFileName_; //fichier xml de données
-	std::string binaryDataFileName_; //fichier binaire associé
+    std::size_t nbPoints_;
+    std::string xmlFileName_;
+    std::string binaryDataFileName_;
 };
 
 struct XMLAttributeMetaData
@@ -71,9 +70,8 @@ struct XMLAttributeMetaData
     explicit XMLAttributeMetaData(const std::string &name, const EnumLidarDataType type, const bool loaded,
                                   const bool dirty, const double min=0., const double max=0.):
         name_(name), type_(type), loaded_(loaded), dirty_(dirty), min_(min), max_(max) {}
-	std::string name_; //atribute name
+    std::string name_; //attribute name
 	EnumLidarDataType type_; //attribute type
-//	unsigned int size_; //taille d'un attribut
     bool loaded_, dirty_; // attribute is loaded, attribute bounds are dirty (need recompute)
     double min_, max_; // min/max attribute value
 };
@@ -86,7 +84,8 @@ class LidarFileIO
 		virtual ~LidarFileIO();
 
 		virtual void loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData& lidarMetaData, const XMLAttributeMetaDataContainerType& attributesDescritpion)=0;
-		virtual void save(const LidarDataContainer& lidarContainer, const std::string& binaryDataFileName)=0;
+        // BV: in order to export standard filetypes (ply, las,...) save should have metadata
+        virtual void save(const LidarDataContainer& lidarContainer, const cs::LidarDataType& xmlStructure, const std::string& dataFileName)=0;
 
 
 		void setXMLData(const boost::shared_ptr<cs::LidarDataType>& xmlData);

@@ -61,6 +61,8 @@ class LidarCenteringTransfo
 {
 	public:
 		LidarCenteringTransfo();
+        LidarCenteringTransfo(const double x, const double y):m_x(x),m_y(y){}
+        LidarCenteringTransfo(const TPoint2D<double>& transfo):m_x(transfo.x),m_y(transfo.y){}
 
 		void setTransfo(const double x, const double y);
 		void setTransfo(const TPoint2D<double>& transfo) { m_x = transfo.x; m_y = transfo.y; }
@@ -68,7 +70,8 @@ class LidarCenteringTransfo
 		const double y() const { return m_y; }
 		const TPoint2D<double> getTransfo() const { return TPoint2D<double>(m_x, m_y); }
 
-		shared_ptr<LidarDataContainer> centerLidarDataContainer(const LidarDataContainer& lidarContainer, const char* const x="x", const char* const y="y", const char* const z="z");
+        shared_ptr<LidarDataContainer> centerLidarDataContainer(const LidarDataContainer& lidarContainer,
+                                                                const char* const x="x", const char* const y="y", const char* const z="z");
 
 		bool isSet() const { return m_x!=0 && m_y!=0; }
 

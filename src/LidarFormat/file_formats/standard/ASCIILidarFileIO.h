@@ -54,8 +54,12 @@ class ASCIILidarFileIO : public LidarFileIO
 	public:
 		virtual ~ASCIILidarFileIO();
 
-		virtual void loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData& lidarMetaData, const XMLAttributeMetaDataContainerType& attributesDescription);
-		virtual void save(const LidarDataContainer& lidarContainer, const std::string& binaryDataFileName);
+        virtual void loadData(LidarDataContainer& lidarContainer,
+                              const XMLLidarMetaData& lidarMetaData,
+                              const XMLAttributeMetaDataContainerType& attributesDescription);
+        virtual void save(const LidarDataContainer& lidarContainer,
+                          const cs::LidarDataType& xmlStructure,
+                          const std::string& binaryDataFileName);
 
 		static bool Register();
 		friend boost::shared_ptr<ASCIILidarFileIO> createASCIILidarFileReader();

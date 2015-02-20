@@ -53,8 +53,6 @@ Contributors:
 namespace Lidar
 {
 
-
-
 void LasIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData& lidarMetaData, const XMLAttributeMetaDataContainerType& attributesDescription)
 {
 	std::ifstream fileIn(lidarMetaData.binaryDataFileName_.c_str(), std::ios::binary);
@@ -67,7 +65,6 @@ void LasIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData&
 	std::cout << "Points count: " << header.GetPointRecordsCount() << '\n';
 
 	lidarContainer.resize(header.GetPointRecordsCount());
-
 
 //	lidarContainer.addAttribute("x", LidarDataType::float64);
 //	lidarContainer.addAttribute("y", LidarDataType::float64);
@@ -130,16 +127,17 @@ void LasIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData&
 	   if(decalage_numberOfReturns>0)
 		   itEcho.value<int32>(decalage_numberOfReturns) = p.GetNumberOfReturns();
 
-
-
        ++itEcho;
 
 	}
 
 }
 
-void LasIO::save(const LidarDataContainer& lidarContainer, const std::string& binaryDataFileName)
+void LasIO::save(const LidarDataContainer& lidarContainer,
+                 const cs::LidarDataType& xmlStructure,
+                 const std::string& binaryDataFileName)
 {
+    // TODO: use xml struture to write a real las file (not just a .bin)
 	std::ofstream fileOut(binaryDataFileName.c_str(), std::ios::binary);
 
 	if(fileOut.good())

@@ -133,7 +133,7 @@ LIDAR_ENUM_TYPE_TRAITS(float64, LidarDataType::float64, "float64", "double")
 #undef LIDAR_ENUM_TYPE_TRAITS
 
 // BV: these are useful too
-inline std::string Name(EnumLidarDataType eldt, bool old=false)
+inline std::string Name(EnumLidarDataType eldt)
 {
     switch(eldt){
     case LidarDataType::int8: return "int8";
@@ -149,7 +149,7 @@ inline std::string Name(EnumLidarDataType eldt, bool old=false)
     default: return "unknown";
     }
 }
-inline std::string OldName(EnumLidarDataType eldt, bool old=false)
+inline std::string OldName(EnumLidarDataType eldt)
 {
     switch(eldt){
     case LidarDataType::int8: return "char";
