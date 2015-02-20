@@ -92,9 +92,12 @@ public:
 
 
     LidarDataContainer();
+    LidarDataContainer(shared_ptr<cs::LidarDataType> xmlData);
     LidarDataContainer(std::string dataFileName);
     LidarDataContainer(const LidarDataContainer&);
     LidarDataContainer& operator=(const LidarDataContainer&);
+
+    void setMapsFromXML(shared_ptr<cs::LidarDataType> xmlData);
 
     /// BV: very practical to use in client code
     void load(std::string dataFileName);

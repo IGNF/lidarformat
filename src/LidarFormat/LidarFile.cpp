@@ -168,8 +168,7 @@ void LidarFile::loadData(LidarDataContainer& lidarContainer)
     boost::shared_ptr<LidarFileIO> reader = LidarIOFactory::instance().createObject(getFormat());
 
     loadMetaDataFromXML();
-    setMapsFromXML(lidarContainer);
-
+    lidarContainer.setMapsFromXML(m_xmlData);
     lidarContainer.resize(m_lidarMetaData.nbPoints_);
 
     reader->setXMLData(m_xmlData);
@@ -353,13 +352,7 @@ void LidarFile::loadMetaDataFromXML()
 
 void LidarFile::setMapsFromXML(LidarDataContainer& lidarContainer) const
 {
-    cs::LidarDataType::AttributesType::AttributeIterator itAttribute;
-    for (itAttribute = m_xmlData->attributes().attribute().begin();
-         itAttribute != m_xmlData->attributes().attribute().end(); ++itAttribute)
-    {
-        //TODO adapter si on ne load pas tout
-        lidarContainer.addAttribute(itAttribute);
-    }
+    lidarContainer.setMapsFromXML(m_xmlData);
 }
 
 LidarFile::~LidarFile()
