@@ -150,6 +150,13 @@ LidarDataContainer::LidarDataContainer():
 {
 }
 
+LidarDataContainer::LidarDataContainer(shared_ptr<cs::LidarDataType> xmlData):
+    attributeMap_(new AttributeMapType),
+    m_xmlData(new cs::LidarDataType(cs::LidarDataType::AttributesType(0, cs::DataFormatType::binary)))
+{
+    setMapsFromXML(xmlData);
+}
+
 LidarDataContainer::LidarDataContainer(std::string dataFileName):
     attributeMap_(new AttributeMapType),
     m_xmlData(new cs::LidarDataType(cs::LidarDataType::AttributesType(0, cs::DataFormatType::binary)))
@@ -170,6 +177,18 @@ LidarDataContainer& LidarDataContainer::operator=(const LidarDataContainer& rhs)
         copy(rhs);
 
     return *this;
+}
+
+void LidarDataContainer::setMapsFromXML(shared_ptr<cs::LidarDataType> xmlData)
+{
+    *m_xmlData = *xmlData;
+    cs::LidarDataType::AttributesType::AttributeIterator itAttribute;
+    for (itAttribute = m_xmlData->attributes().attribute().begin();
+         itAttribute != m_xmlData->attributes().attribute().end(); ++itAttribute)
+    {
+        //TODO adapt if we do not want to load everything
+        addAttribute(itAttribute);
+    }
 }
 
 void LidarDataContainer::load(std::string dataFileName)
