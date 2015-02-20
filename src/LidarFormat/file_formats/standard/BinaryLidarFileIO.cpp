@@ -56,14 +56,14 @@ void BinaryLidarFileIO::loadData(LidarDataContainer& lidarContainer, const XMLLi
 		std::ifstream fileIn(lidarMetaData.binaryDataFileName_.c_str(), std::ios::binary );
 		fileIn.seekg(0, std::ios::end);
 		const unsigned int tailleFicOctets = fileIn.tellg();
-		std::cout << "Taille du fichier binaire en octets : " << tailleFicOctets << std::endl;
+        std::cout << "Binary file size: " << tailleFicOctets << std::endl;
 		const unsigned int taillePt = lidarContainer.pointSize();
-		std::cout << "Taille d'un enregistrement : " << taillePt << std::endl;
+        std::cout << "Echo size:" << taillePt << std::endl;
 		const unsigned int nbPts = tailleFicOctets/taillePt;
-		std::cout << "Nb de points : " << nbPts << std::endl;
+        std::cout << "Nb of points : " << nbPts << std::endl;
 
 		if(lidarMetaData.nbPoints_ != nbPts)
-			std::cout << "Attention : la structure d'attributs du fichier xml ne correspond pas au contenu du fichier binaire !" << std::endl;
+            std::cout << "Warning : xml structure does not match binary file!" << std::endl;
 
 
 		lidarContainer.resize(nbPts);
@@ -73,19 +73,21 @@ void BinaryLidarFileIO::loadData(LidarDataContainer& lidarContainer, const XMLLi
 	if(fileIn.good())
 		fileIn.read(lidarContainer.rawData(), lidarMetaData.nbPoints_ * lidarContainer.pointSize());
 	else
-		throw std::logic_error("Erreur au chargement du fichier dans BinaryOneFileUngroupedLidarFileReader::loadData : le fichier n'existe pas ou n'est pas accessible en lecture ! \n");
+        throw std::logic_error("Error writing file in BinaryLidarFileIO::loadData : file does not exist or cannot be read! \n");
 
 
 }
 
-void BinaryLidarFileIO::save(const LidarDataContainer& lidarContainer, const std::string& binaryDataFileName)
+void BinaryLidarFileIO::save(const LidarDataContainer& lidarContainer,
+                             const cs::LidarDataType& xmlStructure,
+                             const std::string& binaryDataFileName)
 {
 	std::ofstream fileOut(binaryDataFileName.c_str(), std::ios::binary);
 
 	if(fileOut.good())
 		fileOut.write(lidarContainer.rawData(), lidarContainer.size() * lidarContainer.pointSize());
 	else
-		throw std::logic_error("Erreur à l'écriture du fichier dans BinaryOneFileUngroupedLidarFileReader::save : le fichier n'existe pas ou n'est pas accessible en écriture ! \n");
+        throw std::logic_error("Error writing file in BinaryLidarFileIO::save : file does not exist or is read only! \n");
 
 }
 

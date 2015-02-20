@@ -53,6 +53,7 @@ using namespace std;
 #include <boost/noncopyable.hpp>
 
 #include "LidarFormat/LidarDataFormatTypes.h"
+#include "LidarFormat/LidarFile.h"
 #include "LidarFormat/tools/AttributeBounds.h"
 #include "apply.h"
 
@@ -134,10 +135,26 @@ void LidarDataContainer::recomputeBounds(bool force_recompute)
         }
 }
 
+bool LidarDataContainer::getCenteringTransfo(double & x, double & y) const
+{
+    if(!m_xmlData->attributes().centeringTransfo().present())
+        return false;
+    x = m_xmlData->attributes().centeringTransfo().get().tx();
+    y = m_xmlData->attributes().centeringTransfo().get().ty();
+    return true;
+}
+
 LidarDataContainer::LidarDataContainer():
     attributeMap_(new AttributeMapType),
     m_xmlData(new cs::LidarDataType(cs::LidarDataType::AttributesType(0, cs::DataFormatType::binary)))
 {
+}
+
+LidarDataContainer::LidarDataContainer(std::string dataFileName):
+    attributeMap_(new AttributeMapType),
+    m_xmlData(new cs::LidarDataType(cs::LidarDataType::AttributesType(0, cs::DataFormatType::binary)))
+{
+    load(dataFileName);
 }
 
 LidarDataContainer::LidarDataContainer(const LidarDataContainer& rhs):
@@ -155,15 +172,25 @@ LidarDataContainer& LidarDataContainer::operator=(const LidarDataContainer& rhs)
     return *this;
 }
 
-void LidarDataContainer::copy(const LidarDataContainer& rhs)
+void LidarDataContainer::load(std::string dataFileName)
+{
+    LidarFile file(dataFileName);
+    file.loadData(*this);
+}
+
+void LidarDataContainer::save(std::string dataFileName)
+{
+    LidarFile::save(*this, dataFileName);
+}
+
+void LidarDataContainer::copy(const LidarDataContainer& rhs, bool copy_data)
 {
     *attributeMap_ = *rhs.attributeMap_;
     *m_xmlData = *rhs.m_xmlData;
 
-    lidarData_ = rhs.lidarData_;
     pointSize_ = rhs.pointSize_;
+    if(copy_data) lidarData_ = rhs.lidarData_;
 }
-
 
 void LidarDataContainer::append(const LidarDataContainer& rhs)
 {

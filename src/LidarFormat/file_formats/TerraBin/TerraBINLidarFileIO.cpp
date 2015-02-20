@@ -62,7 +62,9 @@ TerraBINLidarFileIO::TerraBINLidarFileIO() {
 TerraBINLidarFileIO::~TerraBINLidarFileIO() {
 	// TODO Auto-generated destructor stub
 }
-void TerraBINLidarFileIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData& lidarMetaData, const XMLAttributeMetaDataContainerType& attributesDescription)
+void TerraBINLidarFileIO::loadData(LidarDataContainer& lidarContainer,
+                                   const XMLLidarMetaData& lidarMetaData,
+                                   const XMLAttributeMetaDataContainerType& attributesDescription)
 {
 //	std::ifstream fileIn(lidarMetaData.binaryDataFileName_.c_str());
 
@@ -179,10 +181,12 @@ void TerraBINLidarFileIO::loadData(LidarDataContainer& lidarContainer, const XML
 }
 
 
-void TerraBINLidarFileIO::save(const LidarDataContainer& lidarContainer, const std::string& binaryDataFileName)
+void TerraBINLidarFileIO::save(const LidarDataContainer& lidarContainer,
+                               const cs::LidarDataType& xmlStructure,
+                               const std::string& binaryDataFileName)
 {
-	throw std::logic_error("Non Implemente ! \n");
-
+    // TODO: write a terra bin using container and xml structure
+    throw std::logic_error("Not Implemented ! \n");
 }
 
 

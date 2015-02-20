@@ -4,52 +4,40 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <boost/filesystem.hpp>
 #include "LidarFormat/LidarFile.h"
 #include "Las2Lf.h"
 
 namespace Lidar
 {
 
-inline std::string RemoveExtention(std::string path)
-{
-    int pointpos = path.find_last_of('.')+1;
-    return path.substr(0, pointpos);
-}
-
-inline std::string GetFilename(std::string path)
-{
-    int slashpos = path.find_last_of('/')+1;
-    return path.substr(slashpos, path.size()-slashpos);
-}
-
 std::string WriteLasXmlHeader(const std::string& las_filename, bool debug)
 {
     // attempt to create xml header
     bool need_absolute = false;
-    std::string xml_filename = RemoveExtention(las_filename) + "xml";
-    std::ofstream ofs(xml_filename.c_str());
+    boost::filesystem::path las_filepath(las_filename), lasxml_filepath(las_filename);
+    lasxml_filepath.replace_extension(".xml");
+    std::ofstream ofs(lasxml_filepath.string().c_str());
     if(!ofs.good())
     {
-        std::cout << "Failed to create " << xml_filename << " -> attempting in cwd" << std::endl;
+        std::cout << "Failed to create " << lasxml_filepath << " -> attempting in cwd" << std::endl;
         need_absolute = true; // if xml is local, it is not with its data file so the data file path should be absolute
-        xml_filename = GetFilename(xml_filename); // remove path
-        ofs.open(xml_filename.c_str());
+        lasxml_filepath = lasxml_filepath.filename(); // remove path
+        ofs.open(lasxml_filepath.string().c_str());
         if(!ofs.good())
         {
-            std::cout << "Failed to open " << xml_filename << std::endl;
+            std::cout << "Failed to open " << lasxml_filepath << std::endl;
             return "";
         }
     }
 
     // write header
-    std::cout << "Writing LF .xml header: " << xml_filename << std::endl;
+    std::cout << "Writing LF .xml header for a LAS file: " << lasxml_filepath << std::endl;
     ofs << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n";
     ofs << "<LidarData xmlns=\"cs\">\n";
 
-    int slashpos = las_filename.find_last_of('/')+1;
-    std::string las_filename_to_write = las_filename;
-    if(!need_absolute) las_filename_to_write = las_filename.substr(slashpos, las_filename.size()-slashpos);
-    ofs << "  <Attributes DataFormat=\"las\" DataSize=\"0\" DataFileName=\"" << las_filename_to_write << "\">\n";
+    if(!need_absolute) las_filepath = las_filepath.filename();
+    ofs << "  <Attributes DataFormat=\"las\" DataSize=\"0\" DataFileName=" << las_filepath << ">\n";
     ofs << "    <Attribute DataType=\"float64\" Name=\"x\"/>\n";
     ofs << "    <Attribute DataType=\"float64\" Name=\"y\"/>\n";
     ofs << "    <Attribute DataType=\"float64\" Name=\"z\"/>\n";
@@ -58,7 +46,7 @@ std::string WriteLasXmlHeader(const std::string& las_filename, bool debug)
     ofs << "    <Attribute DataType=\"uint32\" Name=\"returnNumber\"/>\n";
     ofs << "    <Attribute DataType=\"uint32\" Name=\"numberOfReturns\"/>\n";
     ofs << "  </Attributes>\n</LidarData>\n";
-    return xml_filename;
+    return lasxml_filepath.string();
 }
 
 void ReadLas(const std::string& las_filename,
@@ -67,9 +55,7 @@ void ReadLas(const std::string& las_filename,
 {
     std::string xml_filename = WriteLasXmlHeader(las_filename);
     if(xml_filename == "") return;
-    LidarFile file(xml_filename);
-    file.loadData(container);
-    file.loadTransfo(transfo);
+    container.load(xml_filename);
 }
 
 } // namespace Lidar

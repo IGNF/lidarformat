@@ -129,7 +129,7 @@ void ASCIILidarFileIO::loadData(LidarDataContainer& lidarContainer,
 	}
 }
 
-void ASCIILidarFileIO::save(const LidarDataContainer& lidarContainer, const std::string& binaryDataFileName)
+void ASCIILidarFileIO::save(const LidarDataContainer& lidarContainer, const cs::LidarDataType& xmlStructure, const std::string& binaryDataFileName)
 {
 	std::ofstream fileOut(binaryDataFileName.c_str());
 
@@ -144,7 +144,7 @@ void ASCIILidarFileIO::save(const LidarDataContainer& lidarContainer, const std:
 		}
 	}
 	else
-		throw std::logic_error("Erreur à l'écriture du fichier dans ASCIILidarFileIO::save : le fichier n'existe pas ou n'est pas accessible en écriture ! \n");
+		throw std::logic_error("Erreur �  l'écriture du fichier dans ASCIILidarFileIO::save : le fichier n'existe pas ou n'est pas accessible en écriture ! \n");
 
 }
 

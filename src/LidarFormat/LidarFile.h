@@ -8,21 +8,21 @@ clouds with a variable number of attributes at runtime.
 
 Homepage: 
 
-	http://code.google.com/p/lidarformat
-	
+    http://code.google.com/p/lidarformat
+
 Copyright:
-	
-	Institut Geographique National & CEMAGREF (2009)
+
+    Institut Geographique National & CEMAGREF (2009)
 
 Author: 
 
-	Adrien Chauve
-	
+    Adrien Chauve
+
 Contributors:
 
-	Nicolas David, Olivier Tournaire
-	
-	
+    Nicolas David, Olivier Tournaire, Bruno Vallet
+
+
 
     LidarFormat is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published
@@ -34,9 +34,9 @@ Contributors:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public 
+    You should have received a copy of the GNU Lesser General Public
     License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 ***********************************************************************/
 
 
@@ -50,7 +50,7 @@ Contributors:
 #include "LidarFormat/LidarFileIO.h"
 
 /**
-* @brief Classe de base de gestion des fichiers lidar.
+* @brief Base Class for lidar file handling
 *
 *
 */
@@ -59,7 +59,7 @@ using boost::shared_ptr;
 
 namespace cs
 {
-	class LidarDataType;
+class LidarDataType;
 }
 
 namespace Lidar
@@ -71,62 +71,77 @@ class LidarCenteringTransfo;
 
 class LidarFile
 {
-	public:
-		explicit LidarFile(const std::string &xmlFileName);
-		virtual ~LidarFile();
+public:
+    explicit LidarFile(const std::string &xmlFileName);
+    virtual ~LidarFile();
 
-		///Teste si le fichier xml est valide (par rapport au modèle xsd)
-		virtual bool isValid() const { return m_isValid; }
-		///Récupère les méta-données principales dans une string
-		virtual std::string getMetaData() const;
-		///Récupère le format des données (ascii, binaire, ...)
-		virtual std::string getFormat() const;
-		///Récupère le nom du fichier de données
-		virtual std::string getBinaryDataFileName() const;
-		///Récupère le nb de points du nuage
-		virtual unsigned int getNbPoints() const;
-
-
-
-		///Recupere la transfo de centrage, (0,0) si pas de transfo
-		void loadTransfo(LidarCenteringTransfo& transfo) const;
-
-		///Charge les données du fichier dans un conteneur lidar
-		void loadData(LidarDataContainer& lidarContainer);
-
-		///Save container data in a file
-		static void save(const LidarDataContainer& lidarContainer, const std::string& xmlFileName, const LidarCenteringTransfo& transfo, const cs::DataFormatType format=cs::DataFormatType::binary);
-		static void save(const LidarDataContainer& lidarContainer, const std::string& xmlFileName, const cs::DataFormatType format=cs::DataFormatType::binary);
-		static void save(const LidarDataContainer& lidarContainer, const std::string& xmlFileName, const cs::LidarDataType& xmlStructure);
-
-		///Save container data in the same file (in place)
-		static void saveInPlace(const LidarDataContainer& lidarContainer, const std::string& xmlFileName);
-
-		///Create xml structure from lidar container
-		static shared_ptr<cs::LidarDataType> createXMLStructure(const LidarDataContainer& lidarContainer, const std::string& xmlFileName, const LidarCenteringTransfo& transfo, const cs::DataFormatType format=cs::DataFormatType::binary);
-
-	protected:
-		///fichier xml qui regroupe toutes les infos sur les données
-		std::string m_xmlFileName;
-		///données xml : fichier xml chargé en mémoire
-		boost::shared_ptr<cs::LidarDataType> m_xmlData;
-		///fichier valide (structure xml) ?
-		bool m_isValid;
+    /// tests if xml file is valid (according to xsd model)
+    virtual bool isValid() const { return m_isValid; }
+    /// get main metadata in a string
+    virtual std::string getMetaData() const;
+    /// get data format (ascii, binary, ...)
+    virtual std::string getFormat() const;
+    /// get BinaryDataFileName (deprecated, depends on format)
+    virtual std::string getBinaryDataFileName() const;
+    /// get number  of points in the file
+    virtual unsigned int getNbPoints() const;
 
 
+    /// load centering transfo, (0,0) si none
+    void loadTransfo(LidarCenteringTransfo& transfo) const;
+
+    /// load data from file to a lidar container
+    void loadData(LidarDataContainer& lidarContainer);
+
+    /// Save container data in a file
+    static void save(const LidarDataContainer& lidarContainer,
+                     const std::string& xmlFileName,
+                     const LidarCenteringTransfo& transfo,
+                     const cs::DataFormatType format);
+    static void save(const LidarDataContainer& lidarContainer,
+                     const std::string& xmlFileName,
+                     const cs::DataFormatType format);
+    static void save(const LidarDataContainer& lidarContainer,
+                     const std::string& xmlFileName,
+                     const cs::LidarDataType& xmlStructure);
+    static void save(const LidarDataContainer& lidarContainer,
+                     const std::string& dataFileName,
+                     const LidarCenteringTransfo& transfo);
+    static void save(const LidarDataContainer& lidarContainer,
+                     const std::string& dataFileName);
+
+    /// Save container data in the same file (in place)
+    static void saveInPlace(const LidarDataContainer& lidarContainer, const std::string& xmlFileName);
+
+    /// Create xml structure from lidar container
+    static shared_ptr<cs::LidarDataType> createXMLStructure(
+            const LidarDataContainer& lidarContainer,
+            const std::string& dataFileName,
+            const LidarCenteringTransfo& transfo,
+            const cs::DataFormatType format=cs::DataFormatType::binary);
+
+protected:
+    /// xml file with infos on dataset
+    std::string m_xmlFileName;
+    /// xml data : xml file loaded in memory
+    boost::shared_ptr<cs::LidarDataType> m_xmlData;
+    /// is the xml structure valid ?
+    bool m_isValid;
 
 
 
 
-		///Méta-données du fichier
-		XMLLidarMetaData m_lidarMetaData;
-		XMLAttributeMetaDataContainerType m_attributeMetaData;
 
-		///fonctions utiles
-		///Chargement des méta-données à partir du xml
-		void loadMetaDataFromXML();
 
-		void setMapsFromXML(LidarDataContainer& lidarContainer) const;
+    /// file meta data
+    XMLLidarMetaData m_lidarMetaData;
+    XMLAttributeMetaDataContainerType m_attributeMetaData;
+
+    /// useful methods
+    /// load meta data from xml
+    void loadMetaDataFromXML();
+
+    void setMapsFromXML(LidarDataContainer& lidarContainer) const;
 
 };
 
