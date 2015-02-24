@@ -56,13 +56,13 @@ namespace Lidar
 boost::shared_ptr<cs::LidarDataType> LasMetaDataIO::load(const std::string& filename)
 {
     std::ifstream las_ifs(filename.c_str(), std::ios::binary);
-    if(!las_ifs.good()) throw std::logic_error("Failed to open " + filename +"\n");
+    if(!las_ifs.good()) throw std::logic_error(std::string(__FUNCTION__) + ": Failed to open " + filename +"\n");
+    std::cout << __FUNCTION__ << " " << filename << std::endl;
     liblas::Reader reader(las_ifs);
 
     liblas::Header const& header = reader.GetHeader();
-    std::cout << "Reading LAS file..." << "\n";
-    std::cout << "Signature: " << header.GetFileSignature() << '\n';
-    std::cout << "Points count: " << header.GetPointRecordsCount() << '\n';
+    std::cout << "Signature: " << header.GetFileSignature() << std::endl;
+    std::cout << "Points count: " << header.GetPointRecordsCount() << std::endl;
 
     cs::LidarDataType::AttributesType attributes(header.GetPointRecordsCount(),cs::DataFormatType::las);
     attributes.dataFileName() = filename;
@@ -96,8 +96,18 @@ bool LasMetaDataIO::m_isRegistered = LasMetaDataIO::Register();
 
 void LasIO::loadData(LidarDataContainer& lidarContainer, std::string filename)
 {
-    std::ifstream las_ifs(filename.c_str(), std::ios::binary);
+    getPaths(lidarContainer, filename);
+    std::ifstream las_ifs(m_data_path.c_str(), std::ios::binary);
+    if(!las_ifs.good()) throw std::logic_error(std::string(__FUNCTION__) + ": Failed to open " + m_data_path +"\n");
     liblas::Reader reader(las_ifs);
+    boost::uint32_t n_points = reader.GetHeader().GetPointRecordsCount();
+    if(n_points != lidarContainer.size())
+    {
+        std::cout << __FILE__ << ":" << __LINE__ << ": WARNING: Number of points in header=" << n_points <<
+                     " differs from container size " << lidarContainer.size() << "->fixing container" << std::endl;
+        lidarContainer.resize(n_points);
+        lidarContainer.getXmlStructure()->attributes().dataSize(n_points);
+    }
 
     // fill the container
     int decalage_x = lidarContainer.getDecalage("x");
@@ -142,13 +152,9 @@ bool LasIO::Register()
 }
 
 
-LasIO::LasIO()
-{
-}
+LasIO::LasIO():LidarFileIO(".las"){}
 
-LasIO::~LasIO()
-{
-}
+LasIO::~LasIO(){}
 
 bool registerLasOk = LasIO::Register();
 

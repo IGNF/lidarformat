@@ -192,7 +192,13 @@ public:
 
     inline shared_ptr<cs::LidarDataType> getXmlStructure() const {return m_xmlData;}
     inline std::string getDataFilename() const {return m_xmlData->attributes().dataFileName().get();}
-    inline void setDataFilename(std::string filename) const {m_xmlData->attributes().dataFileName(filename);}
+    inline bool getDataFilename(std::string & filename) const
+    {
+        bool has_data_filename = m_xmlData->attributes().dataFileName().present();
+        if(has_data_filename) filename = m_xmlData->attributes().dataFileName().get();
+        return has_data_filename;
+    }
+    inline void setDataFilename(const std::string & filename) const {m_xmlData->attributes().dataFileName(filename);}
 
     const unsigned int pointSize() const { return pointSize_; }
 

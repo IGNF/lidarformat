@@ -159,12 +159,8 @@ bool ASCIILidarFileIO::Register()
 
 bool ASCIILidarFileIO::m_isRegistered = ASCIILidarFileIO::Register();
 
-ASCIILidarFileIO::ASCIILidarFileIO():StandardLidarFileIO()
-{
-}
+ASCIILidarFileIO::ASCIILidarFileIO():StandardLidarFileIO(".txt"){}
 
-ASCIILidarFileIO::~ASCIILidarFileIO()
-{
-}
+ASCIILidarFileIO::~ASCIILidarFileIO(){}
 
 } //namespace Lidar

@@ -70,30 +70,32 @@ bool PlyMetaDataIO::m_isRegistered = PlyMetaDataIO::Register();
 
 void BinaryPLYArchiLidarFileIO::loadData(LidarDataContainer& lidarContainer, std::string filename)
 {
+    getPaths(lidarContainer,filename);
     // BV: very subtle problem: windows endlines are counted double in ascii (\R\N), but not in binary (0a)
     // so under windows there will be a shift between ascii and binary positions
-    // My solution: we get the data size from the xml and get the end header position from end of file based on it
-    // TODO: more careful checking of xml/ply coherence
-    std::ifstream ply_ifs(filename.c_str(), std::ios::binary);
-    if(ply_ifs.good())
+    // My solution: we get the data size from the lidarContainer and get the end header position from end of file based on it
+    std::ifstream ply_ifs(m_data_path.c_str(), std::ios::binary);
+    if(!ply_ifs.good()) throw std::logic_error(std::string(__FUNCTION__) + ": Failed to open " + m_data_path +"\n");
+    ply_ifs.seekg(0, std::ios::end);
+    const int dataSize = lidarContainer.size()*lidarContainer.pointSize();
+    if(ply_ifs.tellg() < dataSize)
     {
-        ply_ifs.seekg(0, std::ios::end);
-        const int dataSize = lidarContainer.size()*lidarContainer.pointSize();
-        if(ply_ifs.tellg() < dataSize)
-            std::cout << "ERROR (BinaryPLYArchiLidarFileIO::loadData) binary file size " << ply_ifs.tellg() << "< what xml expects: " << dataSize << std::endl;
-        ply_ifs.seekg(-dataSize, std::ios::end);
-        //std::cout << "Binary part starts at " << fileInBin.tellg() << std::endl;
-        // lidarContainer.allocate(lidarMetaData.nbPoints_); // BV: do we need that ? works well without
-        ply_ifs.read(lidarContainer.rawData(), dataSize);
+        std::ostringstream oss;
+        oss << "BinaryPLYArchiLidarFileIO::loadData: binary file size " << ply_ifs.tellg() << "< what xml expects: " << dataSize << std::endl;
+        oss <<  "lidarContainer.size()=" << lidarContainer.size() << ", lidarContainer.pointSize()=" << lidarContainer.pointSize() << std:: endl;
+        throw std::logic_error(oss.str());
     }
-    else
-        throw std::logic_error("ERROR (BinaryPLYArchiLidarFileIO::loadData) " + filename + " does not exist or cannot be accessed ! \n");
+    ply_ifs.seekg(-dataSize, std::ios::end);
+    //std::cout << "Binary part starts at " << fileInBin.tellg() << std::endl;
+    // lidarContainer.allocate(lidarMetaData.nbPoints_); // BV: do we need that ? works well without
+    ply_ifs.read(lidarContainer.rawData(), dataSize);
 }
 
 
 void BinaryPLYArchiLidarFileIO::save(const LidarDataContainer& lidarContainer, std::string filename)
 {
-    SavePly(lidarContainer, filename);
+    getPaths(lidarContainer, filename);
+    SavePly(lidarContainer, m_data_path);
 }
 
 boost::shared_ptr<BinaryPLYArchiLidarFileIO> createBinaryPLYArchiLidarFileReader()
@@ -108,8 +110,7 @@ bool BinaryPLYArchiLidarFileIO::Register()
     return true;
 }
 
-BinaryPLYArchiLidarFileIO::BinaryPLYArchiLidarFileIO()
-{}
+BinaryPLYArchiLidarFileIO::BinaryPLYArchiLidarFileIO():LidarFileIO(".ply"){}
 
 bool BinaryPLYArchiLidarFileIO::m_isRegistered = BinaryPLYArchiLidarFileIO::Register();
 

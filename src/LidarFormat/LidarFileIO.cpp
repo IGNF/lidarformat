@@ -41,6 +41,8 @@ Contributors:
 
 
 #include "LidarFileIO.h"
+#include "LidarDataContainer.h"
+#include "boost/filesystem.hpp"
 
 namespace Lidar
 {
@@ -53,13 +55,34 @@ MetaDataIO::~MetaDataIO()
 {
 }
 
+void LidarFileIO::getPaths(const LidarDataContainer& lidarContainer, std::string filename)
+{
+    boost::filesystem::path xml_path(filename), data_path(filename);
+    if(!lidarContainer.getDataFilename(m_data_path))
+        data_path.replace_extension(m_ext);
+    else data_path = m_data_path;
+    if(data_path.is_relative()) data_path = xml_path.parent_path() / data_path;
+
+    if(".xml" != xml_path.extension().string())
+    {
+        if(data_path != xml_path) // here xml_path is not an xml
+            throw std::logic_error("Called " + std::string(__FUNCTION__) + "(lidarContainer," + filename +
+                                   ") with lidarContainer.getDataFilename()=" + lidarContainer.getDataFilename() + "\n");
+        xml_path.replace_extension(".xml").string();
+    }
+    m_xml_path = xml_path.string();
+    m_data_path = data_path.string();
+    std::cout << __FILE__ << ":" << __LINE__ << ": xml_path=" << xml_path.string() << std::endl;
+    std::cout << __FILE__ << ":" << __LINE__ << ": data_path=" << data_path.string() << std::endl;
+
+}
+
 void LidarFileIO::setXMLData(const boost::shared_ptr<cs::LidarDataType>& xmlData)
 {
-	m_xmlData=xmlData;
 }
 
 
-LidarFileIO::LidarFileIO()
+LidarFileIO::LidarFileIO(std::string ext):m_xml_path(""), m_data_path(""),m_ext(ext)
 {
 }
 

@@ -55,23 +55,32 @@ boost::shared_ptr<cs::LidarDataType> StandardMetaDataIO::load(const string& file
 {
     // filename is supposed to be xml and dataFilename given in xml
     // if not, assume filename is a datafilename and try to do something intelligent with it rather than crashing
-    string xml_filename = filename;
-    boost::filesystem::path file_path(filename);
+    boost::filesystem::path xml_path(filename), data_path(filename);
     bool ext_was_changed = false;
-    if(".xml" != file_path.extension().string())
+    if(".xml" != xml_path.extension().string())
     {
-        xml_filename = file_path.replace_extension(".xml").string();
+        xml_path.replace_extension(".xml");
         ext_was_changed = true;
+    }
+    if(!boost::filesystem::exists(xml_path))
+    {
+        std::cout << xml_path << " does not exist" << std::endl;
+        xml_path = xml_path.parent_path() / "common.xml";
+        if(!boost::filesystem::exists(xml_path))
+        {
+            throw logic_error("No .xml file found for StandardMetaDataIO::load("+filename+")\n");
+        } else std::cout << "StandardMetaDataIO::load using " << xml_path << endl;
     }
     // load the xml (either given as argument or generated)
     //auto_ptr<cs::LidarDataType> ap(cs::lidarData(dataFileName, xml_schema::Flags::dont_validate));
-    boost::shared_ptr<cs::LidarDataType> xmlStructure(cs::lidarData(xml_filename, xml_schema::Flags::dont_validate));
+    boost::shared_ptr<cs::LidarDataType> xmlStructure(cs::lidarData(xml_path.string(), xml_schema::Flags::dont_validate));
 
     if(ext_was_changed && xmlStructure->attributes().dataFileName().present())
     {
-        string data_filename = xmlStructure->attributes().dataFileName().get();
-        if(filename != data_filename)
-            throw logic_error("Called XmlMetaDataIO::load("+filename+") but "+xml_filename+" says data is in "+data_filename+"\n");
+        boost::filesystem::path data_path_from_xml(xmlStructure->attributes().dataFileName().get());
+        if(data_path_from_xml.filename() != data_path.filename())
+            throw logic_error("Called StandardMetaDataIO::load("+filename+") but "+xml_path.string()
+                              +" says data is in "+data_path_from_xml.string()+"\n");
     }
     return xmlStructure;
 }
@@ -84,21 +93,13 @@ boost::shared_ptr<StandardMetaDataIO> createStandardMetaDataReader()
 bool StandardMetaDataIO::Register()
 {
     MetaDataIOFactory::instance().Register(".xml", createStandardMetaDataReader);
+    MetaDataIOFactory::instance().Register(".bin", createStandardMetaDataReader);
+    MetaDataIOFactory::instance().Register(".txt", createStandardMetaDataReader);
     return true;
 }
 
 bool StandardMetaDataIO::m_isRegistered = StandardMetaDataIO::Register();
 
-
-void StandardLidarFileIO::getPaths(const LidarDataContainer& lidarContainer, std::string filename)
-{
-    boost::filesystem::path xml_path(filename);
-    xml_path.replace_extension(".xml").string();
-    boost::filesystem::path data_path(lidarContainer.getDataFilename());
-    if(data_path.is_relative()) data_path = xml_path.parent_path() / data_path;
-    m_xml_path = xml_path.string();
-    m_data_path = data_path.string();
-}
 
 void StandardLidarFileIO::saveXml(const LidarDataContainer& lidarContainer, std::string filename)
 {
@@ -114,6 +115,6 @@ void StandardLidarFileIO::saveXml(const LidarDataContainer& lidarContainer, std:
 
 StandardLidarFileIO::~StandardLidarFileIO(){}
 
-StandardLidarFileIO::StandardLidarFileIO():m_xml_path(""), m_data_path(""){}
+StandardLidarFileIO::StandardLidarFileIO(std::string ext):LidarFileIO(ext){}
 
 } //namespace Lidar
