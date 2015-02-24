@@ -34,7 +34,7 @@ endif(ENABLE_TERRABIN)
 ####
 #### Use PlyArchi format
 ####
-# BV: always enable because it is now used in LidarFile and it does not add any dependency
+# BV: always enable because it does not add any dependency
 ADD_DEFINITIONS(-DENABLE_PLYARCHI)
 AUX_SOURCE_DIRECTORY(${SRC_DIR}/LidarFormat/file_formats/PlyArchi SRC_PLYARCHI)
 SET( ALL_SOURCES ${ALL_SOURCES} ${SRC_PLYARCHI})

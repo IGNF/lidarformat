@@ -20,7 +20,7 @@ Author:
 	
 Contributors:
 
-	Nicolas David, Olivier Tournaire
+    Nicolas David, Olivier Tournaire, Bruno Vallet
 	
 	
 
@@ -51,6 +51,7 @@ Contributors:
 namespace Lidar
 {
 
+typedef boost::detail::thread::singleton<Factory<MetaDataIO> > MetaDataIOFactory;
 typedef boost::detail::thread::singleton<Factory<LidarFileIO> > LidarIOFactory;
 
 } //namespace Lidar

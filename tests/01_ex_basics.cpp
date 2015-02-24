@@ -74,6 +74,7 @@ int main()
 
 	//data test filename (trunk/data/testAscii.xml)
 	const string lidarFileName(string(PATH_LIDAR_TEST_DATA) + "/testAscii.xml");
+    cout << "Loading " << lidarFileName << endl;
 
 	//create a LidarFile which reads the XML file and contains informations about the data
 	//(size, number of attributes, types of attributes, path to the data file)

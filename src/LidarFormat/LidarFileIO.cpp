@@ -20,7 +20,7 @@ Author:
 	
 Contributors:
 
-	Nicolas David, Olivier Tournaire
+    Nicolas David, Olivier Tournaire, Bruno Vallet
 	
 	
 
@@ -45,6 +45,13 @@ Contributors:
 namespace Lidar
 {
 
+MetaDataIO::MetaDataIO()
+{
+}
+
+MetaDataIO::~MetaDataIO()
+{
+}
 
 void LidarFileIO::setXMLData(const boost::shared_ptr<cs::LidarDataType>& xmlData)
 {

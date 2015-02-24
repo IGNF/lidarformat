@@ -20,7 +20,7 @@ Author:
 	
 Contributors:
 
-	Nicolas David, Olivier Tournaire
+    Nicolas David, Olivier Tournaire, Bruno Vallet
 	
 	
 
@@ -51,18 +51,29 @@ Contributors:
 
 namespace Lidar
 {
+class TerraBINMetaDataIO : public MetaDataIO
+{
+public:
+    virtual ~TerraBINMetaDataIO(){}
+
+    virtual boost::shared_ptr<cs::LidarDataType> load(const std::string& filename);
+
+    static bool Register();
+    friend boost::shared_ptr<TerraBINMetaDataIO> createTerraBINMetaDataReader();
+
+private:
+    TerraBINMetaDataIO(){}
+
+    static bool m_isRegistered;
+};
 
 class TerraBINLidarFileIO : public LidarFileIO {
 
 public:
 	virtual ~TerraBINLidarFileIO();
 
-    virtual void loadData(LidarDataContainer& lidarContainer,
-                          const XMLLidarMetaData& lidarMetaData,
-                          const XMLAttributeMetaDataContainerType& attributesDescription);
-    virtual void save(const LidarDataContainer& lidarContainer,
-                      const cs::LidarDataType& xmlStructure,
-                      const std::string& binaryDataFileName);
+    virtual void loadData(LidarDataContainer& lidarContainer, std::string filename);
+    virtual void save(const LidarDataContainer& lidarContainer, std::string filename);
 
 	static bool Register();
 	friend boost::shared_ptr<TerraBINLidarFileIO> createTerraBINLidarFileReader();

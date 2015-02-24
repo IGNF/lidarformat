@@ -20,7 +20,7 @@ Adrien Chauve
 
 Contributors:
 
-Nicolas David, Olivier Tournaire
+Nicolas David, Olivier Tournaire, Bruno Vallet
 
 
 
@@ -49,60 +49,69 @@ License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
 namespace Lidar
 {
 
-    void BinaryPLYArchiLidarFileIO::loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData& lidarMetaData, const XMLAttributeMetaDataContainerType& attributesDescription)
+boost::shared_ptr<cs::LidarDataType> PlyMetaDataIO::load(const std::string& filename)
+{
+    return PlyHeaderToLidarDataType(filename);
+}
+
+boost::shared_ptr<PlyMetaDataIO> createPlyMetaDataReader()
+{
+    return boost::shared_ptr<PlyMetaDataIO>(new PlyMetaDataIO());
+}
+
+bool PlyMetaDataIO::Register()
+{
+    MetaDataIOFactory::instance().Register(".ply", createPlyMetaDataReader);
+    return true;
+}
+
+bool PlyMetaDataIO::m_isRegistered = PlyMetaDataIO::Register();
+
+
+void BinaryPLYArchiLidarFileIO::loadData(LidarDataContainer& lidarContainer, std::string filename)
+{
+    // BV: very subtle problem: windows endlines are counted double in ascii (\R\N), but not in binary (0a)
+    // so under windows there will be a shift between ascii and binary positions
+    // My solution: we get the data size from the xml and get the end header position from end of file based on it
+    // TODO: more careful checking of xml/ply coherence
+    std::ifstream ply_ifs(filename.c_str(), std::ios::binary);
+    if(ply_ifs.good())
     {
-
-        // BV: very subtle problem: windows endlines are counted double in ascii (\R\N), but not in binary (0a)
-        // so under windows there will be a shift between ascii and binary positions
-        // My solution: we get the data size from the xml and get the end header position from end of file based on it
-        // TODO: more careful checking of xml/ply coherence
-        std::ifstream fileInBin(lidarMetaData.binaryDataFileName_.c_str(), std::ios::binary);
-        if(fileInBin.good())
-        {
-            fileInBin.seekg(0, std::ios::end);
-            const int dataSize = lidarMetaData.nbPoints_*lidarContainer.pointSize();
-            if(fileInBin.tellg() < dataSize)
-                std::cout << "ERROR (BinaryPLYArchiLidarFileIO::loadData) binary file size " << fileInBin.tellg() << "< what xml expects: " << dataSize << std::endl;
-            fileInBin.seekg(-dataSize, std::ios::end);
-            //std::cout << "Binary part starts at " << fileInBin.tellg() << std::endl;
-            // lidarContainer.allocate(lidarMetaData.nbPoints_); // BV: do we need that ? works well without
-            fileInBin.read(lidarContainer.rawData(), dataSize);
-        }
-        else
-            throw std::logic_error("ERROR (BinaryPLYArchiLidarFileIO::loadData) binary file " + lidarMetaData.binaryDataFileName_ + " does not exist or cannot be accessed ! \n");
+        ply_ifs.seekg(0, std::ios::end);
+        const int dataSize = lidarContainer.size()*lidarContainer.pointSize();
+        if(ply_ifs.tellg() < dataSize)
+            std::cout << "ERROR (BinaryPLYArchiLidarFileIO::loadData) binary file size " << ply_ifs.tellg() << "< what xml expects: " << dataSize << std::endl;
+        ply_ifs.seekg(-dataSize, std::ios::end);
+        //std::cout << "Binary part starts at " << fileInBin.tellg() << std::endl;
+        // lidarContainer.allocate(lidarMetaData.nbPoints_); // BV: do we need that ? works well without
+        ply_ifs.read(lidarContainer.rawData(), dataSize);
     }
+    else
+        throw std::logic_error("ERROR (BinaryPLYArchiLidarFileIO::loadData) " + filename + " does not exist or cannot be accessed ! \n");
+}
 
-    void BinaryPLYArchiLidarFileIO::save(const LidarDataContainer& lidarContainer,
-                                         const cs::LidarDataType& xmlStructure,
-                                         const std::string& dataFileName)
-    {
-        // TODO: handle transfo
-        LidarCenteringTransfo transfo;
-        if(xmlStructure.attributes().centeringTransfo().present())
-        {
-            transfo.setTransfo(xmlStructure.attributes().centeringTransfo().get().tx(),
-                               xmlStructure.attributes().centeringTransfo().get().ty());
-        }
-        //std::cout << "Called BinaryPLYArchiLidarFileIO::save " <<  dataFileName << std::endl;
-        SavePly(lidarContainer, transfo, dataFileName);
-    }
 
-    boost::shared_ptr<BinaryPLYArchiLidarFileIO> createBinaryPLYArchiLidarFileReader()
-    {
-        return boost::shared_ptr<BinaryPLYArchiLidarFileIO>(new BinaryPLYArchiLidarFileIO());
-    }
+void BinaryPLYArchiLidarFileIO::save(const LidarDataContainer& lidarContainer, std::string filename)
+{
+    SavePly(lidarContainer, filename);
+}
 
-    bool BinaryPLYArchiLidarFileIO::Register()
-    {
-        //	std::cout << "Format cs : " << cs::DataFormatType(cs::DataFormatType::binary_one_file_ungrouped) << std::endl;
-        LidarIOFactory::instance().Register(cs::DataFormatType(cs::DataFormatType::plyarchi), createBinaryPLYArchiLidarFileReader);
-        return true;
-    }
+boost::shared_ptr<BinaryPLYArchiLidarFileIO> createBinaryPLYArchiLidarFileReader()
+{
+    return boost::shared_ptr<BinaryPLYArchiLidarFileIO>(new BinaryPLYArchiLidarFileIO());
+}
 
-    BinaryPLYArchiLidarFileIO::BinaryPLYArchiLidarFileIO()
-    {}
+bool BinaryPLYArchiLidarFileIO::Register()
+{
+    //	std::cout << "Format cs : " << cs::DataFormatType(cs::DataFormatType::binary_one_file_ungrouped) << std::endl;
+    LidarIOFactory::instance().Register(cs::DataFormatType(cs::DataFormatType::plyarchi), createBinaryPLYArchiLidarFileReader);
+    return true;
+}
 
-    bool BinaryPLYArchiLidarFileIO::m_isRegistered = BinaryPLYArchiLidarFileIO::Register();
+BinaryPLYArchiLidarFileIO::BinaryPLYArchiLidarFileIO()
+{}
+
+bool BinaryPLYArchiLidarFileIO::m_isRegistered = BinaryPLYArchiLidarFileIO::Register();
 
 
 }

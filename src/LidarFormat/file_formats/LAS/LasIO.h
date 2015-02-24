@@ -8,21 +8,21 @@ clouds with a variable number of attributes at runtime.
 
 Homepage: 
 
-	http://code.google.com/p/lidarformat
-	
+    http://code.google.com/p/lidarformat
+
 Copyright:
-	
-	Institut Geographique National & CEMAGREF (2009)
+
+    Institut Geographique National & CEMAGREF (2009)
 
 Author: 
 
-	Adrien Chauve
-	
+    Adrien Chauve
+
 Contributors:
 
-	Nicolas David, Olivier Tournaire
-	
-	
+    Nicolas David, Olivier Tournaire, Bruno Vallet
+
+
 
     LidarFormat is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published
@@ -34,9 +34,9 @@ Contributors:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public 
+    You should have received a copy of the GNU Lesser General Public
     License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 ***********************************************************************/
 
 
@@ -48,24 +48,35 @@ Contributors:
 
 namespace Lidar
 {
+class LasMetaDataIO : public MetaDataIO
+{
+public:
+    virtual ~LasMetaDataIO(){}
+
+    virtual boost::shared_ptr<cs::LidarDataType> load(const std::string& filename);
+
+    static bool Register();
+    friend boost::shared_ptr<LasMetaDataIO> createLasMetaDataReader();
+
+private:
+    LasMetaDataIO(){}
+
+    static bool m_isRegistered;
+};
 
 class LasIO : public LidarFileIO
 {
-	public:
-		virtual ~LasIO();
+public:
+    virtual ~LasIO();
 
-        virtual void loadData(LidarDataContainer& lidarContainer,
-                              const XMLLidarMetaData& lidarMetaData,
-                              const XMLAttributeMetaDataContainerType& attributesDescription);
-        virtual void save(const LidarDataContainer& lidarContainer,
-                          const cs::LidarDataType& xmlStructure,
-                          const std::string& binaryDataFileName);
+    virtual void loadData(LidarDataContainer& lidarContainer, std::string filename);
+    virtual void save(const LidarDataContainer& lidarContainer, std::string filename);
 
-		static bool Register();
-		friend boost::shared_ptr<LasIO> createLasIO();
+    static bool Register();
+    friend boost::shared_ptr<LasIO> createLasIO();
 
-	private:
-		LasIO();
+private:
+    LasIO();
 };
 
 } //namespace Lidar

@@ -14,24 +14,26 @@
 namespace Lidar
 {
 
-// conversion from ply to lf type names
+/// conversion from ply to lf type names
 std::string Ply2Lf(std::string ply_type);
 
-// write the xml header corresponding to the ply file
-// returns the name of the header
+/// write the xml header corresponding to the ply file
+/// returns the name of the header
 std::string WritePlyXmlHeader(const std::string& ply_filename, bool debug=false);
 
-// directly read a ply file in lf by generating a lf .xml header (cf function above) then reading it
+boost::shared_ptr<cs::LidarDataType> PlyHeaderToLidarDataType(const std::string& ply_filename, bool debug=false);
+
+/// directly read a ply file in lf by generating a lf .xml header (cf function above) then reading it DEPRECATED
 void ReadPly(const std::string& ply_filename,
              LidarDataContainer& container,
              LidarCenteringTransfo& transfo);
 
-// save the container and centering as a ply file
+/// save the container and centering as a ply file DEPRECATED
 void SavePly(const LidarDataContainer& container,
              const LidarCenteringTransfo& transfo,
              const std::string& ply_filename);
 
-// save the container as a ply file
+/// save the container as a ply file DEPRECATED
 void SavePly(const LidarDataContainer& container,
              const std::string& ply_filename);
 
