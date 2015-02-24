@@ -8,21 +8,21 @@ clouds with a variable number of attributes at runtime.
 
 Homepage: 
 
-	http://code.google.com/p/lidarformat
-	
+    http://code.google.com/p/lidarformat
+
 Copyright:
-	
-	Institut Geographique National & CEMAGREF (2009)
+
+    Institut Geographique National & CEMAGREF (2009)
 
 Author: 
 
-	Adrien Chauve
-	
+    Adrien Chauve
+
 Contributors:
 
-	Nicolas David, Olivier Tournaire
-	
-	
+    Nicolas David, Olivier Tournaire, Bruno Vallet
+
+
 
     LidarFormat is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published
@@ -34,9 +34,9 @@ Contributors:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public 
+    You should have received a copy of the GNU Lesser General Public
     License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 ***********************************************************************/
 
 
@@ -54,46 +54,46 @@ namespace Lidar
 
 class LidarDataContainer;
 
-
-
-struct XMLLidarMetaData
+/// BV: refactored with 2 objectives:
+/// 1) to have an identical api for lidarformat (.xml/.(bin|txt)) and non-lidarformat (.ply, .las,...) file formats
+/// filename should be the .xml in the first case and .ply/.las in the second
+/// 2) keeping the possibility to load meta-data and data separately
+/// As in OpenSceneGraph, all loaders are attempted (in the order they were declared) to load meta data
+/// thus a loader should simply return false if anything is wrong (starting with wrong extention
+class MetaDataIO
 {
-	XMLLidarMetaData() : nbPoints_(0), xmlFileName_(""), binaryDataFileName_("") {}
-    std::size_t nbPoints_;
-    std::string xmlFileName_;
-    std::string binaryDataFileName_;
-};
+public:
+    virtual ~MetaDataIO();
 
-struct XMLAttributeMetaData
-{
-    XMLAttributeMetaData(): name_(""), type_(LidarDataType::int8), loaded_(false), min_(0.), max_(0.) {}
-    explicit XMLAttributeMetaData(const std::string &name, const EnumLidarDataType type, const bool loaded,
-                                  const bool dirty, const double min=0., const double max=0.):
-        name_(name), type_(type), loaded_(loaded), dirty_(dirty), min_(min), max_(max) {}
-    std::string name_; //attribute name
-	EnumLidarDataType type_; //attribute type
-    bool loaded_, dirty_; // attribute is loaded, attribute bounds are dirty (need recompute)
-    double min_, max_; // min/max attribute value
-};
-typedef std::vector<XMLAttributeMetaData> XMLAttributeMetaDataContainerType;
+    /// load meta data from the specific file format
+    /// throws on error
+    virtual boost::shared_ptr<cs::LidarDataType> load(const std::string& filename)=0;
 
+protected:
+    MetaDataIO();
+};
 
 class LidarFileIO
 {
-	public:
-		virtual ~LidarFileIO();
+public:
+    virtual ~LidarFileIO();
 
-		virtual void loadData(LidarDataContainer& lidarContainer, const XMLLidarMetaData& lidarMetaData, const XMLAttributeMetaDataContainerType& attributesDescritpion)=0;
-        // BV: in order to export standard filetypes (ply, las,...) save should have metadata
-        virtual void save(const LidarDataContainer& lidarContainer, const cs::LidarDataType& xmlStructure, const std::string& dataFileName)=0;
+    /// BV: all meta data assumed loaded in the container and memory allocated
+    /// for lidarformat formats, filename is the xml and it is used to make the binary filename (from metadata) absolute
+    /// throws on error
+    virtual void loadData(LidarDataContainer& lidarContainer, std::string filename)=0;
 
+    /// data filename is in the container's xml structure.
+    /// for lidarformat, accompanying xml filename is inferred from data filename by replacing ext by .xml
+    virtual void save(const LidarDataContainer& lidarContainer, std::string filename)=0;
 
-		void setXMLData(const boost::shared_ptr<cs::LidarDataType>& xmlData);
+    /// DEPRECATED, use loadMetaData() instead
+    void setXMLData(const boost::shared_ptr<cs::LidarDataType>& xmlData);
 
-	protected:
-		LidarFileIO();
+protected:
+    LidarFileIO();
 
-		boost::shared_ptr<cs::LidarDataType> m_xmlData;
+    boost::shared_ptr<cs::LidarDataType> m_xmlData;
 
 };
 

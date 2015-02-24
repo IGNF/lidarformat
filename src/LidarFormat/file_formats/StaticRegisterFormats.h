@@ -20,7 +20,7 @@ Author:
 	
 Contributors:
 
-	Nicolas David, Olivier Tournaire
+    Nicolas David, Olivier Tournaire, Bruno Vallet
 	
 	
 

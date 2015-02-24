@@ -39,30 +39,40 @@ Contributors:
 
 ***********************************************************************/
 
-#include "LidarFormat/file_formats/standard/ASCIILidarFileIO.h"
-#include "LidarFormat/file_formats/standard/BinaryLidarFileIO.h"
-#include "LidarFormat/file_formats/PlyArchi/BinaryPLYArchiLidarFileIO.h"
-#ifdef ENABLE_TERRABIN
-#include "LidarFormat/file_formats/TerraBin/TerraBINLidarFileIO.h"
-#endif // ENABLE_TERRABIN
-#ifdef ENABLE_LAS
-#include "LidarFormat/file_formats/LAS/LasIO.h"
-#endif // ENABLE_LAS
+#pragma once
 
-void registerAllFileFormats()
+#include "LidarFormat/LidarFileIO.h"
+
+namespace Lidar
 {
-    using namespace Lidar;
-    ASCIILidarFileIO::Register();
-    BinaryLidarFileIO::Register();
-    BinaryPLYArchiLidarFileIO::Register();
-    StandardMetaDataIO::Register();
-    PlyMetaDataIO::Register();
-#ifdef ENABLE_TERRABIN
-    TerraBINLidarFileIO::Register();
-    TerraBINMetaDataIO::Register();
-#endif // ENABLE_TERRABIN
-#ifdef ENABLE_LAS
-    LasIO::Register();
-    LasMetaDataIO::Register();
-#endif // ENABLE_LAS
-}
+
+class StandardMetaDataIO : public MetaDataIO
+{
+public:
+    virtual ~StandardMetaDataIO(){}
+
+    virtual boost::shared_ptr<cs::LidarDataType> load(const std::string& filename);
+
+    static bool Register();
+    friend boost::shared_ptr<StandardMetaDataIO> createStandardMetaDataReader();
+
+private:
+    StandardMetaDataIO(){}
+
+    static bool m_isRegistered;
+};
+
+class StandardLidarFileIO : public LidarFileIO
+{
+public:
+    virtual ~StandardLidarFileIO();
+    virtual void getPaths(const LidarDataContainer& lidarContainer, std::string filename);
+    virtual void saveXml(const LidarDataContainer& lidarContainer, std::string filename);
+
+protected:
+    StandardLidarFileIO();
+    std::string m_xml_path, m_data_path;
+};
+
+} //namespace Lidar
+

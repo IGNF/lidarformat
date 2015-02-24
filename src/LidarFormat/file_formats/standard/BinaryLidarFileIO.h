@@ -8,21 +8,21 @@ clouds with a variable number of attributes at runtime.
 
 Homepage: 
 
-	http://code.google.com/p/lidarformat
-	
+    http://code.google.com/p/lidarformat
+
 Copyright:
-	
-	Institut Geographique National & CEMAGREF (2009)
+
+    Institut Geographique National & CEMAGREF (2009)
 
 Author: 
 
-	Adrien Chauve
-	
+    Adrien Chauve
+
 Contributors:
 
-	Nicolas David, Olivier Tournaire
-	
-	
+    Nicolas David, Olivier Tournaire, Bruno Vallet
+
+
 
     LidarFormat is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published
@@ -34,39 +34,34 @@ Contributors:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public 
+    You should have received a copy of the GNU Lesser General Public
     License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 ***********************************************************************/
 
 
 #ifndef BINARYLIDARFILEIO_H_
 #define BINARYLIDARFILEIO_H_
 
-#include "LidarFormat/LidarFileIO.h"
+#include "LidarFormat/file_formats/standard/StandardLidarFileIO.h"
 
 namespace Lidar
 {
 
-class BinaryLidarFileIO : public LidarFileIO
+class BinaryLidarFileIO : public StandardLidarFileIO
 {
-	public:
-		virtual ~BinaryLidarFileIO();
+public:
+    virtual ~BinaryLidarFileIO();
+    virtual void loadData(LidarDataContainer& lidarContainer, std::string filename);
+    virtual void save(const LidarDataContainer& lidarContainer, std::string filename);
 
-        virtual void loadData(LidarDataContainer& lidarContainer,
-                              const XMLLidarMetaData& lidarMetaData,
-                              const XMLAttributeMetaDataContainerType& attributesDescription);
-        virtual void save(const LidarDataContainer& lidarContainer,
-                          const cs::LidarDataType& xmlStructure,
-                          const std::string& binaryDataFileName);
+    static bool Register();
+    friend boost::shared_ptr<BinaryLidarFileIO> createBinaryLidarFileReader();
 
-		static bool Register();
-		friend boost::shared_ptr<BinaryLidarFileIO> createBinaryLidarFileReader();
+private:
+    BinaryLidarFileIO();
 
-	private:
-		BinaryLidarFileIO();
-
-		static bool m_isRegistered;
+    static bool m_isRegistered;
 };
 
 } //namespace Lidar

@@ -191,6 +191,33 @@ void LidarDataContainer::setMapsFromXML(shared_ptr<cs::LidarDataType> xmlData)
     }
 }
 
+void LidarDataContainer::updateXMLStructure(
+        const std::string& dataFileName,
+        const cs::DataFormatType format,
+        const LidarCenteringTransfo& transfo)
+{
+    // todo: update instead of regenerating
+    // generate xml file
+    cs::LidarDataType::AttributesType attributes(size(), format);
+
+    // insert attributes in the xml (with their names and types)
+    for(AttributeMapType::const_iterator it=attributeMap_->begin(); it!=attributeMap_->end(); ++it)
+    {
+        attributes.attribute().push_back(it->second);
+    }
+
+    // add transfo
+    if(transfo.isSet())
+    {
+        attributes.centeringTransfo(cs::CenteringTransfoType(transfo.x(), transfo.y()));
+    }
+
+    // add dataFilename
+    attributes.dataFileName() = dataFileName;
+
+    *m_xmlData = cs::LidarDataType(attributes);
+}
+
 void LidarDataContainer::load(std::string dataFileName)
 {
     LidarFile file(dataFileName);

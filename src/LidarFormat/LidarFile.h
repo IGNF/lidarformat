@@ -94,24 +94,21 @@ public:
     void loadData(LidarDataContainer& lidarContainer);
 
     /// Save container data in a file
-    static void save(const LidarDataContainer& lidarContainer,
+    static void save(LidarDataContainer& lidarContainer,
                      const std::string& xmlFileName,
                      const LidarCenteringTransfo& transfo,
                      const cs::DataFormatType format);
-    static void save(const LidarDataContainer& lidarContainer,
+    static void save(LidarDataContainer& lidarContainer,
                      const std::string& xmlFileName,
                      const cs::DataFormatType format);
-    static void save(const LidarDataContainer& lidarContainer,
-                     const std::string& xmlFileName,
-                     const cs::LidarDataType& xmlStructure);
-    static void save(const LidarDataContainer& lidarContainer,
+    static void save(LidarDataContainer& lidarContainer,
                      const std::string& dataFileName,
                      const LidarCenteringTransfo& transfo);
-    static void save(const LidarDataContainer& lidarContainer,
+    static void save(LidarDataContainer& lidarContainer,
                      const std::string& dataFileName);
 
     /// Save container data in the same file (in place)
-    static void saveInPlace(const LidarDataContainer& lidarContainer, const std::string& xmlFileName);
+    static void saveInPlace(LidarDataContainer& lidarContainer, const std::string& xmlFileName);
 
     /// Create xml structure from lidar container
     static shared_ptr<cs::LidarDataType> createXMLStructure(
@@ -128,17 +125,12 @@ protected:
     /// is the xml structure valid ?
     bool m_isValid;
 
-
-
-
-
-
     /// file meta data
-    XMLLidarMetaData m_lidarMetaData;
-    XMLAttributeMetaDataContainerType m_attributeMetaData;
+    //XMLLidarMetaData m_lidarMetaData;
+    //XMLAttributeMetaDataContainerType m_attributeMetaData;
 
     /// useful methods
-    /// load meta data from xml
+    /// load meta data from xml DEPRECATED, does nothing (now done by the MetaReaders for each format)
     void loadMetaDataFromXML();
 
     void setMapsFromXML(LidarDataContainer& lidarContainer) const;

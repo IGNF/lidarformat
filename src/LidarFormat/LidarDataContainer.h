@@ -98,6 +98,10 @@ public:
     LidarDataContainer& operator=(const LidarDataContainer&);
 
     void setMapsFromXML(shared_ptr<cs::LidarDataType> xmlData);
+    void updateXMLStructure(
+            const std::string& dataFileName,
+            const cs::DataFormatType format,
+            const LidarCenteringTransfo& transfo);
 
     /// BV: very practical to use in client code
     void load(std::string dataFileName);
@@ -186,6 +190,10 @@ public:
     /// the centering transfo is accessible through the xml structure
     bool getCenteringTransfo(double & x, double & y) const;
 
+    inline shared_ptr<cs::LidarDataType> getXmlStructure() const {return m_xmlData;}
+    inline std::string getDataFilename() const {return m_xmlData->attributes().dataFileName().get();}
+    inline void setDataFilename(std::string filename) const {m_xmlData->attributes().dataFileName(filename);}
+
     const unsigned int pointSize() const { return pointSize_; }
 
     void getAttributeList(std::vector<std::string> &liste) const;
@@ -241,10 +249,11 @@ private:
     ///data
     mutable LidarDataContainerType lidarData_;
     shared_ptr<AttributeMapType> attributeMap_; //infos sur les attributs
-    shared_ptr<cs::LidarDataType> m_xmlData; // data from the xml, can be modified by accessors
 
     unsigned int pointSize_;
 
+public:
+    shared_ptr<cs::LidarDataType> m_xmlData; // data from the xml, can be modified by accessors
 
 };
 

@@ -20,7 +20,7 @@ Author:
 
 Contributors:
 
-    Nicolas David, Olivier Tournaire
+    Nicolas David, Olivier Tournaire, Bruno Vallet
 
 
 
@@ -115,48 +115,25 @@ unsigned int LidarFile::getNbPoints() const
 }
 
 LidarFile::LidarFile(const std::string &filename):
-    m_isValid(false)
+    m_xmlFileName(filename), m_isValid(false)
 {
-    // BV: we want to tolerate loading directly other formats =>
-    // if ext is not .xml, do the following:
-    // if there is a .xml next to it, use it
-    // if not, generate it (in both cases dataFileName is relative)
-    // if it cannot be generated (read only) generate it in cwd => dataFileName must be absolute
     path filepath(filename);
-    if(filepath.extension().string() != ".xml") // filename is not xml, we need one
-    {
-        path xml_filepath(filename);
-        xml_filepath.replace_extension(".xml");
-        if(exists(xml_filepath)) // we found an xml, use it
-        {
-            m_xmlFileName = xml_filepath.string();
-            std::cout << "Using existing xml file " << m_xmlFileName << std::endl;
-        }
-        else // no xml found, create one
-        {
-            if(filepath.extension().string() == ".ply")  m_xmlFileName = WritePlyXmlHeader(filename);
-#ifdef ENABLE_LAS
-            if(filepath.extension().string() == ".las")  m_xmlFileName = WriteLasXmlHeader(filename);
-#endif // ENABLE_LAS
-            m_isValid = !m_xmlFileName.empty();
-            if(!m_isValid) std::cout << "Could not generate an xml file" << std::endl;
-        }
-    }
-    else m_xmlFileName = filename; // filename is xml, use it
+    std::string ext = filepath.extension().string();
+
+    // BV: we want to tolerate loading directly other formats =>
+    // there is now a MetaDataIOFactory to create meta data readers for all supported formats
+    boost::shared_ptr<MetaDataIO> reader = MetaDataIOFactory::instance().createObject(ext);
 
     // load the xml (either given as argument or generated)
     try
     {
-        std::auto_ptr<cs::LidarDataType> ap(cs::lidarData(m_xmlFileName, xml_schema::Flags::dont_validate));
-        m_xmlData  = boost::shared_ptr<cs::LidarDataType>(ap);
-        m_isValid =  true;
+        m_xmlData = reader->load(filename);
+        m_isValid = true;
     }
-
     catch( const std::exception &)
     {
-        m_isValid =  false;
+        m_isValid = false;
     }
-
 }
 
 void LidarFile::loadData(LidarDataContainer& lidarContainer)
@@ -164,16 +141,12 @@ void LidarFile::loadData(LidarDataContainer& lidarContainer)
     if(!isValid())
         throw std::logic_error("Error : Lidar xml file is not valid !\n");
 
-    // create reader using factory
-    boost::shared_ptr<LidarFileIO> reader = LidarIOFactory::instance().createObject(getFormat());
-
-    loadMetaDataFromXML();
+    //loadMetaDataFromXML(); // BV this is done by constructor
     lidarContainer.setMapsFromXML(m_xmlData);
-    lidarContainer.resize(m_lidarMetaData.nbPoints_);
+    lidarContainer.resize(m_xmlData->attributes().dataSize());
 
-    reader->setXMLData(m_xmlData);
-    reader->loadData(lidarContainer, m_lidarMetaData, m_attributeMetaData);
-
+    boost::shared_ptr<LidarFileIO> reader = LidarIOFactory::instance().createObject(m_xmlData->attributes().dataFormat());
+    reader->loadData(lidarContainer, m_xmlFileName);
 }
 
 void LidarFile::loadTransfo(LidarCenteringTransfo& transfo) const
@@ -220,27 +193,9 @@ shared_ptr<cs::LidarDataType> LidarFile::createXMLStructure(
     return xmlStructure;
 }
 
-void LidarFile::save(const LidarDataContainer& lidarContainer,
-                     const std::string& dataFileName,
-                     const cs::LidarDataType& xmlStructure)
-{
-    // todo: check dataFileName.extention() is consistent with xmlStructure.attributes().dataFormat()
-    path xmlFilePath(dataFileName);
-    xmlFilePath.replace_extension(".xml");
-    xml_schema::NamespaceInfomap map;
-    map[""].name = "cs";
-    //map[""].schema = "/src/LidarFormat/models/xsd/format_me.xsd";
-    std::ofstream ofs(xmlFilePath.string().c_str());
-    cs::lidarData(ofs, xmlStructure, map);
-
-    // create appropriate writer thanks to the factory
-    boost::shared_ptr<LidarFileIO> writer = LidarIOFactory::instance().createObject(xmlStructure.attributes().dataFormat());
-    writer->save(lidarContainer, xmlStructure, dataFileName);
-}
-
 // BV: create extention based on format
-void LidarFile::save(const LidarDataContainer& lidarContainer,
-                     const std::string& xmlFileName,
+void LidarFile::save(LidarDataContainer& lidarContainer,
+                     const std::string& filename,
                      const LidarCenteringTransfo& transfo,
                      const cs::DataFormatType format)
 {
@@ -254,15 +209,15 @@ void LidarFile::save(const LidarDataContainer& lidarContainer,
     case cs::DataFormatType::terrabin: ext=".terrabin"; break;
     default: ext=".bin";
     }
-    path dataFilePath(xmlFileName);
+    path dataFilePath(filename);
     dataFilePath.replace_extension(ext);
 
-    shared_ptr<cs::LidarDataType> xmlStructure = createXMLStructure(lidarContainer, dataFilePath.string(), transfo, format);
-
-    save(lidarContainer, dataFilePath.string(), *xmlStructure);
+    lidarContainer.updateXMLStructure(dataFilePath.string(), format, transfo);
+    boost::shared_ptr<LidarFileIO> writer = LidarIOFactory::instance().createObject(format);
+    writer->save(lidarContainer, dataFilePath.string());
 }
 
-void LidarFile::save(const LidarDataContainer& lidarContainer,
+void LidarFile::save(LidarDataContainer& lidarContainer,
                      const std::string& xmlFileName,
                      const cs::DataFormatType format)
 {
@@ -272,12 +227,12 @@ void LidarFile::save(const LidarDataContainer& lidarContainer,
 }
 
 // BV: guess format from given extention
-void LidarFile::save(const LidarDataContainer& lidarContainer,
-                     const std::string& dataFileName,
+void LidarFile::save(LidarDataContainer& lidarContainer,
+                     const std::string& filename,
                      const LidarCenteringTransfo& transfo)
 {
     // format should be inferred from dataFileName extension
-    path dataFilePath(dataFileName);
+    path dataFilePath(filename);
     std::string ext = dataFilePath.extension().string();
     cs::DataFormatType format = cs::DataFormatType::binary; // default (includes .xml and .bin)
     if(".txt" == ext) format = cs::DataFormatType::ascii;
@@ -288,12 +243,13 @@ void LidarFile::save(const LidarDataContainer& lidarContainer,
     // if user gives .xml filename without specifying format, assume he wants binary
     else if(".xml" == ext) dataFilePath.replace_extension(".bin");
 
-    shared_ptr<cs::LidarDataType> xmlStructure = createXMLStructure(lidarContainer, dataFilePath.string(), transfo, format);
-
-    save(lidarContainer, dataFilePath.string(), *xmlStructure);
+    // dataFilePath.filename() = relative path between .xml and data, only used by lidarformat formats
+    lidarContainer.updateXMLStructure(dataFilePath.filename().string(), format, transfo);
+    boost::shared_ptr<LidarFileIO> writer = LidarIOFactory::instance().createObject(format);
+    writer->save(lidarContainer, filename);
 }
 
-void LidarFile::save(const LidarDataContainer& lidarContainer,
+void LidarFile::save(LidarDataContainer& lidarContainer,
                      const std::string& dataFileName)
 {
     double x=0., y=0.;
@@ -302,17 +258,18 @@ void LidarFile::save(const LidarDataContainer& lidarContainer,
 }
 
 
-void LidarFile::saveInPlace(const LidarDataContainer& lidarContainer,
+void LidarFile::saveInPlace(LidarDataContainer& lidarContainer,
                             const std::string& xmlFileName)
 {
-    std::auto_ptr<cs::LidarDataType> xmlData(cs::lidarData(xmlFileName, xml_schema::Flags::dont_validate));
+    shared_ptr<cs::LidarDataType> xmlData(cs::lidarData(xmlFileName, xml_schema::Flags::dont_validate));
 
     const cs::DataFormatType format = xmlData->attributes().dataFormat();
     const std::string dataFileName = (path(xmlFileName).branch_path() / (basename(xmlFileName) + ".bin")).string();
 
     // create writer appropriate to format using the factory
+    lidarContainer.updateXMLStructure(dataFileName, format, LidarCenteringTransfo());
     boost::shared_ptr<LidarFileIO> writer = LidarIOFactory::instance().createObject(format);
-    writer->save(lidarContainer, *xmlData, dataFileName);
+    writer->save(lidarContainer, xmlFileName);
 }
 
 
@@ -332,9 +289,9 @@ void LidarFile::loadMetaDataFromXML()
 
     }*/
 
-    //meta données générales
-    m_lidarMetaData.binaryDataFileName_ = getBinaryDataFileName();
-    m_lidarMetaData.nbPoints_ = (size_t)m_xmlData->attributes().dataSize(); //tailleFicOctets/m_lidarMetaData.ptSize_;
+    //general meta data
+    //m_lidarMetaData.binaryDataFileName_ = getBinaryDataFileName();
+    //m_lidarMetaData.nbPoints_ = (size_t)m_xmlData->attributes().dataSize(); //tailleFicOctets/m_lidarMetaData.ptSize_;
 
     //	std::cout << "taille d'un enregistrement : " << m_lidarMetaData.ptSize_ << std::endl;
     //	double reste = double(tailleFicOctets)/double(m_lidarMetaData.ptSize_) - m_lidarMetaData.nbPoints_;
