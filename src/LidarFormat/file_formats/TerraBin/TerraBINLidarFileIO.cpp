@@ -109,12 +109,14 @@ bool TerraBINMetaDataIO::Register()
 bool TerraBINMetaDataIO::m_isRegistered = TerraBINMetaDataIO::Register();
 
 
-TerraBINLidarFileIO::TerraBINLidarFileIO() {
+TerraBINLidarFileIO::TerraBINLidarFileIO():LidarFileIO(".terrabin")
+{
     // TODO Auto-generated constructor stub
 
 }
 
-TerraBINLidarFileIO::~TerraBINLidarFileIO() {
+TerraBINLidarFileIO::~TerraBINLidarFileIO()
+{
     // TODO Auto-generated destructor stub
 }
 

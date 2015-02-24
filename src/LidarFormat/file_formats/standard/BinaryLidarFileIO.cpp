@@ -56,7 +56,7 @@ void BinaryLidarFileIO::loadData(LidarDataContainer& lidarContainer, std::string
     // compute file size
     {
         std::ifstream data_file(m_data_path.c_str(), std::ios::binary);
-        if(!data_file.good()) throw std::logic_error(std::string(__FUNCTION__) + ": Failed to open " + m_data_path +"\n");
+        if(!data_file.good()) throw std::logic_error("BinaryLidarFileIO::loadData: Failed to open " + m_data_path +"\n");
 
         data_file.seekg(0, std::ios::end);
         const unsigned int bin_file_size = data_file.tellg();
@@ -66,13 +66,17 @@ void BinaryLidarFileIO::loadData(LidarDataContainer& lidarContainer, std::string
         std::cout << "Nb of points : " << n_points << std::endl;
 
         if(lidarContainer.size() != n_points)
-            std::cout << "Warning : xml structure does not match binary file size!" << std::endl;
+        {
+            std::cout << "Warning : xml structure does not match binary file size->fixing container" << std::endl;
+            lidarContainer.resize(n_points);
+            lidarContainer.getXmlStructure()->attributes().dataSize(n_points);
+        }
     }
 
     std::ifstream data_file(m_data_path.c_str(), std::ios::binary);
     if(data_file.good())
         data_file.read(lidarContainer.rawData(), lidarContainer.size() * lidarContainer.pointSize());
-    else throw std::logic_error(std::string(__FUNCTION__) + ": Failed to open " + m_data_path +"\n");
+    else throw std::logic_error("BinaryLidarFileIO::loadData: Failed to open " + m_data_path +"\n");
 }
 
 void BinaryLidarFileIO::save(const LidarDataContainer& lidarContainer, std::string filename)
@@ -83,7 +87,7 @@ void BinaryLidarFileIO::save(const LidarDataContainer& lidarContainer, std::stri
     std::ofstream bin_ofs(m_data_path.c_str(), std::ios::binary);
     if(bin_ofs.good())
         bin_ofs.write(lidarContainer.rawData(), lidarContainer.size() * lidarContainer.pointSize());
-    else throw std::logic_error(std::string(__FUNCTION__) + ": Failed to open " + m_data_path +"\n");
+    else throw std::logic_error("BinaryLidarFileIO::loadData: Failed to open " + m_data_path +"\n");
 }
 
 boost::shared_ptr<BinaryLidarFileIO> createBinaryLidarFileReader()
@@ -98,13 +102,9 @@ bool BinaryLidarFileIO::Register()
 }
 
 
-BinaryLidarFileIO::BinaryLidarFileIO():StandardLidarFileIO()
-{
-}
+BinaryLidarFileIO::BinaryLidarFileIO():StandardLidarFileIO(".bin"){}
 
-BinaryLidarFileIO::~BinaryLidarFileIO()
-{
-}
+BinaryLidarFileIO::~BinaryLidarFileIO(){}
 
 bool BinaryLidarFileIO::m_isRegistered = BinaryLidarFileIO::Register();
 

@@ -125,21 +125,14 @@ LidarFile::LidarFile(const std::string &filename):
     boost::shared_ptr<MetaDataIO> reader = MetaDataIOFactory::instance().createObject(ext);
 
     // load the xml (either given as argument or generated)
-    try
-    {
-        m_xmlData = reader->load(filename);
-        m_isValid = true;
-    }
-    catch( const std::exception &)
-    {
-        m_isValid = false;
-    }
+    m_xmlData = reader->load(filename);
+    m_isValid = true;
 }
 
 void LidarFile::loadData(LidarDataContainer& lidarContainer)
 {
     if(!isValid())
-        throw std::logic_error("Error : Lidar xml file is not valid !\n");
+        throw std::logic_error("LidarFile::loadData: " + m_xmlFileName + " is not valid !\n");
 
     //loadMetaDataFromXML(); // BV this is done by constructor
     lidarContainer.setMapsFromXML(m_xmlData);

@@ -66,12 +66,10 @@ class StandardLidarFileIO : public LidarFileIO
 {
 public:
     virtual ~StandardLidarFileIO();
-    virtual void getPaths(const LidarDataContainer& lidarContainer, std::string filename);
     virtual void saveXml(const LidarDataContainer& lidarContainer, std::string filename);
 
 protected:
-    StandardLidarFileIO();
-    std::string m_xml_path, m_data_path;
+    StandardLidarFileIO(std::string ext);
 };
 
 } //namespace Lidar

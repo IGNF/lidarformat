@@ -87,13 +87,18 @@ public:
     /// for lidarformat, accompanying xml filename is inferred from data filename by replacing ext by .xml
     virtual void save(const LidarDataContainer& lidarContainer, std::string filename)=0;
 
-    /// DEPRECATED, use loadMetaData() instead
+    /// compute m_xml_path and m_data_path:
+    /// if filename is an xml, use it as xml_path and use the xmlData to infer the data_path
+    /// if filename is a data file (.bin,txt,ply,las,...) use it as data_path and change extention to xml to make the xml_path
+    void getPaths(const LidarDataContainer& lidarContainer, std::string filename);
+
+    /// DEPRECATED, xmlData is in the container to save
     void setXMLData(const boost::shared_ptr<cs::LidarDataType>& xmlData);
 
 protected:
-    LidarFileIO();
-
-    boost::shared_ptr<cs::LidarDataType> m_xmlData;
+    LidarFileIO(std::string ext);
+    /// paths for meta data and data, default data file extention
+    std::string m_xml_path, m_data_path, m_ext;
 
 };
 

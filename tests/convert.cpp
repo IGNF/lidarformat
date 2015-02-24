@@ -55,31 +55,17 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    if(argc != 4)
+    if(argc != 3)
     {
-        cout << "Usage: " << argv[0] << " input.xml format output.xml" << endl;
-        cout << "Format = binary, ascii, plyarchi" << endl; // terrabin,las
+        cout << "Usage: " << argv[0] << " input output" << endl;
+        cout << "possible input extentions: .xml, .bin, .txt, .ply, .las" << endl; // terrabin,las
+        cout << "possible output extentions: .xml (with binary), .bin (with xml), .txt (with xml), .ply" << endl;
         return 0;
     }
 
     time_t timer = clock();
-    LidarFile file(argv[1]);
-    //cout << file.getMetaData();
-    LidarDataContainer ldc;
-    file.loadData(ldc);
-    LidarCenteringTransfo transfo;
-    file.loadTransfo(transfo);
-
-    std::string format(argv[2]);
-    cs::DataFormatType format_type = cs::DataFormatType::binary;
-    if(format == "ascii") format_type = cs::DataFormatType::ascii;
-    else if(format == "plyarchi") format_type = cs::DataFormatType::plyarchi;
-    else if(format != "binary")
-    {
-        cout << "Unknown format " << format << endl;
-        return 1;
-    }
-    LidarFile::save(ldc, argv[3], transfo, format_type);
+    LidarDataContainer ldc(argv[1]);
+    ldc.save(argv[2]);
     cout << "Time: " << ( double ) timer/CLOCKS_PER_SEC << " s" << endl;
 
     return 0;

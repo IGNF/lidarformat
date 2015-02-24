@@ -14,8 +14,11 @@
 namespace Lidar
 {
 
-/// conversion from ply to lf type names
+/// conversion from ply to lf type names DEPRECATED
 std::string Ply2Lf(std::string ply_type);
+
+/// conversion from name in string to EnumLidarDataType
+EnumLidarDataType Ply2LfEnum(std::string ply_type);
 
 /// write the xml header corresponding to the ply file
 /// returns the name of the header

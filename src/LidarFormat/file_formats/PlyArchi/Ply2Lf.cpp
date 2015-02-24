@@ -28,18 +28,19 @@ string Ply2Lf(string ply_type)
     return ply_type;
 }
 
+// ply supports both old typenames (char, float,...) and new typenames (int8, float32,...)
 EnumLidarDataType Ply2LfEnum(string ply_type)
 {
-    if(ply_type == "char") return LidarDataType::int8;
-    if(ply_type == "uchar") return LidarDataType::uint8;
-    if(ply_type == "short") return LidarDataType::int16;
-    if(ply_type == "ushort") return LidarDataType::uint16;
-    if(ply_type == "int") return LidarDataType::int32;
-    if(ply_type == "uint") return LidarDataType::uint32;
-    if(ply_type == "long") return LidarDataType::int64;
-    if(ply_type == "ulong") return LidarDataType::uint64;
-    if(ply_type == "float") return LidarDataType::float32;
-    if(ply_type == "double") return LidarDataType::float64;
+    if(ply_type == "char" || ply_type == "int8") return LidarDataType::int8;
+    if(ply_type == "uchar" || ply_type == "uint8") return LidarDataType::uint8;
+    if(ply_type == "short" || ply_type == "int16") return LidarDataType::int16;
+    if(ply_type == "ushort" || ply_type == "uint16") return LidarDataType::uint16;
+    if(ply_type == "int" || ply_type == "int32") return LidarDataType::int32;
+    if(ply_type == "uint" || ply_type == "uint32") return LidarDataType::uint32;
+    if(ply_type == "long" || ply_type == "int64") return LidarDataType::int64;
+    if(ply_type == "ulong" || ply_type == "uint64") return LidarDataType::uint64;
+    if(ply_type == "float" || ply_type == "float32") return LidarDataType::float32;
+    if(ply_type == "double" || ply_type == "float64") return LidarDataType::float64;
     return LidarDataType::float32; // by default
 }
 
@@ -200,7 +201,7 @@ void SavePly(const LidarDataContainer& container,
     container.getAttributeList(attrib_liste);
     for(vector<string>::iterator it = attrib_liste.begin(); it != attrib_liste.end();it++)
     {
-        fileOut << "property " << OldName(container.getAttributeType(*it)) << " " << *it << endl;
+        fileOut << "property " << Name(container.getAttributeType(*it)) << " " << *it << endl;
         double min=0., max=0.;
         if(container.getAttributeBounds(*it, min, max))
             fileOut << "comment IGN bounds " << min << " " << max << endl;
