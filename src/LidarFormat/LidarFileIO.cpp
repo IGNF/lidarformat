@@ -57,24 +57,34 @@ MetaDataIO::~MetaDataIO()
 
 void LidarFileIO::getPaths(const LidarDataContainer& lidarContainer, std::string filename)
 {
-    boost::filesystem::path xml_path(filename), data_path(filename);
-    if(!lidarContainer.getDataFilename(m_data_path))
-        data_path.replace_extension(m_ext);
-    else data_path = m_data_path;
-    if(data_path.is_relative()) data_path = xml_path.parent_path() / data_path;
-
-    if(".xml" != xml_path.extension().string())
+    boost::filesystem::path file_path(filename), xml_path(filename), data_path(filename);
+    // get data path from lidarContainer metainfo, else take the input filename with the proper extension
+    std::string data_path_from_ldc;
+    if(!lidarContainer.getDataFilename(data_path_from_ldc))
     {
-        if(data_path != xml_path) // here xml_path is not an xml
+        // the container does not have a datafilename: just ensure extension is correct
+        data_path.replace_extension(m_ext);
+    }
+    else
+    {
+        // the container has a datafilename: read it and make it absolute if it is not
+        data_path = data_path_from_ldc;
+        if(data_path.is_relative())
+            data_path = file_path.parent_path() / data_path;
+    }
+
+    if(".xml" != file_path.extension().string())
+    {
+        // filename is a data file, check that the associated ldc metainfo is consistent
+        if(data_path != file_path)
             throw std::logic_error("Called " + std::string(__FUNCTION__) + "(lidarContainer," + filename +
                                    ") with lidarContainer.getDataFilename()=" + lidarContainer.getDataFilename() + "\n");
-        xml_path.replace_extension(".xml").string();
+        xml_path.replace_extension(".xml");
     }
     m_xml_path = xml_path.string();
     m_data_path = data_path.string();
-    std::cout << __FILE__ << ":" << __LINE__ << ": xml_path=" << xml_path.string() << std::endl;
-    std::cout << __FILE__ << ":" << __LINE__ << ": data_path=" << data_path.string() << std::endl;
-
+    //std::cout << __FILE__ << ":" << __LINE__ << ": xml_path=" << xml_path.string() << std::endl;
+    //std::cout << __FILE__ << ":" << __LINE__ << ": data_path=" << data_path.string() << std::endl;
 }
 
 void LidarFileIO::setXMLData(const boost::shared_ptr<cs::LidarDataType>& xmlData)
