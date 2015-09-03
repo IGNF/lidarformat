@@ -48,6 +48,7 @@ Contributors:
  *
  */
 
+#include <iostream>
 #include "LidarFormat/LidarEcho.h"
 
 namespace Lidar
