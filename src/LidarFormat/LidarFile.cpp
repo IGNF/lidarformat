@@ -129,6 +129,14 @@ LidarFile::LidarFile(const std::string &filename):
     m_isValid = true;
 }
 
+void LidarFile::loadMetaData(LidarDataContainer& lidarContainer)
+{
+    if(!isValid())
+        throw std::logic_error("LidarFile::loadMetaData: " + m_xmlFileName + " is not valid !\n");
+
+    lidarContainer.setMapsFromXML(m_xmlData);
+}
+
 void LidarFile::loadData(LidarDataContainer& lidarContainer)
 {
     if(!isValid())

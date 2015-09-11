@@ -8,21 +8,21 @@ clouds with a variable number of attributes at runtime.
 
 Homepage: 
 
-	http://code.google.com/p/lidarformat
-	
+    http://code.google.com/p/lidarformat
+
 Copyright:
-	
-	Institut Geographique National & CEMAGREF (2009)
+
+    Institut Geographique National & CEMAGREF (2009)
 
 Author: 
 
-	Adrien Chauve
-	
+    Adrien Chauve
+
 Contributors:
 
     Nicolas David, Olivier Tournaire, Bruno Vallet
-	
-	
+
+
 
     LidarFormat is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published
@@ -34,9 +34,9 @@ Contributors:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public 
+    You should have received a copy of the GNU Lesser General Public
     License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
- 
+
 ***********************************************************************/
 
 
@@ -85,6 +85,7 @@ void LidarFileIO::getPaths(const LidarDataContainer& lidarContainer, std::string
     m_data_path = data_path.string();
     //std::cout << __FILE__ << ":" << __LINE__ << ": xml_path=" << xml_path.string() << std::endl;
     //std::cout << __FILE__ << ":" << __LINE__ << ": data_path=" << data_path.string() << std::endl;
+
 }
 
 void LidarFileIO::setXMLData(const boost::shared_ptr<cs::LidarDataType>& xmlData)

@@ -93,7 +93,7 @@ public:
 
     LidarDataContainer();
     LidarDataContainer(shared_ptr<cs::LidarDataType> xmlData);
-    LidarDataContainer(std::string dataFileName);
+    LidarDataContainer(std::string dataFileName, bool meta_only=false);
     LidarDataContainer(const LidarDataContainer&);
     LidarDataContainer& operator=(const LidarDataContainer&);
 
@@ -104,7 +104,7 @@ public:
             const LidarCenteringTransfo& transfo);
 
     /// BV: very practical to use in client code
-    void load(std::string dataFileName);
+    void load(std::string dataFileName, bool meta_only=false);
     void save(std::string dataFileName);
 
     /// vector like Interface
@@ -190,6 +190,9 @@ public:
     /// the centering transfo is accessible through the xml structure
     bool getCenteringTransfo(double & x, double & y) const;
 
+    /// set the centering transfo in the xml structure (use at your own risks)
+    void setCenteringTransfo(double x, double y) const;
+
     inline shared_ptr<cs::LidarDataType> getXmlStructure() const {return m_xmlData;}
     inline std::string getDataFilename() const {return m_xmlData->attributes().dataFileName().get();}
     inline bool getDataFilename(std::string & filename) const
@@ -224,9 +227,10 @@ public:
         return attributeMap_->find(attributeName)->second.decalage;
     }
 
-private:
     /// BV: added option copy_data to optionnaly copy only attribute map without data (more memory efficient for some usages)
     void copy(const LidarDataContainer& rhs, bool copy_data=true);
+
+private:
 
     ///Update container content after having added attributes
     void updateAttributeContent(const unsigned int oldPointSize);

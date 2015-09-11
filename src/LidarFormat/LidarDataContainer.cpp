@@ -144,6 +144,17 @@ bool LidarDataContainer::getCenteringTransfo(double & x, double & y) const
     return true;
 }
 
+void LidarDataContainer::setCenteringTransfo(double x, double y) const
+{
+    if(!m_xmlData->attributes().centeringTransfo().present())
+        m_xmlData->attributes().centeringTransfo().set(cs::CenteringTransfoType(x,y));
+    else
+    {
+        m_xmlData->attributes().centeringTransfo().get().tx() = x;
+        m_xmlData->attributes().centeringTransfo().get().ty() = y;
+    }
+}
+
 LidarDataContainer::LidarDataContainer():
     attributeMap_(new AttributeMapType),
     m_xmlData(new cs::LidarDataType(cs::LidarDataType::AttributesType(0, cs::DataFormatType::binary)))
@@ -157,11 +168,11 @@ LidarDataContainer::LidarDataContainer(shared_ptr<cs::LidarDataType> xmlData):
     setMapsFromXML(xmlData);
 }
 
-LidarDataContainer::LidarDataContainer(std::string dataFileName):
+LidarDataContainer::LidarDataContainer(std::string dataFileName, bool meta_only):
     attributeMap_(new AttributeMapType),
     m_xmlData(new cs::LidarDataType(cs::LidarDataType::AttributesType(0, cs::DataFormatType::binary)))
 {
-    load(dataFileName);
+    load(dataFileName, meta_only);
 }
 
 LidarDataContainer::LidarDataContainer(const LidarDataContainer& rhs):
@@ -218,10 +229,11 @@ void LidarDataContainer::updateXMLStructure(
     *m_xmlData = cs::LidarDataType(attributes);
 }
 
-void LidarDataContainer::load(std::string dataFileName)
+void LidarDataContainer::load(std::string dataFileName, bool meta_only)
 {
     LidarFile file(dataFileName);
-    file.loadData(*this);
+    if(meta_only) file.loadMetaData(*this);
+    else file.loadData(*this);
 }
 
 void LidarDataContainer::save(std::string dataFileName)

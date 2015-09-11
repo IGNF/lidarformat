@@ -90,6 +90,9 @@ public:
     /// load centering transfo, (0,0) si none
     void loadTransfo(LidarCenteringTransfo& transfo) const;
 
+    /// load meta data from file to a lidar container
+    void loadMetaData(LidarDataContainer& lidarContainer);
+
     /// load data from file to a lidar container
     void loadData(LidarDataContainer& lidarContainer);
 
