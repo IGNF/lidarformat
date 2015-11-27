@@ -6,13 +6,17 @@ sudo: false
 
 addons:
   apt:
-    sources:
-    - boost-latest
     packages:
     - xsltproc
     - libxerces-c-dev
     - xsdcxx
-    - libboost1.54
+    
+install:
+  # Get boost
+  - wget https://github.com/Viq111/travis-container-packets/releases/download/boost-1.57.0/boost.tar.bz2
+  - tar -xjf boost.tar.bz2
+  - rm boost.tar.bz2
+  - export BOOST_ROOT=$(pwd)/boost
 
 script:
   - mkdir build && cd build && cmake .. && make
