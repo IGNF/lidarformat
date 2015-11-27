@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/IGNF/lidarformat.svg?branch=master)](https://travis-ci.org/IGNF/lidarformat)
+
 LidarFormat
 
 LidarFormat is an open source library for efficiently handling 3D point 
