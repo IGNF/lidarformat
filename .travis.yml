@@ -12,7 +12,7 @@ addons:
     - xsltproc
     - libxerces-c-dev
     - xsdcxx
-    - libboost1.55
+    - libboost1.54
 
 script:
   - mkdir build && cd build && cmake .. && make
