@@ -8,20 +8,20 @@ clouds with a variable number of attributes at runtime.
 
 Homepage: 
 
-	http://code.google.com/p/lidarformat
+	https://github.com/IGNF/lidarformat
 	
 Copyright:
 	
 	Institut Geographique National & CEMAGREF (2009)
 
-Author: 
+Original Author: 
 
 	Adrien Chauve
 
 	
 Contributors:
 
-	Nicolas David, Olivier Tournaire
+	Nicolas David, Olivier Tournaire, Bruno Vallet, Mathieu Brédif
 
 
 
@@ -37,11 +37,3 @@ Contributors:
 
     You should have received a copy of the GNU Lesser General Public 
     License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
-	
-	
-
- 
-Installation instructions:
-
-	Please go to the Homepage.
-
