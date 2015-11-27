@@ -6,6 +6,8 @@ sudo: false
 
 addons:
   apt:
+    sources:
+    - boost-latest
     packages:
     - xsltproc
     - libxerces-c-dev
