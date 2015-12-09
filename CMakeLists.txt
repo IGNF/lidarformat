@@ -113,6 +113,7 @@ INCLUDE( cmake/LidarFormat_plugin_io.cmake )
 # CMake does not include boost version 1.39
 SET(Boost_ADDITIONAL_VERSIONS "1.39.0" "1.39" "1.38.0" "1.38" "1.37.0" "1.37" "1.40" "1.41" "1.42" "1.43" "1.44")
 SET(Boost_COMPONENTS filesystem system)
+OPTION( BUILD_TESTS "Build tests" ON )
 if (BUILD_TESTS)
   set(Boost_COMPONENTS ${Boost_COMPONENTS} unit_test_framework)
 endif() 
@@ -173,7 +174,6 @@ ENDIF(${INSTALL_MODE} STREQUAL "Package")
 ####
 #### Tests
 ####
-OPTION( BUILD_TESTS "Build tests" ON )
 if(BUILD_TESTS)
     INCLUDE( cmake/LidarFormat_tests.cmake )
 endif(BUILD_TESTS)
