@@ -73,16 +73,19 @@ public:
     TBound(const EnumLidarDataType type):
         AbstractBound(type),
         m_min(std::numeric_limits<T>::max()),
-        m_max(std::numeric_limits<T>::min())
+        m_max(std::numeric_limits<T>::min()),
+        m_sum(0.), m_count(0)
     {
         if(!std::numeric_limits<T>::is_integer) m_max=-m_min;
     }
 
     void Add(const Lidar::LidarEcho& echo)
     {
-        double val = echo.value<T>(m_decalage);
+        T val = echo.value<T>(m_decalage);
         if(val < m_min) m_min = val;
         if(val > m_max) m_max = val;
+        m_sum += val;
+        m_count++;
     }
 
     void Print()
@@ -91,8 +94,9 @@ public:
                 LidarTypeTraits<T>::old_name() << ") ";
         // convert (unsigned) char to int
         if(std::numeric_limits<T>::is_integer)
-            std::cout << "[" << (int)m_min << "," << (int)m_max << "]=" << (int)m_max - (int)m_min + 1 << std::endl;
-        else std::cout << "[" << m_min << "," << m_max << "]=" << m_max-m_min << std::endl;
+            std::cout << "[" << (int)m_min << "," << (int)m_max << "]=" << (int)m_max - (int)m_min + 1;
+        else std::cout << "[" << m_min << "," << m_max << "]=" << m_max-m_min;
+        std::cout << " avg " << m_sum/m_count << std::endl;
     }
 
     void Get(double & min, double & max)
@@ -101,6 +105,8 @@ public:
     }
 
     T m_min, m_max;
+    double m_sum;
+    unsigned long m_count;
 };
 
 struct FonctorMultiAbstractBound

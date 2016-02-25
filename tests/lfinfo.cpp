@@ -82,7 +82,7 @@ int main(int argc, char** argv)
             if(ldc.getAttributeBounds(*it, min, max))
             {
                 cout << " in [" << min << "," << max << "]" << endl;
-            } else cout << " no bounds" << endl;
+            } else cout << " no bounds in metainfo" << endl;
             fmab.AddAttribute(*it, ldc.getDecalage(*it), ldc.getAttributeType(*it));
         }
         fmab = for_each (ldc.begin(), ldc.end(), fmab);
