@@ -36,25 +36,25 @@ Contributors:
     You should have received a copy of the GNU Lesser General Public 
     License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
     
-Installation
+Installation:
 
-	LidarFormat uses `cmake`. To build under `Linux`, go to  the root of the repository and type:
+LidarFormat uses `cmake`. To build under `Linux`, go to  the root of the repository and type:
 ```
 mkdir build
 cd build
 cmake ..
 make
 ```
-	If everything went well, you can install the library with
+If everything went well, you can install the library with
 ```
 sudo make install
 ```
-	which will make your library available to other `C++` project.
-	To use LidarFormat in another cmake project, add
+which will make your library available to other `C++` project.
+To use LidarFormat in another cmake project, add
 ```
 find_package(LidarFormat)
 include_directories(${LidarFormat_INCLUDE_DIRS})
 add_library(myLib ...)
 target_link_libraries(myLib LidarFormat ...)
 ```
-	to your `CMakeLists.txt`
+to your `CMakeLists.txt`
