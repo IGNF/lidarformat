@@ -183,6 +183,42 @@ void ReadPly(const string& ply_filename,
     file.loadTransfo(transfo);
 }
 
+// assumes ldc is already structured
+void LoadPlyAsciiData(const string& ply_filename,
+                      Lidar::LidarDataContainer& ldc)
+{
+    using namespace std;
+    ifstream ply_ifs(ply_filename.c_str());
+    if(!ply_ifs.good()) throw std::logic_error(std::string(__FUNCTION__) + ": Failed to open " + ply_filename +"\n");
+    string word="";
+    while(!ply_ifs.eof() && word != "end_header") {ply_ifs >> word;}
+    AttributeMapType attrib_map = ldc.getAttributeMap();
+    for(LidarDataContainer::iterator it=ldc.begin(); it != ldc.end(); it++)
+    {
+        int old_decalage=-2, decalage=-1, ival=0;
+        for(AttributeMapType::iterator it_att = attrib_map.begin(); it_att != attrib_map.end(); it_att++)
+        {
+            old_decalage = decalage;
+            decalage = it_att->second.decalage;
+            if(decalage <= old_decalage) cout << "ERROR: non increasing decalage" << endl;
+            switch(it_att->second.dataType())
+            {
+            case Lidar::LidarDataType::float32: ; ply_ifs >> it.value<float32>(decalage); break;
+            case Lidar::LidarDataType::float64: ply_ifs >> it.value<float64>(decalage); break;
+            case Lidar::LidarDataType::int8: ply_ifs >> ival; it.value<int8>(decalage)=ival; break;
+            case Lidar::LidarDataType::int16: ply_ifs >> ival; it.value<int16>(decalage)=ival; break;
+            case Lidar::LidarDataType::int32: ply_ifs >> it.value<int32>(decalage); break;
+            case Lidar::LidarDataType::int64: ply_ifs >> it.value<int64>(decalage); break;
+            case Lidar::LidarDataType::uint8: ply_ifs >> ival; it.value<uint8>(decalage)=ival; break;
+            case Lidar::LidarDataType::uint16: ply_ifs >> ival; it.value<uint16>(decalage)=ival; break;
+            case Lidar::LidarDataType::uint32: ply_ifs >> it.value<uint32>(decalage); break;
+            case Lidar::LidarDataType::uint64: ply_ifs >> it.value<uint64>(decalage); break;
+            default: cout << "Unknown data type " << it_att->second.dataType() << endl;
+            }
+        }
+    }
+}
+
 void SavePly(const LidarDataContainer& ldc,
              const LidarCenteringTransfo& transfo,
              const string& ply_filename,
@@ -219,11 +255,12 @@ void SavePly(const LidarDataContainer& ldc,
         {
             for(AttributeMapType::iterator it_att = attrib_map.begin(); it_att != attrib_map.end(); it_att++)
             {
-                int decalage = it_att->second.decalage, ival;
+                if(it_att != attrib_map.begin()) fileOut << " ";
+                int decalage = it_att->second.decalage;
                 switch(it_att->second.dataType())
                 {
-                case Lidar::LidarDataType::float32: ; fileOut << it.value<float32>(decalage); break;
-                case Lidar::LidarDataType::float64: fileOut << it.value<float64>(decalage); break;
+                case Lidar::LidarDataType::float32: ; fileOut.precision(9); fileOut << it.value<float32>(decalage); break;
+                case Lidar::LidarDataType::float64: fileOut.precision(15); fileOut << it.value<float64>(decalage); break;
                 case Lidar::LidarDataType::int8: fileOut << (int)it.value<int8>(decalage); break;
                 case Lidar::LidarDataType::int16: fileOut << (int)it.value<int16>(decalage); break;
                 case Lidar::LidarDataType::int32: fileOut << it.value<int32>(decalage); break;
@@ -235,6 +272,7 @@ void SavePly(const LidarDataContainer& ldc,
                 default: cout << "Unknown data type " << it_att->second.dataType() << endl;
                 }
             }
+            fileOut << endl;
         }
     }
     fileOut.close();

@@ -31,6 +31,10 @@ void ReadPly(const std::string& ply_filename,
              LidarDataContainer& container,
              LidarCenteringTransfo& transfo);
 
+/// load ascii data in a structured container
+void LoadPlyAsciiData(const std::string& ply_filename,
+                      Lidar::LidarDataContainer& ldc);
+
 /// save the container and centering as a ply file DEPRECATED
 void SavePly(const LidarDataContainer& container,
              const LidarCenteringTransfo& transfo,
