@@ -72,7 +72,7 @@ std::string LidarFile::getMetaData() const
     ostringstream result;
     result << "Nb of points : " << m_xmlData->attributes().dataSize() << "\n";
     result << "Format : " << m_xmlData->attributes().dataFormat() << "\n";
-    result << "Binary filename : " << getBinaryDataFileName() << "\n";
+    result << "Data filename : " << getBinaryDataFileName() << "\n";
     return result.str();
 }
 
@@ -96,7 +96,7 @@ std::string LidarFile::getBinaryDataFileName() const
         path datafilename(std::string(m_xmlData->attributes().dataFileName().get()));
         // BV: check if path is absolute or relative
         if(datafilename.is_absolute()) fileName = datafilename;
-        else fileName /= datafilename;
+        else fileName /= datafilename.filename();
     }
     else
     {
@@ -145,7 +145,6 @@ void LidarFile::loadData(LidarDataContainer& lidarContainer)
     //loadMetaDataFromXML(); // BV this is done by constructor
     lidarContainer.setMapsFromXML(m_xmlData);
     lidarContainer.resize(m_xmlData->attributes().dataSize());
-
     boost::shared_ptr<LidarFileIO> reader = LidarIOFactory::instance().createObject(m_xmlData->attributes().dataFormat());
     reader->loadData(lidarContainer, m_xmlFileName);
 }
@@ -206,6 +205,7 @@ void LidarFile::save(LidarDataContainer& lidarContainer,
     case cs::DataFormatType::binary: ext=".bin"; break;
     case cs::DataFormatType::ascii: ext=".txt"; break;
     case cs::DataFormatType::plyarchi: ext=".ply"; break;
+    case cs::DataFormatType::plyascii: ext=".ply"; break;
     case cs::DataFormatType::las: ext=".las"; break;
     case cs::DataFormatType::terrabin: ext=".terrabin"; break;
     default: ext=".bin";

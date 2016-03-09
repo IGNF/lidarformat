@@ -42,6 +42,8 @@ Contributors:
 #include "LidarFormat/file_formats/standard/ASCIILidarFileIO.h"
 #include "LidarFormat/file_formats/standard/BinaryLidarFileIO.h"
 #include "LidarFormat/file_formats/PlyArchi/BinaryPLYArchiLidarFileIO.h"
+#include "LidarFormat/file_formats/PlyArchi/AsciiPLYArchiLidarFileIO.h"
+#include "LidarFormat/file_formats/PlyArchi/PlyMetaDataIO.h"
 #ifdef ENABLE_TERRABIN
 #include "LidarFormat/file_formats/TerraBin/TerraBINLidarFileIO.h"
 #endif // ENABLE_TERRABIN
@@ -55,6 +57,7 @@ void registerAllFileFormats()
     ASCIILidarFileIO::Register();
     BinaryLidarFileIO::Register();
     BinaryPLYArchiLidarFileIO::Register();
+    AsciiPLYArchiLidarFileIO::Register();
     StandardMetaDataIO::Register();
     PlyMetaDataIO::Register();
 #ifdef ENABLE_TERRABIN

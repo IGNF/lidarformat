@@ -80,8 +80,9 @@ boost::shared_ptr<cs::LidarDataType> PlyHeaderToLidarDataType(const string& ply_
         iss >> word;
         if(word == "format")
         {
-            if(line != "format binary_little_endian 1.0")
-                cout << "->only binary_little_endian 1.0 format supported, use at your own risks" << endl;
+            if(line == "format binary_little_endian 1.0") attributes.dataFormat() = cs::DataFormatType::plyarchi;
+            else if(line == "format ascii 1.0") attributes.dataFormat() = cs::DataFormatType::plyascii;
+            else cout << "->only binary_little_endian and ascii 1.0 formats supported, use at your own risks" << endl;
         }
         else if(word == "comment")
         {
@@ -172,19 +173,20 @@ string WritePlyXmlHeader(const string& ply_filename, bool debug)
 }
 
 void ReadPly(const string& ply_filename,
-             Lidar::LidarDataContainer& container,
+             Lidar::LidarDataContainer& ldc,
              Lidar::LidarCenteringTransfo& transfo)
 {
     string xml_filename = WritePlyXmlHeader(ply_filename);
     if(xml_filename == "") return;
     LidarFile file(xml_filename);
-    file.loadData(container);
+    file.loadData(ldc);
     file.loadTransfo(transfo);
 }
 
-void SavePly(const LidarDataContainer& container,
+void SavePly(const LidarDataContainer& ldc,
              const LidarCenteringTransfo& transfo,
-             const string& ply_filename)
+             const string& ply_filename,
+             bool binary)
 {
     ofstream fileOut(ply_filename.c_str());
     if(!fileOut.good())
@@ -193,29 +195,55 @@ void SavePly(const LidarDataContainer& container,
         return;
     }
     // write text header
-    fileOut << "ply\nformat binary_little_endian 1.0" << endl;
-    fileOut << "comment LidarFormat export" << endl;
+    fileOut << "ply\nformat ";
+    if(binary) fileOut << "binary_little_endian";
+    else fileOut << "ascii";
+    fileOut << " 1.0\ncomment LidarFormat export" << endl;
     fileOut << "comment IGN offset Pos " << transfo.x() << " " << transfo.y() << " 0" << endl;
-    fileOut << "element vertex " << container.size() << endl;
+    fileOut << "element vertex " << ldc.size() << endl;
     vector<string> attrib_liste;
-    container.getAttributeList(attrib_liste);
+    ldc.getAttributeList(attrib_liste);
     for(vector<string>::iterator it = attrib_liste.begin(); it != attrib_liste.end();it++)
     {
-        fileOut << "property " << Name(container.getAttributeType(*it)) << " " << *it << endl;
+        fileOut << "property " << Name(ldc.getAttributeType(*it)) << " " << *it << endl;
         double min=0., max=0.;
-        if(container.getAttributeBounds(*it, min, max))
+        if(ldc.getAttributeBounds(*it, min, max))
             fileOut << "comment IGN bounds " << min << " " << max << endl;
     }
     fileOut << "end_header" << endl;
-    fileOut.write(container.rawData(), container.size() * container.pointSize());
+    if(binary) fileOut.write(ldc.rawData(), ldc.size() * ldc.pointSize());
+    else
+    {
+        AttributeMapType attrib_map = ldc.getAttributeMap();
+        for(LidarDataContainer::const_iterator it = ldc.begin(); it != ldc.end(); it++)
+        {
+            for(AttributeMapType::iterator it_att = attrib_map.begin(); it_att != attrib_map.end(); it_att++)
+            {
+                int decalage = it_att->second.decalage;
+                switch(it_att->second.dataType())
+                {
+                case Lidar::LidarDataType::float32: ; fileOut << it.value<float32>(decalage); break;
+                case Lidar::LidarDataType::float64: fileOut << it.value<float64>(decalage); break;
+                case Lidar::LidarDataType::int8: fileOut << it.value<int8>(decalage); break;
+                case Lidar::LidarDataType::int16: fileOut << it.value<int16>(decalage); break;
+                case Lidar::LidarDataType::int32: fileOut << it.value<int32>(decalage); break;
+                case Lidar::LidarDataType::int64: fileOut << it.value<int64>(decalage); break;
+                case Lidar::LidarDataType::uint8: fileOut << it.value<uint8>(decalage); break;
+                case Lidar::LidarDataType::uint16: fileOut << it.value<uint16>(decalage); break;
+                case Lidar::LidarDataType::uint32: fileOut << it.value<uint32>(decalage); break;
+                case Lidar::LidarDataType::uint64: fileOut << it.value<uint64>(decalage); break;
+                default: cout << "Unknown data type " << it_att->second.dataType() << endl;
+                }
+            }
+        }
+    }
     fileOut.close();
-    // WritePlyXmlHeader(ply_filename); // header should be written by LidarFile::Save()
 }
 
-void SavePly(const LidarDataContainer& container, const string& ply_filename)
+void SavePly(const LidarDataContainer& ldc, const string& ply_filename, bool binary)
 {
-    double x=0.,y=0.; container.getCenteringTransfo(x,y);
-    SavePly(container, LidarCenteringTransfo(x,y), ply_filename);
+    double x=0.,y=0.; ldc.getCenteringTransfo(x,y);
+    SavePly(ldc, LidarCenteringTransfo(x,y), ply_filename, binary);
 }
 
 } // namespace Lidar

@@ -49,25 +49,6 @@ License along with LidarFormat.  If not, see <http://www.gnu.org/licenses/>.
 namespace Lidar
 {
 
-boost::shared_ptr<cs::LidarDataType> PlyMetaDataIO::load(const std::string& filename)
-{
-    return PlyHeaderToLidarDataType(filename);
-}
-
-boost::shared_ptr<PlyMetaDataIO> createPlyMetaDataReader()
-{
-    return boost::shared_ptr<PlyMetaDataIO>(new PlyMetaDataIO());
-}
-
-bool PlyMetaDataIO::Register()
-{
-    MetaDataIOFactory::instance().Register(".ply", createPlyMetaDataReader);
-    return true;
-}
-
-bool PlyMetaDataIO::m_isRegistered = PlyMetaDataIO::Register();
-
-
 void BinaryPLYArchiLidarFileIO::loadData(LidarDataContainer& lidarContainer, std::string filename)
 {
     getPaths(lidarContainer,filename);

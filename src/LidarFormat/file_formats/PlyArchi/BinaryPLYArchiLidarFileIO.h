@@ -39,30 +39,12 @@ Contributors:
 
 ***********************************************************************/
 
-
-
-#ifndef BINARYPLYARCHILIDARFILEIO_H_
-#define BINARYPLYARCHILIDARFILEIO_H_
+#pragma once
 
 #include "LidarFormat/LidarFileIO.h"
 
 namespace Lidar
 {
-class PlyMetaDataIO : public MetaDataIO
-{
-public:
-    virtual ~PlyMetaDataIO(){}
-
-    virtual boost::shared_ptr<cs::LidarDataType> load(const std::string& filename);
-
-    static bool Register();
-    friend boost::shared_ptr<PlyMetaDataIO> createPlyMetaDataReader();
-
-private:
-    PlyMetaDataIO(){}
-
-    static bool m_isRegistered;
-};
 
 class BinaryPLYArchiLidarFileIO : public LidarFileIO
 {
@@ -81,5 +63,3 @@ private:
 };
 
 }
-
-#endif /* BINARYPLYARCHILIDARFILEIO_H_ */

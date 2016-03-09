@@ -69,10 +69,9 @@ void LidarFileIO::getPaths(const LidarDataContainer& lidarContainer, std::string
     {
         // the container has a datafilename: read it and make it absolute if it is not
         data_path = data_path_from_ldc;
-        if(data_path.is_relative())
+        if(data_path.is_relative() && file_path.is_absolute())
             data_path = file_path.parent_path() / data_path;
     }
-
     if(".xml" != file_path.extension().string())
     {
         // filename is a data file, check that the associated ldc metainfo is consistent

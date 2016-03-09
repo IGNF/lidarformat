@@ -84,6 +84,7 @@
             <xs:enumeration value="terrabin"/>
             <xs:enumeration value="las"/>
             <xs:enumeration value="plyarchi"/>
+            <xs:enumeration value="plyascii"/>
         </xs:restriction>
     </xs:simpleType>
 

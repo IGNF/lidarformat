@@ -34,11 +34,13 @@ void ReadPly(const std::string& ply_filename,
 /// save the container and centering as a ply file DEPRECATED
 void SavePly(const LidarDataContainer& container,
              const LidarCenteringTransfo& transfo,
-             const std::string& ply_filename);
+             const std::string& ply_filename,
+             bool binary=true);
 
 /// save the container as a ply file DEPRECATED
 void SavePly(const LidarDataContainer& container,
-             const std::string& ply_filename);
+             const std::string& ply_filename,
+             bool binary=true);
 
 } // namespace Lidar
 
