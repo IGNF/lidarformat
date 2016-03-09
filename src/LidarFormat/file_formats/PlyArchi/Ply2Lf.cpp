@@ -219,17 +219,17 @@ void SavePly(const LidarDataContainer& ldc,
         {
             for(AttributeMapType::iterator it_att = attrib_map.begin(); it_att != attrib_map.end(); it_att++)
             {
-                int decalage = it_att->second.decalage;
+                int decalage = it_att->second.decalage, ival;
                 switch(it_att->second.dataType())
                 {
                 case Lidar::LidarDataType::float32: ; fileOut << it.value<float32>(decalage); break;
                 case Lidar::LidarDataType::float64: fileOut << it.value<float64>(decalage); break;
-                case Lidar::LidarDataType::int8: fileOut << it.value<int8>(decalage); break;
-                case Lidar::LidarDataType::int16: fileOut << it.value<int16>(decalage); break;
+                case Lidar::LidarDataType::int8: fileOut << (int)it.value<int8>(decalage); break;
+                case Lidar::LidarDataType::int16: fileOut << (int)it.value<int16>(decalage); break;
                 case Lidar::LidarDataType::int32: fileOut << it.value<int32>(decalage); break;
                 case Lidar::LidarDataType::int64: fileOut << it.value<int64>(decalage); break;
-                case Lidar::LidarDataType::uint8: fileOut << it.value<uint8>(decalage); break;
-                case Lidar::LidarDataType::uint16: fileOut << it.value<uint16>(decalage); break;
+                case Lidar::LidarDataType::uint8: fileOut << (int)it.value<uint8>(decalage); break;
+                case Lidar::LidarDataType::uint16: fileOut << (int)it.value<uint16>(decalage); break;
                 case Lidar::LidarDataType::uint32: fileOut << it.value<uint32>(decalage); break;
                 case Lidar::LidarDataType::uint64: fileOut << it.value<uint64>(decalage); break;
                 default: cout << "Unknown data type " << it_att->second.dataType() << endl;
