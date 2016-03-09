@@ -106,6 +106,8 @@ public:
     /// BV: very practical to use in client code
     void load(std::string dataFileName, bool meta_only=false);
     void save(std::string dataFileName);
+    /// force the format (useful for binary/ascii)
+    void save(std::string dataFileName, cs::DataFormatType format);
 
     /// vector like Interface
     bool empty() const;

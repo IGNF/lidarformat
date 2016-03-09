@@ -237,12 +237,25 @@ void LidarFile::save(LidarDataContainer& lidarContainer,
     std::string ext = dataFilePath.extension().string();
     cs::DataFormatType format = cs::DataFormatType::binary; // default (includes .xml and .bin)
     if(".txt" == ext) format = cs::DataFormatType::ascii;
-    else if(".ply" == ext) format = cs::DataFormatType::plyarchi;
+    else if(".ply" == ext) // infer binary/ascii from xml structure
+    {
+        if(lidarContainer.getXmlStructure()->attributes().dataFormat() == cs::DataFormatType::plyascii)
+            format = cs::DataFormatType::plyascii;
+        else format = cs::DataFormatType::plyarchi;
+    }
     else if(".asc" == ext) format = cs::DataFormatType::ascii;
     else if(".terrabin" == ext) format = cs::DataFormatType::terrabin;
     else if(".las" == ext) format = cs::DataFormatType::las;
     // if user gives .xml filename without specifying format, assume he wants binary
-    else if(".xml" == ext) dataFilePath.replace_extension(".bin");
+    else if(".xml" == ext) // infer binary/ascii from xml structure
+    {
+        if(lidarContainer.getXmlStructure()->attributes().dataFormat() == cs::DataFormatType::ascii)
+        {
+            format = cs::DataFormatType::ascii;
+            dataFilePath.replace_extension(".txt");
+        }
+        else dataFilePath.replace_extension(".bin");
+    }
 
     // dataFilePath.filename() = relative path between .xml and data, only used by lidarformat formats
     lidarContainer.updateXMLStructure(dataFilePath.filename().string(), format, transfo);

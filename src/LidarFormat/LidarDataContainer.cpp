@@ -241,6 +241,11 @@ void LidarDataContainer::save(std::string dataFileName)
     LidarFile::save(*this, dataFileName);
 }
 
+void LidarDataContainer::save(std::string dataFileName, cs::DataFormatType format)
+{
+    LidarFile::save(*this, dataFileName, format);
+}
+
 void LidarDataContainer::copy(const LidarDataContainer& rhs, bool copy_data)
 {
     *attributeMap_ = *rhs.attributeMap_;
