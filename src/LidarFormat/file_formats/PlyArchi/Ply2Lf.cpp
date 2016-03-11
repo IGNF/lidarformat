@@ -53,6 +53,7 @@ void RobustGetLine(ifstream & ifs, string & line)
 
 boost::shared_ptr<cs::LidarDataType> PlyHeaderToLidarDataType(const string& ply_filename, bool debug)
 {
+    //debug=true;
     // load ply header
     ifstream ifs(ply_filename.c_str());
     if(!ifs.good()) throw logic_error("Failed to open " + ply_filename +"\n");
@@ -125,8 +126,10 @@ boost::shared_ptr<cs::LidarDataType> PlyHeaderToLidarDataType(const string& ply_
         else if(word == "element")
         {
             iss >> element;
-            if(element != "vertex" && debug)
-                cout << "->only vertex supported, the following will be ignored";
+            if(element != "vertex")
+            {
+                if(debug) cout << "->only vertex supported, the following will be ignored";
+            }
             else
             {
                 int data_size=0;
