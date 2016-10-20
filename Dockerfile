@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
-RUN BUILD_PACKAGES="xsltproc libxerces-c-dev xsdcxx libboost1.55-dev libboost-filesystem1.55-dev libboost-system1.55-dev cmake g++ git" \
-&&  RUNTIME_PACKAGES=" libxerces-c3.1 libboost-filesystem1.55.0 libboost-system1.55.0" \
-&&  apt-get -y -qq update \
+ENV BUILD_PACKAGES "xsltproc libxerces-c-dev xsdcxx libboost1.55-dev libboost-filesystem1.55-dev libboost-system1.55-dev cmake g++ git"
+ENV RUNTIME_PACKAGES "libxerces-c3.1 libboost-filesystem1.55.0 libboost-system1.55.0"
+RUN apt-get -y -qq update \
 &&  apt-get -y --fix-missing install $BUILD_PACKAGES \
 &&  git clone https://github.com/IGNF/lidarformat.git \
 &&  cd lidarformat \
@@ -15,5 +15,3 @@ RUN BUILD_PACKAGES="xsltproc libxerces-c-dev xsdcxx libboost1.55-dev libboost-fi
 &&  apt-get -y --fix-missing install $RUNTIME_PACKAGES \
 &&  apt-get -y clean \
 &&  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-
