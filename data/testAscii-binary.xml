@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<LidarData xmlns="cs">
+  <Attributes DataFileName="testAscii-binary.txt" DataFormat="ascii" DataSize="10">
+    <Attribute DataType="float64" Name="x"/>
+    <Attribute DataType="float64" Name="y"/>
+    <Attribute DataType="float64" Name="z"/>
+  </Attributes>
+</LidarData>
