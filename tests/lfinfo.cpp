@@ -43,6 +43,7 @@ Contributors:
  * This displays infos on the lidarformat file
  */
 #include <time.h>
+#include <iomanip>
 
 #include "config_data_test.h"
 
@@ -58,7 +59,7 @@ class AbstractAttribute
 {
 public:
     AbstractAttribute(const EnumLidarDataType type):m_type(type){}
-    virtual string String(const Lidar::LidarEcho& echo)=0;
+    virtual void Stream(const Lidar::LidarEcho& echo, ostream & os)=0;
 
     string m_name;
     unsigned int m_decalage;
@@ -71,13 +72,14 @@ public:
     TAttribute(const EnumLidarDataType type):
         AbstractAttribute(type) {}
 
-    string String(const Lidar::LidarEcho& echo)
+    void Stream(const Lidar::LidarEcho& echo, ostream & os)
     {
-        ostringstream oss;
         if(std::numeric_limits<T>::is_integer)
-            oss << (int)echo.value<T>(m_decalage);
-        else oss << echo.value<T>(m_decalage);
-        return oss.str();
+            if(std::numeric_limits<T>::is_signed)
+                os << (int)echo.value<T>(m_decalage);
+            else os << (unsigned int)echo.value<T>(m_decalage);
+        else os << echo.value<T>(m_decalage);
+        return;
     }
 };
 
@@ -152,10 +154,14 @@ int main(int argc, char** argv)
     for(vector<string>::iterator it = attrib_list.begin(); it != attrib_list.end(); it++)
         cout << *it << "\t";
     cout << endl;
+    cout << setprecision(16);
     for(LidarDataContainer::iterator it=ldc.begin(); it<ldc.begin()+n_echo; it++)
     {
         for(unsigned int i=0; i<v_attrib.size(); i++)
-            cout << v_attrib[i]->String(*it) << "\t";
+        {
+            v_attrib[i]->Stream(*it, cout);
+            cout << "\t";
+        }
         cout << endl;
     }
     return 0;

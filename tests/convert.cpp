@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 {
     if(argc != 3)
     {
-        cout << "Usage: " << argv[0] << " input output" << endl;
+        cout << argc << "!=3 args given -> usage: " << argv[0] << " input output" << endl;
         cout << "possible input extentions: .xml, .bin, .txt, .ply, .las" << endl; // terrabin,las
         cout << "possible output extentions: .xml (with binary), .bin (with xml), .txt (with xml), .ply" << endl;
         return 0;
